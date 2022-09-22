@@ -4,8 +4,8 @@ Scenario=-1
 #Participant ID (can be a string) [max lenght 15]
 ParticipantId=56
 
-#SetLocomotion Technique among {ArmSwing, WalkInPlace, CVirtualizer, Joystick}
-LocomotionTechnique=ArmSwing
+#SetLocomotion Technique among {ArmSwing, WalkInPlace, CVirtualizer, Joystick, StandingFootVelocity}
+LocomotionTechnique=StandingFootVelocity
 
 #Use true to automatically freeze the player at the start/end of each task
 AutoFreeze=true

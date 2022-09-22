@@ -15,7 +15,8 @@ public enum LocomotionTechniqueType
     ArmSwing,
     WalkInPlace,
     CVirtualizer,
-    Joystick
+    Joystick,
+    StandingFootVelocity
 };
 
 
