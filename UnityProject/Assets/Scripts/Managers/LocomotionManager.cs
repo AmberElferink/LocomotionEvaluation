@@ -249,6 +249,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
             case LocomotionTechniqueType.Joystick:
                 CurrentPlayerController.GetComponent<JoystickMovement>().Blocked = true;
                 break;
+ 
         }
     }
 

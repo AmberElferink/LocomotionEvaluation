@@ -72,7 +72,7 @@ using Valve.VR;
             {
                 transform.localPosition = pose.pos;
                 transform.localRotation = pose.rot * calibration;
-        }
+            }
         }
 
         SteamVR_Events.Action newPosesAction;

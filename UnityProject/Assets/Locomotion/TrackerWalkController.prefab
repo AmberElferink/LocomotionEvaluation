@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ef3f5661579ffa4cb1997151342b577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  index: 3
+  index: 7
   origin: {fileID: 0}
 --- !u!1 &6208660801225168464
 GameObject:
@@ -725,6 +725,7 @@ GameObject:
   - component: {fileID: 6208660801927453111}
   - component: {fileID: 6208660801716360007}
   - component: {fileID: 6208660801716360006}
+  - component: {fileID: 739398883}
   m_Layer: 0
   m_Name: TrackerWalkController
   m_TagString: Untagged
@@ -793,6 +794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17ced6fa1a333ce4cb6e70c9ac287ba1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 739398883}
   head: {fileID: 6208660801921704107}
   hip: {fileID: 6208660801630545053}
   directionIndicator: {fileID: 6208660801681522711}
@@ -806,14 +808,10 @@ MonoBehaviour:
     isRight: 1
     tracker: {fileID: 6208660802021383355}
     footTransform: {fileID: 6208660802828108462}
-  standingThres: 0
-  liftedThres: 0.1
-  controllerType: 4
+  standingThres: 0.1
+  liftedThres: 0
+  controllerType: 5
   speed: 1
-  joystickInput: 0
-  input:
-    actionPath: /actions/default/in/SmoothLocomotion
-    needsReinit: 0
 --- !u!114 &6208660801716360006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -833,8 +831,26 @@ MonoBehaviour:
   - {fileID: 6208660802828108462}
   - {fileID: 6208660801937407038}
   ignoreTransforms: []
-  writeSetting: 2
+  writeSetting: 3
   path: test.txt
+--- !u!143 &739398883
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6208660801921239235}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.25
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &6208660801921240749
 GameObject:
   m_ObjectHideFlags: 0
@@ -2160,7 +2176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ef3f5661579ffa4cb1997151342b577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  index: 4
+  index: 8
   origin: {fileID: 0}
 --- !u!1 &6208660802086210767
 GameObject:

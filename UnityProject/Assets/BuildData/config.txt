@@ -8,4 +8,4 @@ ParticipantId=56
 LocomotionTechnique=StandingFootVelocity
 
 #Use true to automatically freeze the player at the start/end of each task
-AutoFreeze=true
+AutoFreeze=false
