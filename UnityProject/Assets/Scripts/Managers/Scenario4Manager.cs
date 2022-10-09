@@ -102,6 +102,7 @@ public class Scenario4Manager : UnitySingleton<Scenario4Manager>
             case LocomotionTechniqueType.ArmSwing:
             case LocomotionTechniqueType.WalkInPlace:
             case LocomotionTechniqueType.Joystick:
+            case LocomotionTechniqueType.StandingFootVelocity:
                 LocomotionManager.Instance.CurrentPlayerController.GetComponent<CircularLimitTracking>().DisableCollider();
                 break;
             default:

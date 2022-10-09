@@ -45,13 +45,14 @@ public class GazeDestination : WalkingDestination
         Scenario2Manager.Instance.StatisticsLogger.StopLogMultiStrLineWalking(this);
         if (other.CompareTag("Player"))
         {
-            _item.OnLocked += StopLog;
+            _item.OnLocked += StopLog; //this is added, but apparently OnLocked event is never raised, so StopLog is not called.
             _item.IsLockable = true;
         }
     }
 
     private void StopLog()
     {
+        print("StopLog");
         gameObject.SetActive(false);
     }
 

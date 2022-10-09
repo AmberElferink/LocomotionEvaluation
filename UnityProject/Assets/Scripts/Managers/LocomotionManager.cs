@@ -209,6 +209,10 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
                 l = CurrentPlayerController.GetComponent<CircularLimitTracking>();
                 CameraEye = l.CameraEye;
                 break;
+            case LocomotionTechniqueType.StandingFootVelocity:
+                l = CurrentPlayerController.GetComponent<CircularLimitTracking>();
+                CameraEye = l.CameraEye;
+                break;
         }
     }
 
