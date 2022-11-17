@@ -131,7 +131,7 @@ public class SmoothLocomotion : MonoBehaviour
         public void Calibrate()
         {
             calibratedThreshold = tracker.position.y;
-            tracker.gameObject.GetComponent<Calibrated_tracked_object>().Calibrate();
+            //tracker.gameObject.GetComponent<Calibrated_tracked_object>().Calibrate();
         }
 
         public void SetFootColor(bool isLeading)
@@ -239,7 +239,7 @@ public class SmoothLocomotion : MonoBehaviour
             case OrientationController.StandingFootVelocity:
                 if (LeadingFoot != null && LeadingFoot.isStanding)
                 {
-                    Vector3 displacement = Vector3.ProjectOnPlane(LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
+                    Vector3 displacement = Vector3.ProjectOnPlane(speed *LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
                     // don't do anything with orientation, since it comes down to the velocity magnitute times velocity orientation unit vector, which is velocity itself.
                     movement -= displacement;
                 }
@@ -248,7 +248,7 @@ public class SmoothLocomotion : MonoBehaviour
             case OrientationController.LiftedFootVelocity:
                 if (LeadingFoot != null && LeadingFoot.isLifted)
                 {
-                    Vector3 displacement = Vector3.ProjectOnPlane(LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
+                    Vector3 displacement = Vector3.ProjectOnPlane(speed * LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
                     movement += displacement;
                 }
                 break;
@@ -412,7 +412,7 @@ public class SmoothLocomotion : MonoBehaviour
         Vector3 displacement;
 
         if (LeadingFoot != null)
-            displacement = Vector3.ProjectOnPlane(LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
+            displacement = Vector3.ProjectOnPlane(speed * LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
         else
             displacement = Vector3.zero;
 

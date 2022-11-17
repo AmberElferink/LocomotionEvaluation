@@ -138,7 +138,8 @@ public class VibrationController : MonoBehaviour {
 
     bool StopCurrentVibration()
     {
-        if (requests.Count == 0)
+        
+        if (requests != null && requests.Count == 0)
         {
             vibrate = false;
             currequest = null;
