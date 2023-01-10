@@ -63,7 +63,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
     }
 
     public float CurrentPlayerSpeed { get; private set; }
-    public Transform LocomotionOffset { get; private set; } //excluding roomscale offset
+    public Transform LocomotionOffset { get => CurrentPlayerController; } //excluding roomscale offset
     public Vector3 PlayerPos { //including roomscale offset (characterController pos)
         get => _getPlayerPos.PlayerPosition; 
         set { _getPlayerPos.SetGlobalPlayerPos(value); } 
@@ -73,6 +73,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
     public Transform RightController { get; private set; }
     public Transform LeftTracker { get; private set; }
     public Transform RightTracker { get; private set; }
+    public Transform HipTracker { get; private set; }
     public Transform DirectionalTracker { get; private set; }
     public Transform CameraEye { get; private set; }
     public I_UI_HUDController CurrentUIController { get; set; }
@@ -114,7 +115,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
 
     #region MonoBehaviour
 
-    private void Awake()
+    void Awake()
     {
         if (_getLocomotionFromConfigFile)
             Locomotion = ConfigurationLookUp.Instance.GetEnum("LocomotionTechnique", Locomotion);
@@ -129,7 +130,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
         
     }
 
-    private void Start()
+    void Start()
     {
         InitializeTechnique();
 
@@ -148,7 +149,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
         AutoFreeze();
     }
 
-    private void Update()
+    void Update()
     {
         if (Input.GetKeyDown(_freezePalyerKeyCode))
             IsPlayerFreezed = !IsPlayerFreezed;
@@ -223,6 +224,11 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
             case LocomotionTechniqueType.StandingFootVelocity:
                 l = CurrentPlayerController.GetComponent<CircularLimitTracking>();
                 CameraEye = l.CameraEye;
+                cr = CurrentPlayerController.Find("[CameraRig]");
+                HipTracker = cr.Find("HipTracker");
+                LeftTracker = cr.Find("LeftFootTracker");
+                RightTracker = cr.Find("RightFootTracker");
+                DirectionalTracker = cr.Find("DirectionIndicator");
                 break;
         }
     }

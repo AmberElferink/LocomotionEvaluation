@@ -26,6 +26,8 @@ public class SmoothLocomotion : MonoBehaviour
     [System.Serializable]
     public class Foot
     {
+        [System.NonSerialized]
+        public Transform sphere;
         public enum State
         {
             Standing,
@@ -36,10 +38,11 @@ public class SmoothLocomotion : MonoBehaviour
         public float calibratedThreshold = 0; // when to say this shoe is lifted;
 
         public bool isRight = false;
-
+        
         public Foot(bool isRightFoot)
         {
             isRight = isRightFoot;
+
 
         }
 
@@ -138,7 +141,7 @@ public class SmoothLocomotion : MonoBehaviour
 
         public void SetFootColor(bool isLeading)
         {
-            Transform sphere = tracker.Find("Sphere");
+            
             Material material = sphere.gameObject.GetComponent<Renderer>().material;
             if (!isLeading)
                 material.SetColor("_Color", Color.grey);
@@ -398,7 +401,11 @@ public class SmoothLocomotion : MonoBehaviour
 
 
 
-
+    private void Start()
+    {
+       leftFoot.sphere = leftFoot.tracker.Find("Sphere");
+       rightFoot.sphere = rightFoot.tracker.Find("Sphere");
+    }
 
     // Update is called once per frame
     void FixedUpdate()

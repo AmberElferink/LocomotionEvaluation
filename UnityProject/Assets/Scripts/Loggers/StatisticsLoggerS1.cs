@@ -200,11 +200,11 @@ public class StatisticsLoggerS1 : StatisticsLoggerBase
     protected float GetAverageDist()
     {
         float v = 0.0f;
-        for (int i = 0; i < _positions.Count; i++)
+        for (int i = 0; i < _playerPositions.Count; i++)
         {
-            v += Mathf.Abs(Vector3.Distance(_positions[i], _targetpositions[i]));
+            v += Mathf.Abs(Vector3.Distance(_playerPositions[i], _targetpositions[i]));
         }
-        return v / _positions.Count;
+        return v / _playerPositions.Count;
     }
 
     #endregion
