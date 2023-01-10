@@ -171,7 +171,7 @@ public class SmoothLocomotion : MonoBehaviour
 
     // ------------------------- now, combine the separate feet to displacement:
     public CharacterController player; //make a CharacterController component on the parent of the SteamVRObjects to move the player and link it here.
-
+    public float additionalHeight = 0.2f; //extra height of "forehead" on top of character height
     public Transform head;
     public Transform hip;
     public GameObject directionIndicator;
@@ -399,8 +399,9 @@ public class SmoothLocomotion : MonoBehaviour
 
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        CapsuleFollowHeadset();
 
         SetBackAndFrontFoot();
         leftFoot.UpdateState(liftedThres, standingThres);
@@ -421,6 +422,17 @@ public class SmoothLocomotion : MonoBehaviour
         directionIndicator.transform.localRotation = orientation;
 
         player.Move(GetMovement(displacement, orientation));
+
+    }
+
+    void CapsuleFollowHeadset()
+    {
+        player.height = head.position.y + additionalHeight;
+
+        //below will place the capsule center on the head.
+        Vector3 capsuleCenter = transform.InverseTransformPoint(head.position); // head position as if it was a child of this object, so position in the coordinate frame of the trackerWalkController if that is the object with this script.
+        // since the centre of the capsule is indeed kind of a child of this transform, that is needed.
+        player.center = new Vector3(capsuleCenter.x, player.height / 2 + player.skinWidth, capsuleCenter.z);
     }
 }
 
