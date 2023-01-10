@@ -72,7 +72,7 @@ public class OvershootingDestination : Destination
     private void OnTriggerEnter(Collider other)
     {
         if (LocomotionManager.Instance.CurrentPlayerController == other.transform)
-            _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+            _prevpos = LocomotionManager.Instance.PlayerPos;
     }
 
     private void OnTriggerExit(Collider other)
@@ -88,7 +88,7 @@ public class OvershootingDestination : Destination
     {
         if (LocomotionManager.Instance.CurrentPlayerController == other.transform)
         {
-            if (LocomotionManager.Instance.CurrentPlayerController.position == _prevpos)
+            if (LocomotionManager.Instance.PlayerPos == _prevpos)
             {
                 if (_timeStop == float.MinValue)
                     _timeStop = Time.time;
@@ -100,7 +100,7 @@ public class OvershootingDestination : Destination
             }
             else
             {
-                _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+                _prevpos = LocomotionManager.Instance.PlayerPos;
             }
         }
     }

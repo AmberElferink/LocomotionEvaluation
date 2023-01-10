@@ -100,7 +100,7 @@ public class StatisticsLoggerS5 : StatisticsLoggerBase
                 break;
         }
         _grabtask++;
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
         _grabbing = true;
     }
 

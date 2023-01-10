@@ -81,7 +81,7 @@ public class StatisticsLoggerS1 : StatisticsLoggerBase
     public void StopLogOvershooting()
     {
         var ComplTime = Time.time - _timeStart;
-        var TargetDist = Mathf.Abs(Vector3.Distance(_overshotingtarget.transform.position, LocomotionManager.Instance.CurrentPlayerController.position));
+        var TargetDist = Mathf.Abs(Vector3.Distance(_overshotingtarget.transform.position, LocomotionManager.Instance.PlayerPos));
         var values = new List<string>
         {
         "" + ComplTime,
@@ -103,7 +103,7 @@ public class StatisticsLoggerS1 : StatisticsLoggerBase
         _timeStart = Time.time;
         _chasing = true;
         _numInterr = -1;
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
     }
     public void StopLogChasing()
     {
@@ -128,7 +128,7 @@ public class StatisticsLoggerS1 : StatisticsLoggerBase
         _timeStart = Time.time;
         _sprinting = true;
         _numWallColl = 0;
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
     }
     public void StopLogSprinting(Destination d)
     {
@@ -168,7 +168,7 @@ public class StatisticsLoggerS1 : StatisticsLoggerBase
         }
         else if (_chasing)
         {
-            if (LocomotionManager.Instance.CurrentPlayerController.position == _prevpos && !_errorCounted)
+            if (LocomotionManager.Instance.PlayerPos == _prevpos && !_errorCounted)
             {
                 if (_timeStop == float.MinValue)
                     _timeStop = Time.time;
@@ -178,9 +178,9 @@ public class StatisticsLoggerS1 : StatisticsLoggerBase
                     _errorCounted = true;
                 }
             }
-            else if (LocomotionManager.Instance.CurrentPlayerController.position != _prevpos)
+            else if (LocomotionManager.Instance.PlayerPos != _prevpos)
             {
-                _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+                _prevpos = LocomotionManager.Instance.PlayerPos;
                 _errorCounted = false;
             }
         }

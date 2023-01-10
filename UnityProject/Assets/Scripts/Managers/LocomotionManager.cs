@@ -63,6 +63,11 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
     }
 
     public float CurrentPlayerSpeed { get; private set; }
+    public Transform LocomotionOffset { get; private set; } //excluding roomscale offset
+    public Vector3 PlayerPos { //including roomscale offset (characterController pos)
+        get => _getPlayerPos.PlayerPosition; 
+        set { _getPlayerPos.SetGlobalPlayerPos(value); } 
+    } 
     public Transform CurrentPlayerController { get; private set; }
     public Transform LeftController { get; private set; }
     public Transform RightController { get; private set; }
@@ -71,6 +76,8 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
     public Transform DirectionalTracker { get; private set; }
     public Transform CameraEye { get; private set; }
     public I_UI_HUDController CurrentUIController { get; set; }
+
+    GetPlayerPos _getPlayerPos;
 
     public LocomotionTechniqueType Locomotion
     {
@@ -119,6 +126,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
 
         IsPlayerFreezed = false;
         CurrentPlayerController = _playerControllers[(int) Locomotion];
+        
     }
 
     private void Start()
@@ -132,7 +140,10 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
         cc.renderMode = RenderMode.ScreenSpaceCamera;
         cc.worldCamera = CameraEye.transform.GetChildRecursive("UI").GetComponent<Camera>();
         CurrentUIController = c;
-        _lastPlayerPosition = CurrentPlayerController.position;
+
+        _getPlayerPos = CurrentPlayerController.GetComponent<GetPlayerPos>();
+        _lastPlayerPosition = PlayerPos;
+
 
         AutoFreeze();
     }
@@ -142,8 +153,8 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
         if (Input.GetKeyDown(_freezePalyerKeyCode))
             IsPlayerFreezed = !IsPlayerFreezed;
 
-        CurrentPlayerSpeed = Vector3.Distance(_lastPlayerPosition, CurrentPlayerController.position) / Time.deltaTime;
-        _lastPlayerPosition = CurrentPlayerController.position;
+        CurrentPlayerSpeed = Vector3.Distance(_lastPlayerPosition, PlayerPos) / Time.deltaTime;
+        _lastPlayerPosition = PlayerPos;
     }
 
     protected override void OnApplicationQuit()

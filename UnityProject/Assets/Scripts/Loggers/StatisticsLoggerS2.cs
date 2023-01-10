@@ -55,7 +55,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
             _multiStrLineWalking = true;
         }
         _timeStart = Time.time;
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
         _estPathLen = 0;
         _recallTime = -1;
         _initAngErr = -1;
@@ -93,7 +93,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
         StartMasterLog("BW");
         _timeStart = Time.time;
         _backWalking = true;
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
 		_inCount = 0;
         _numLookOut = -1;
     }
@@ -122,7 +122,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
         _timeStart = Time.time;
         _curvedWalking = true;
         _stopPos = Vector3.negativeInfinity;
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
         _numInterr = 0;
     }
     public void StopLogCurvedWalking(Destination d)
@@ -219,7 +219,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
         _fear = true;
         _numFalls = 0;
         _avoidance = 0;
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
     }
 
     public void StopLogFear(Destination d)
@@ -275,7 +275,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
         else if (_curvedWalking)
         {
             var t = (Time.time - _lastsample);
-            var currpos = LocomotionManager.Instance.CurrentPlayerController.position;
+            var currpos = LocomotionManager.Instance.PlayerPos;
             if (currpos == _prevpos)
             {
                 if (_timeStop == float.MinValue)
@@ -297,7 +297,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
         }
         else if (_fear)
         {
-            if (LocomotionManager.Instance.CurrentPlayerController.position.x <= Scenario2Manager.Instance._avoidanceRef.position.x)
+            if (LocomotionManager.Instance.PlayerPos.x <= Scenario2Manager.Instance._avoidanceRef.position.x)
             {
                 var diff = GetPathDev(Scenario2Manager.Instance._avoidanceRef, _avoidanceAxis);
                 _avoidance += diff * (1 / StatisticsLoggerData.SamplingRate);
@@ -305,13 +305,13 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
         }
         else if (_multiStrLineWalking)
         {
-            var d = Mathf.Abs(Vector3.Distance(LocomotionManager.Instance.CurrentPlayerController.position, _prevpos));
+            var d = Mathf.Abs(Vector3.Distance(LocomotionManager.Instance.PlayerPos, _prevpos));
             _estPathLen += d;
             if (d > 0 && _recallTime == -1)
                 _recallTime = Time.time - _timeStart;
             if (_estPathLen >= _dirWalkingDistThreshold && _initAngErr == -1)
             {
-                var v1 = LocomotionManager.Instance.CurrentPlayerController.position - _prevpos;
+                var v1 = LocomotionManager.Instance.PlayerPos - _prevpos;
                 Vector3 v2 = Vector3.zero;
                 if (_dirTargets == 0)
                     v2 = _currDest.transform.position - Scenario2Manager.Instance.StartDest.transform.position;
@@ -322,7 +322,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
 
         }
         else 
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
 
         base.ComputeStatisticsStep();
     }

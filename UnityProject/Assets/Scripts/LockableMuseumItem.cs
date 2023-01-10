@@ -116,7 +116,7 @@ public class LockableMuseumItem : MonoBehaviour
     void Update()
     {
         if (!IsLockable || IsLocked) return;
-        float playerDistance = Vector3.Distance(LocomotionManager.Instance.CurrentPlayerController.position, transform.position);
+        float playerDistance = Vector3.Distance(LocomotionManager.Instance.PlayerPos, transform.position);
         //Debug.Log($"{gameObject.name} player Distance {playerDistance:F1} Locked= {IsLocked}");
         if (InteractiveItem.IsOver && !IsLocked && !_selectionRadial.IsVisible
                     && (!_checkDistance || _playerDetectionRange >= playerDistance))

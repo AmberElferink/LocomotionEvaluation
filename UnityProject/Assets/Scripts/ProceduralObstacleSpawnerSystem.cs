@@ -141,7 +141,7 @@ public class ProceduralObstacleSpawnerSystem : MonoBehaviour
 
     private void SpawnElement(int elementIdx)
     {
-        if (Vector3.Dot(LocomotionManager.Instance.CurrentPlayerController.position - _sourceSpawnQuad.transform.position, -_movingDirection) > 0) return;
+        if (Vector3.Dot(LocomotionManager.Instance.PlayerPos - _sourceSpawnQuad.transform.position, -_movingDirection) > 0) return;
 
         var e = _proceduralObstaclePattern.Elements[elementIdx];
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube);

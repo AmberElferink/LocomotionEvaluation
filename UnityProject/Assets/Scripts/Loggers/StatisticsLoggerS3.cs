@@ -75,7 +75,7 @@ public class StatisticsLoggerS3 : StatisticsLoggerBase
         _decoupledGaze = false;
         _strOutHands = true;
         _stopPos = Vector3.negativeInfinity;
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
         _count = 0;
         _inCount = 0;
         _numInterr = 0;
@@ -103,7 +103,7 @@ public class StatisticsLoggerS3 : StatisticsLoggerBase
         _decoupledGaze = false;
         _decoupledHands = true;
         _stopPos = Vector3.negativeInfinity;
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
         _stPathDev = 0;
         _numInterr = 0;
     }
@@ -138,7 +138,7 @@ public class StatisticsLoggerS3 : StatisticsLoggerBase
             var diff = GetPathDev(Scenario3Manager.Instance._pathDevRef1, _pathDevAxis);
             _stPathDev += diff * (1 / StatisticsLoggerData.SamplingRate);
                        
-            var v1 = LocomotionManager.Instance.CurrentPlayerController.position - _prevpos;
+            var v1 = LocomotionManager.Instance.PlayerPos - _prevpos;
             var v2 = LocomotionManager.Instance.CameraEye.forward;
             var a = Vector3.Angle(v1, v2);
             if (a > Scenario3Manager.Instance.Sphere.Angle - _anglethresholdOffset && a < Scenario3Manager.Instance.Sphere.Angle + _anglethresholdOffset)
@@ -147,7 +147,7 @@ public class StatisticsLoggerS3 : StatisticsLoggerBase
             if(_masterlog)
                 _gazewalkangles.Add(a);
 
-            var currpos = LocomotionManager.Instance.CurrentPlayerController.position;
+            var currpos = LocomotionManager.Instance.PlayerPos;
             if (currpos == _prevpos)
             {
                 if (_timeStop == float.MinValue)
@@ -180,7 +180,7 @@ public class StatisticsLoggerS3 : StatisticsLoggerBase
                 _inCount++;
             _count++;
 
-            var currpos = LocomotionManager.Instance.CurrentPlayerController.position;
+            var currpos = LocomotionManager.Instance.PlayerPos;
             if (currpos == _prevpos)
             {
                 if (_timeStop == float.MinValue)
@@ -207,7 +207,7 @@ public class StatisticsLoggerS3 : StatisticsLoggerBase
             var diff = GetPathDev(Scenario3Manager.Instance._pathDevRef3, _pathDevAxis);
             _stPathDev += diff * (1 / StatisticsLoggerData.SamplingRate);
             
-            var currpos = LocomotionManager.Instance.CurrentPlayerController.position;
+            var currpos = LocomotionManager.Instance.PlayerPos;
             if (currpos == _prevpos)
             {
                 if (_timeStop == float.MinValue)
@@ -228,7 +228,7 @@ public class StatisticsLoggerS3 : StatisticsLoggerBase
             }
 
         }
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
 
         base.ComputeStatisticsStep();
     }

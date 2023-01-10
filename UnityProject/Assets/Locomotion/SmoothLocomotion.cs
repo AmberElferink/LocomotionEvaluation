@@ -15,6 +15,8 @@ using UnityEditor;
 public class SmoothLocomotion : MonoBehaviour
 {
 
+
+
     static float toRadians(float degrees)
     {
         return (degrees * Mathf.PI) / 180;
@@ -433,6 +435,8 @@ public class SmoothLocomotion : MonoBehaviour
         Vector3 capsuleCenter = transform.InverseTransformPoint(head.position); // head position as if it was a child of this object, so position in the coordinate frame of the trackerWalkController if that is the object with this script.
         // since the centre of the capsule is indeed kind of a child of this transform, that is needed.
         player.center = new Vector3(capsuleCenter.x, player.height / 2 + player.skinWidth, capsuleCenter.z);
+
+       
     }
 }
 

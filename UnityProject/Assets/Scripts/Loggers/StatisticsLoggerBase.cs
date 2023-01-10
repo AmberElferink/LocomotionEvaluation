@@ -401,7 +401,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
     {
         if (_masterlog)
         {
-            _positions.Add(LocomotionManager.Instance.CurrentPlayerController.position);
+            _positions.Add(LocomotionManager.Instance.PlayerPos);
             _rotations.Add(LocomotionManager.Instance.CurrentPlayerController.eulerAngles);
             _headpositions.Add(LocomotionManager.Instance.CameraEye.localPosition);
             _headrotations.Add(LocomotionManager.Instance.CameraEye.localEulerAngles);
@@ -430,11 +430,11 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         switch (axis)
         {
             case PathDevAxis.X:
-                return Math.Abs(LocomotionManager.Instance.CurrentPlayerController.position.x - reference.position.x);
+                return Math.Abs(LocomotionManager.Instance.PlayerPos.x - reference.position.x);
             case PathDevAxis.Y:
-                return Math.Abs(LocomotionManager.Instance.CurrentPlayerController.position.y - reference.position.y);
+                return Math.Abs(LocomotionManager.Instance.PlayerPos.y - reference.position.y);
             case PathDevAxis.Z:
-                return Math.Abs(LocomotionManager.Instance.CurrentPlayerController.position.z - reference.position.z);
+                return Math.Abs(LocomotionManager.Instance.PlayerPos.z - reference.position.z);
         }
 
         return -1;

@@ -87,7 +87,7 @@ public class LookAtMeCatalizer : MonoBehaviour
 
     private Vector3 CalcPosition()
     {
-        var p = LocomotionManager.Instance.CurrentPlayerController.position;
+        var p = LocomotionManager.Instance.PlayerPos;
         p.x += _aheadOfPlayer;
         p.y = _rb.position.y;
         p.z += _distanceFromPlayer;

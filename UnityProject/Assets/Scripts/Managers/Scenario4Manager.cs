@@ -109,7 +109,7 @@ public class Scenario4Manager : UnitySingleton<Scenario4Manager>
                 LocomotionManager.Instance.CurrentPlayerController.GetComponent<PlayerColliderManager>().DisableCollider();
                 break;
         }
-        LocomotionManager.Instance.CurrentPlayerController.position = new Vector3(LocomotionManager.Instance.CurrentPlayerController.position.x, 0, LocomotionManager.Instance.CurrentPlayerController.position.z);
+        LocomotionManager.Instance.PlayerPos = new Vector3(LocomotionManager.Instance.PlayerPos.x, 0, LocomotionManager.Instance.PlayerPos.z);
         LocomotionManager.Instance.CameraEye.GetComponent<SphereCollider>().enabled = true;
         LocomotionManager.Instance.RightController.GetComponent<Collider>().enabled = false;
         LocomotionManager.Instance.LeftController.GetComponent<Collider>().enabled = false;

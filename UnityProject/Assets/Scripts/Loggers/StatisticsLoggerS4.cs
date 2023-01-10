@@ -36,7 +36,7 @@ public class StatisticsLoggerS4 : StatisticsLoggerBase
         StartMasterLog("DA");
         _timeStart = Time.time;
         _dynamicAgility = true;
-        _prevpos = LocomotionManager.Instance.CurrentPlayerController.position;
+        _prevpos = LocomotionManager.Instance.PlayerPos;
     }
     public void StopLogDynamicAgility()
     {
