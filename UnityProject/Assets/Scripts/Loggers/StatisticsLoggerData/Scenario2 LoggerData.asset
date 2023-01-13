@@ -16,18 +16,23 @@ MonoBehaviour:
   _logFiles:
   - FileName: Master
     Metrics:
-    - PosX
-    - PosY
-    - PosZ
-    - RotX
-    - RotY
-    - RotZ
+    - SecSinceStart
+    - PlayerX
+    - PlayerY
+    - PlayerZ
+    - LocomotionOffX
+    - LocomotionOffY
+    - LocomotionOffZ
+    - PlayerRotX
+    - PlayerRotY
+    - PlayerRotZ
     - HeadPosX
     - HeadPosY
     - HeadPosZ
     - HeadRotX
     - HeadRotY
     - HeadRotZ
+    - HeadHorSpeed
     - LHandPosX
     - LHandPosY
     - LHandPosZ
@@ -40,24 +45,27 @@ MonoBehaviour:
     - RHandRotX
     - RHandRotY
     - RHandRotZ
-    - HipPosX
-    - HipPosY
-    - HipPosZ
-    - HipRotX
-    - HipRotY
-    - HipRotZ
     - LLegPosX
     - LLegPosY
     - LLegPosZ
     - LLegRotX
     - LLegRotY
     - LLegRotZ
+    - LLHorSpeed
     - RLegPosX
     - RLegPosY
     - RLegPosZ
     - RLegRotX
     - RLegRotY
     - RLegRotZ
+    - RLHorSpeed
+    - HipPosX
+    - HipPosY
+    - HipPosZ
+    - HipRotX
+    - HipRotY
+    - HipRotZ
+    - HipHorSpeed
     - TargetPosX
     - TargetPosY
     - TargetPosZ

@@ -111,12 +111,12 @@ public class SmoothLocomotion : MonoBehaviour
 
         public State UpdateState(float liftedFootThresh, float standingFootThresh)
         {
-            if (height < calibratedThreshold + standingFootThresh)
+            if ( height < calibratedThreshold + standingFootThresh)
             {
                 if (-tracker.localRotation.eulerAngles.z <= 1) // toe is down, heel is up
                     state = State.Standing;
             }
-            else if (height > calibratedThreshold + liftedFootThresh)
+            if (height > calibratedThreshold + liftedFootThresh)
             {
                 state = State.Lifted;
             }
@@ -191,6 +191,7 @@ public class SmoothLocomotion : MonoBehaviour
     public float liftedThres = 0.05f; // it registers being lifted a bit higher than standing on the foot. 
 
     public OrientationController controllerType = OrientationController.Hip;
+    private SpeedController speedType = SpeedController.LiftedFootVel; //autoset on Start
 
     public float speed = 1; // for scaling speed from the joystick. Currently not used.
 
@@ -230,18 +231,23 @@ public class SmoothLocomotion : MonoBehaviour
         RightShoe
     }
 
+    public enum SpeedController
+    {
+        StandingFootVel,
+        LiftedFootVel
+    }
 
-
+    SpeedController velocityController;
 
     // Updates based on the controllertype with usually the default displacement and the given orientation.
     // In some controllertypes, it overrides those, since they are defined in the controllertype.
     Vector3 GetMovement(Vector3 defaultDisplacement, Quaternion orientation)
     {
         Vector3 movement = Vector3.zero;
-        switch (controllerType)
+        switch (speedType)
         {
 
-            case OrientationController.StandingFootVelocity:
+            case SpeedController.StandingFootVel:
                 if (LeadingFoot != null && LeadingFoot.isStanding)
                 {
                     Vector3 displacement = Vector3.ProjectOnPlane(speed *LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
@@ -250,7 +256,7 @@ public class SmoothLocomotion : MonoBehaviour
                 }
                 break;
 
-            case OrientationController.LiftedFootVelocity:
+            case SpeedController.LiftedFootVel:
                 if (LeadingFoot != null && LeadingFoot.isLifted)
                 {
                     Vector3 displacement = Vector3.ProjectOnPlane(speed * LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
@@ -405,6 +411,17 @@ public class SmoothLocomotion : MonoBehaviour
     {
        leftFoot.sphere = leftFoot.tracker.Find("Sphere");
        rightFoot.sphere = rightFoot.tracker.Find("Sphere");
+       Calibrate();
+
+       switch(controllerType)
+        {
+            case OrientationController.LiftedFootVelocity:
+                speedType = SpeedController.StandingFootVel;
+                break;
+            default:
+                speedType = SpeedController.StandingFootVel;
+                break;
+        }
     }
 
     // Update is called once per frame

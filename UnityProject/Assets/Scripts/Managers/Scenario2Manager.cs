@@ -87,7 +87,7 @@ public class Scenario2Manager : UnitySingleton<Scenario2Manager>
         FearEnd.OnDisabled.AddListener(StatisticsLogger.StopLogFear);
         LevelEnd.OnDisabled.AddListener(EndGame);
 
-        _city.SetActive(false); //Save GPU before S2T3
+       // _city.SetActive(false); //Save GPU before S2T3
     }
 
 
