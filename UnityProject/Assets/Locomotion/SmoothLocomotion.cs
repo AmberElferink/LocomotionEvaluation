@@ -191,7 +191,7 @@ public class SmoothLocomotion : MonoBehaviour
     public float liftedThres = 0.05f; // it registers being lifted a bit higher than standing on the foot. 
 
     public OrientationController controllerType = OrientationController.Hip;
-    private SpeedController speedType = SpeedController.LiftedFootVel; //autoset on Start
+    private SpeedController speedType = SpeedController.LiftedFootVel; //overwrite in Start
 
     public float speed = 1; // for scaling speed from the joystick. Currently not used.
 
@@ -236,8 +236,6 @@ public class SmoothLocomotion : MonoBehaviour
         StandingFootVel,
         LiftedFootVel
     }
-
-    SpeedController velocityController;
 
     // Updates based on the controllertype with usually the default displacement and the given orientation.
     // In some controllertypes, it overrides those, since they are defined in the controllertype.
@@ -416,7 +414,7 @@ public class SmoothLocomotion : MonoBehaviour
        switch(controllerType)
         {
             case OrientationController.LiftedFootVelocity:
-                speedType = SpeedController.StandingFootVel;
+                speedType = SpeedController.LiftedFootVel;
                 break;
             default:
                 speedType = SpeedController.StandingFootVel;
