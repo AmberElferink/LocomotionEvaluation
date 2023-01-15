@@ -32,7 +32,7 @@ public class SmoothLocomotion : MonoBehaviour
         {
             Standing,
             Lifted,
-            InBetween
+            None
         }
 
         public float calibratedThreshold = 0; // when to say this shoe is lifted;
@@ -109,17 +109,20 @@ public class SmoothLocomotion : MonoBehaviour
         }
 
 
-        public State UpdateState(float liftedFootThresh, float standingFootThresh)
+        public State UpdateState(SpeedController speedType, float liftedFootThresh, float standingFootThresh)
         {
-            if ( height < calibratedThreshold + standingFootThresh)
+            if (speedType == SpeedController.StandingFootVel && height < calibratedThreshold + standingFootThresh)
             {
                 if (-tracker.localRotation.eulerAngles.z <= 1) // toe is down, heel is up
                     state = State.Standing;
             }
-            if (height > calibratedThreshold + liftedFootThresh)
+            else if (speedType == SpeedController.LiftedFootVel && height > calibratedThreshold + liftedFootThresh)
             {
                 state = State.Lifted;
             }
+            else
+                state = State.None;
+
             return state;
         }
 
@@ -401,6 +404,7 @@ public class SmoothLocomotion : MonoBehaviour
     {
         leftFoot.Calibrate();
         rightFoot.Calibrate();
+        Debug.Log("Calibrated");
     }
 
 
@@ -409,7 +413,7 @@ public class SmoothLocomotion : MonoBehaviour
     {
        leftFoot.sphere = leftFoot.tracker.Find("Sphere");
        rightFoot.sphere = rightFoot.tracker.Find("Sphere");
-       Calibrate();
+       StartCoroutine(CalibrationAfterSeconds(2.0f));
 
        switch(controllerType)
         {
@@ -422,14 +426,20 @@ public class SmoothLocomotion : MonoBehaviour
         }
     }
 
+    IEnumerator CalibrationAfterSeconds(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        Calibrate();
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
         CapsuleFollowHeadset();
 
         SetBackAndFrontFoot();
-        leftFoot.UpdateState(liftedThres, standingThres);
-        rightFoot.UpdateState(liftedThres, standingThres);
+        leftFoot.UpdateState(speedType, liftedThres, standingThres);
+        rightFoot.UpdateState(speedType, liftedThres, standingThres);
         leftFoot.CalcVelocities();
         rightFoot.CalcVelocities();
         SetLeadingShoe();
