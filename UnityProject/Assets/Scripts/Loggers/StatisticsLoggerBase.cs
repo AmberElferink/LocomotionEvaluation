@@ -374,7 +374,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 values.Add("" + _dirtrackrotations[i].y);
                 values.Add("" + _dirtrackrotations[i].z);
             }
-            else if (LocomotionManager.Instance.Locomotion == LocomotionTechniqueType.StandingFootVelocity)
+            else if (LocomotionManager.Instance.TrackersActive)
             {
                 values.Add("" + _leftlegpositions[i].x);
                 values.Add("" + _leftlegpositions[i].y);
@@ -513,7 +513,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 _rightlegpositions.Add(LocomotionManager.Instance.RightTracker.localPosition);
                 _rightlegrotations.Add(LocomotionManager.Instance.RightTracker.localEulerAngles);
             }
-            if (LocomotionManager.Instance.Locomotion == LocomotionTechniqueType.StandingFootVelocity)
+            if (LocomotionManager.Instance.TrackersActive)
             {
                 _leftlegpositions.Add(LocomotionManager.Instance.LeftTracker.localPosition);
                 _leftlegrotations.Add(LocomotionManager.Instance.LeftTracker.localEulerAngles);

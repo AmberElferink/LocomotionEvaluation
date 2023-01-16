@@ -10,14 +10,20 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+//order should match by the ones set in Locomotion Manager Player Controllers
 public enum LocomotionTechniqueType
 {
+    LiftedFootVelocity,
+    StandingFootVelocity,
+    AverageShoes,
+    Hip,
+    Head,
+    WalkInPlace, // this and below are from the previous experiment and not in use.
     ArmSwing,
-    WalkInPlace,
     CVirtualizer,
-    Joystick,
-    StandingFootVelocity
+    Joystick
 };
+
 
 
 public class LocomotionManager : UnitySingleton<LocomotionManager>
@@ -77,6 +83,8 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
     public Transform DirectionalTracker { get; private set; }
     public Transform CameraEye { get; private set; }
     public I_UI_HUDController CurrentUIController { get; set; }
+
+    public bool TrackersActive { get; private set; }
 
     GetPlayerPos _getPlayerPos;
 
@@ -195,6 +203,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
         var ic = CurrentPlayerController.GetComponent<VRItemController>();
         LeftController = ic.LeftController;
         RightController = ic.RightController;
+        TrackersActive = false;
         switch (Locomotion)
         {
             case LocomotionTechniqueType.ArmSwing:
@@ -207,9 +216,10 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
                 l = CurrentPlayerController.GetComponent<CircularLimitTracking>();
                 CameraEye = l.CameraEye;
                 cr = CurrentPlayerController.Find("[CameraRig]");
-                DirectionalTracker = cr.Find("Tracker (hip)");
-                LeftTracker = cr.Find("Tracker (left)");
-                RightTracker = cr.Find("Tracker (right)");
+                DirectionalTracker = cr.Find("HipTracker");
+                LeftTracker = cr.Find("LeftFootTracker");
+                RightTracker = cr.Find("RightFootTracker");
+                TrackersActive = true;
                 break;
             case LocomotionTechniqueType.CVirtualizer:
                 var pcm = CurrentPlayerController.GetComponent<PlayerColliderManager>();
@@ -221,7 +231,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
                 l = CurrentPlayerController.GetComponent<CircularLimitTracking>();
                 CameraEye = l.CameraEye;
                 break;
-            case LocomotionTechniqueType.StandingFootVelocity:
+            default:
                 l = CurrentPlayerController.GetComponent<CircularLimitTracking>();
                 CameraEye = l.CameraEye;
                 cr = CurrentPlayerController.Find("[CameraRig]");
@@ -229,6 +239,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
                 LeftTracker = cr.Find("LeftFootTracker");
                 RightTracker = cr.Find("RightFootTracker");
                 DirectionalTracker = cr.Find("DirectionIndicator");
+                TrackersActive = true;
                 break;
         }
     }
