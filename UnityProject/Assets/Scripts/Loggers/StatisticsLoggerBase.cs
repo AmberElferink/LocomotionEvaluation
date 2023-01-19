@@ -296,12 +296,12 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
 
     double horizontalVelocity(List<Vector3> data, int i)
     {
-        double timeStep = 1 / StatisticsLoggerData.SamplingRate;
+        double timeStep = 1.0 / StatisticsLoggerData.SamplingRate;
         if (i == 0)
             return 0;
         double xspeed = (data[i].x - data[i - 1].x) / timeStep;
-        double yspeed = (data[i].z - data[i - 1].z) / timeStep;
-        return Math.Sqrt(xspeed*xspeed + yspeed*yspeed);
+        double zspeed = (data[i].z - data[i - 1].z) / timeStep;
+        return Math.Sqrt(xspeed*xspeed + zspeed*zspeed);
     }
 
     protected void StopMasterLog()

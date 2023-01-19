@@ -286,6 +286,9 @@ public class SmoothLocomotion : MonoBehaviour
                 break;
         }
         movement.y -= 9.81f * Time.deltaTime;
+
+
+        //Vector3.ClampMagnitude(movement, 3); // found this is not reached in walking, by plottiong horizontal shoe speed plots.
         return movement;
 
         //alternative way to do input transform (example based on head)

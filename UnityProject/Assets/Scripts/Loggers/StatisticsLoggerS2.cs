@@ -77,7 +77,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
                 "" + _recallTime
             };
             WriteToCSV("MW" + _dirTargets, values, 1);
-            if (_dirTargets == 2)
+            if (_dirTargets == 6)
             {
                 StopMasterLog();
                 _multiStrLineWalking = false;
