@@ -356,10 +356,6 @@ public class SmoothLocomotion : MonoBehaviour
             {
                 //Take the back foot
 
-                //comparing the velocity in the ground plane directions (moving foot up does not count)
-                Vector3 leftVelocityGroundPlane = Vector3.ProjectOnPlane(((Vector3)(leftFoot.footTransform.localToWorldMatrix * leftFoot.Velocity)), Vector3.up);
-                Vector3 rightVelocityGroundPlane = Vector3.ProjectOnPlane(((Vector3)(rightFoot.footTransform.localToWorldMatrix * rightFoot.Velocity)), Vector3.up);
-
                 if (leftFoot.backFoot)
                 {
                     //Debug.Log("leftFootLead");
@@ -388,8 +384,14 @@ public class SmoothLocomotion : MonoBehaviour
 
     public void SetBackAndFrontFoot()
     {
+        //comparing the velocity in the ground plane directions (moving foot up does not count)
+        Vector3 leftVelocityGroundPlane = Vector3.ProjectOnPlane(((Vector3)(leftFoot.footTransform.localToWorldMatrix * leftFoot.Velocity)), Vector3.up);
+        Vector3 rightVelocityGroundPlane = Vector3.ProjectOnPlane(((Vector3)(rightFoot.footTransform.localToWorldMatrix * rightFoot.Velocity)), Vector3.up);
+
         // get a vector between the left and right foot position, pointing towards the left foot.
         // if the dot product with this vector and the forwards direction is positive, left is the front foot and right is the back foot.
+        Debug.DrawLine(leftFoot.tracker.position, rightFoot.tracker.position, Color.blue);
+        Debug.DrawRay(rightFoot.tracker.position, rightFoot.footTransform.rotation * Vector3.up, Color.red);
         if (Vector3.Dot(leftFoot.tracker.position - rightFoot.tracker.position, rightFoot.footTransform.rotation * Vector3.up) > 0)
         {
             leftFoot.backFoot = false;
