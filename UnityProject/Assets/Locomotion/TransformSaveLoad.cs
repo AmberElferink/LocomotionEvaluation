@@ -22,8 +22,33 @@ public class TransformSaveLoad : MonoBehaviour
         //transform.SaveTransform(objectToSave); (this is saved on button click only)
 
         //Load Transform
+        LoadTransforms();
+    }
+
+    void LoadTransforms()
+    {
         Transform[] loadedTransform = transform.LoadTransform();
         transform.CopyTransform(loadedTransform, objectToSave);
+    }
+
+
+    private void Update()
+    {
+        foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
+        {
+            if (Input.GetKey(kcode))
+                switch (kcode)
+                {
+                    case KeyCode.T:
+                        transform.SaveTransform(objectToSave);
+                        break;
+                    case KeyCode.Y:
+                        LoadTransforms();
+                        // also Calibrate (done in Smooth locomotion)
+                        break;
+
+                }
+        }
     }
 }
 
@@ -38,6 +63,7 @@ public static class TransformSaver
         public Quaternion rot;
         public Vector3 scale;
     }
+
 
     //Save Transform
     public static void SaveTransform(this Transform trans, Transform[] tranformToSave)

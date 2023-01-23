@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
+using System;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -382,16 +383,14 @@ public class SmoothLocomotion : MonoBehaviour
         }
     }
 
+
+    // get a vector between the left and right foot position, pointing towards the left foot.
+    // get a vector from the right foot position pointing towards the toe of the right foot.
+    // if the dot product with this vector and the forwards direction is positive, left is the front foot and right is the back foot.    
+
     public void SetBackAndFrontFoot()
     {
-        //comparing the velocity in the ground plane directions (moving foot up does not count)
-        Vector3 leftVelocityGroundPlane = Vector3.ProjectOnPlane(((Vector3)(leftFoot.footTransform.localToWorldMatrix * leftFoot.Velocity)), Vector3.up);
-        Vector3 rightVelocityGroundPlane = Vector3.ProjectOnPlane(((Vector3)(rightFoot.footTransform.localToWorldMatrix * rightFoot.Velocity)), Vector3.up);
-
-        // get a vector between the left and right foot position, pointing towards the left foot.
-        // if the dot product with this vector and the forwards direction is positive, left is the front foot and right is the back foot.
-        Debug.DrawLine(leftFoot.tracker.position, rightFoot.tracker.position, Color.blue);
-        Debug.DrawRay(rightFoot.tracker.position, rightFoot.footTransform.rotation * Vector3.up, Color.red);
+        //this is tested, and works as intended
         if (Vector3.Dot(leftFoot.tracker.position - rightFoot.tracker.position, rightFoot.footTransform.rotation * Vector3.up) > 0)
         {
             leftFoot.backFoot = false;
@@ -462,6 +461,22 @@ public class SmoothLocomotion : MonoBehaviour
 
         player.Move(GetMovement(displacement, orientation));
 
+    }
+
+    private void Update()
+    {
+        foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
+        {
+            if (Input.GetKey(kcode))
+                switch (kcode)
+                {
+                    case KeyCode.Y:
+                        // also load the FootTransforms saved on calibration of the foot transforms (first open unity to set them to the correct orientation, then hit the save transforms button in the Locomotion Entity TransformLoadSave, or press Y)
+                        Calibrate(); //set foot height (only press with two feet on the ground)                        
+                        break;
+
+                }
+        }
     }
 
     void CapsuleFollowHeadset()
