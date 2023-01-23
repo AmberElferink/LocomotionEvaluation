@@ -82,10 +82,20 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _directionRotations,
         _targetpositions;
 
-    protected List<float> _gazewalkangles;
+    protected List<float> 
+        _time,
+        _playerspeed, // the global head speed (including locomotion offset)
+        _rightlegspeed, // local (no locomotion offset included)
+        _leftlegspeed, // local (no locomotion offset included)
+        _hipspeed, // local (no locomotion offset included)
+        _gazewalkangles;
+
     protected List<object> _locks;
     private List<List<string>> _allValues;
     StringBuilder _singleValueBuilder;
+
+    SmoothLocomotion smoothLocomotion; //if not null, contains data on locomotion
+   
 
     #endregion
 
@@ -121,7 +131,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
 
     public static List<string> MasterHeader()
     {
-        //dont edit here, but in Scenario2 LoggerData.asset
+        //DONT EDIT HERE, but in ScenarioX LoggerData.asset with X the number of the scenario
         return new List<string>(new string[] { "PlayerX", "PlayerY", "PlayerZ",
                                                 "LocomotionOffX", "LocomotionOffY", "LocomotionOffZ",
                                                 "PlayerRotX", "PlayerRotY", "PlayerRotZ",
@@ -186,7 +196,13 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _hiprotations = new List<Vector3>();
         _directionRotations = new List<Vector3>();
         _targetpositions = new List<Vector3>();
+
+        _playerspeed = new List<float>();
+        _leftlegspeed = new List<float>();
+        _rightlegspeed = new List<float>();
+        _hipspeed = new List<float>();
         _gazewalkangles = new List<float>();
+        _time = new List<float>();
 
         Debug.Log($"Logger {this.name} Initialized");
     }
@@ -224,7 +240,10 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                     File.AppendAllText(_logFilePaths[fileindex], _sb.ToString());
             }
 
-            UnityMainThreadDispatcher.Instance.Enqueue(() => OnLogFinalized.RaiseEvent(fileindex));
+            if (UnityMainThreadDispatcher.Instance != null)
+                UnityMainThreadDispatcher.Instance.Enqueue(() => OnLogFinalized.RaiseEvent(fileindex));
+            else
+                OnLogFinalized.RaiseEvent(fileindex);
         });
         Debug.Log($"Writing {_logFilePaths[fileindex]}");
     }
@@ -263,16 +282,24 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 else
                     File.AppendAllText(_logFilePaths[fileindex], _sb.ToString());
             }
-
-            UnityMainThreadDispatcher.Instance.Enqueue(() => OnLogFinalized.RaiseEvent(fileindex));
+            if(UnityMainThreadDispatcher.Instance != null)
+                UnityMainThreadDispatcher.Instance.Enqueue(() => OnLogFinalized.RaiseEvent(fileindex));
+            else
+                OnLogFinalized.RaiseEvent(fileindex);
         });
         Debug.Log($"Writing {_logFilePaths[fileindex]}");
     }
+
+    float startTime = 0;
+
+    float ElapsedTime { get { return Time.time - startTime; } }
 
     protected void StartMasterLog(string type)
     {
         _masterlog = true;
         _masterlogtype = type;
+        smoothLocomotion = LocomotionManager.Instance.CurrentPlayerController.GetComponent<SmoothLocomotion>();
+        startTime = Time.time;
     }
 
     public string GetHeader(int index, string CSVseparator)
@@ -294,23 +321,16 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         return v / list.Count;
     }
 
-    double horizontalVelocity(List<Vector3> data, int i)
-    {
-        double timeStep = 1.0 / StatisticsLoggerData.SamplingRate;
-        if (i == 0)
-            return 0;
-        double xspeed = (data[i].x - data[i - 1].x) / timeStep;
-        double zspeed = (data[i].z - data[i - 1].z) / timeStep;
-        return Math.Sqrt(xspeed*xspeed + zspeed*zspeed);
-    }
-
     protected void StopMasterLog()
     {
         _masterlog = false;
-        _singleValueBuilder.Append("LiftedThreshold").Append(";");
-        _singleValueBuilder.Append(LocomotionManager.Instance.CurrentPlayerController.GetComponent<SmoothLocomotion>().liftedThres).Append(";");
-        _singleValueBuilder.Append("StandingThreshold").Append(";");
-        _singleValueBuilder.Append(LocomotionManager.Instance.CurrentPlayerController.GetComponent<SmoothLocomotion>().standingThres).Append(";");
+        if(smoothLocomotion != null)
+        {
+            _singleValueBuilder.Append("LiftedThreshold").Append(";");
+            _singleValueBuilder.Append(smoothLocomotion.liftedThres).Append(";");
+            _singleValueBuilder.Append("StandingThreshold").Append(";");
+            _singleValueBuilder.Append(smoothLocomotion.standingThres).Append(";");
+        }    
         _singleValueBuilder.Append("SamplingRate").Append(";");
         _singleValueBuilder.Append(StatisticsLoggerData.SamplingRate).Append(";");
         _singleValueBuilder.Append("\n");
@@ -320,7 +340,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         {
             var values = new List<string>
             {
-                "" + Time.time,
+                "" + _time[i],
                 "" + _playerPositions[i].x,
                 "" + _playerPositions[i].y,
                 "" + _playerPositions[i].z,
@@ -336,7 +356,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 "" + _headrotations[i].x,
                 "" + _headrotations[i].y,
                 "" + _headrotations[i].z,
-                "" + horizontalVelocity(_headpositions, i),
+                "" + _playerspeed[i],
                 "" + _lefthandpositions[i].x,
                 "" + _lefthandpositions[i].y,
                 "" + _lefthandpositions[i].z,
@@ -351,7 +371,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 "" + _righthandrotations[i].z
             };
 
-            if (LocomotionManager.Instance.Locomotion == LocomotionTechniqueType.WalkInPlace)
+            if (LocomotionManager.Instance != null && LocomotionManager.Instance.Locomotion == LocomotionTechniqueType.WalkInPlace)
             {
                 values.Add("" + _leftlegpositions[i].x);
                 values.Add("" + _leftlegpositions[i].y);
@@ -374,7 +394,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 values.Add("" + _dirtrackrotations[i].y);
                 values.Add("" + _dirtrackrotations[i].z);
             }
-            else if (LocomotionManager.Instance.TrackersActive)
+            else if ((LocomotionManager.Instance == null || LocomotionManager.Instance.TrackersActive) )
             {
                 values.Add("" + _leftlegpositions[i].x);
                 values.Add("" + _leftlegpositions[i].y);
@@ -382,7 +402,11 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 values.Add("" + _leftlegrotations[i].x);
                 values.Add("" + _leftlegrotations[i].y);
                 values.Add("" + _leftlegrotations[i].z);
-                values.Add("" + horizontalVelocity(_leftlegpositions, i));
+
+                if(i < _leftlegspeed.Count)
+                values.Add("" + _leftlegspeed[i]);
+                else
+                    values.Add("");
 
                 values.Add("" + _rightlegpositions[i].x);
                 values.Add("" + _rightlegpositions[i].y);
@@ -390,7 +414,12 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 values.Add("" + _rightlegrotations[i].x);
                 values.Add("" + _rightlegrotations[i].y);
                 values.Add("" + _rightlegrotations[i].z);
-                values.Add("" + horizontalVelocity(_rightlegpositions, i));
+
+                if (i < _rightlegspeed.Count)
+                    values.Add("" + _rightlegspeed[i]);
+                else
+                    values.Add("");
+
 
                 if (_hippositions.Count > i)
                 {
@@ -400,10 +429,14 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                     values.Add("" + _hiprotations[i].x);
                     values.Add("" + _hiprotations[i].y);
                     values.Add("" + _hiprotations[i].z);
-                    values.Add("" + horizontalVelocity(_hippositions, i));
+                    if (i < _hipspeed.Count)
+                        values.Add("" + _hipspeed[i]);
+                    else
+                        values.Add("");
                 }    
                 else
                 {
+                    values.Add("");
                     values.Add("");
                     values.Add("");
                     values.Add("");
@@ -466,6 +499,10 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
 
         WriteToCSVMulipleLines(_masterlogtype, _singleValueBuilder.ToString(), _allValues, 0);
 
+        _playerspeed.Clear();
+        _leftlegspeed.Clear();
+        _rightlegspeed.Clear();
+        _hipspeed.Clear();
         _singleValueBuilder.Clear();
         _allValues.Clear();
         _targetpositions.Clear();
@@ -490,16 +527,27 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _gazewalkangles.Clear();
     }
 
+    float GetHorizontalSpeed(Transform trans, Vector3 velocity)
+    {
+        if (Vector3.Dot(velocity, trans.forward) > 0.0f)
+            return Vector3.ProjectOnPlane(velocity, Vector3.up).magnitude;
+        else
+            return -Vector3.ProjectOnPlane(velocity, Vector3.up).magnitude;
+    }
+
     protected virtual void ComputeStatisticsStep()
     {
         if (_masterlog)
         {
+            _time.Add(ElapsedTime);
             _playerPositions.Add(LocomotionManager.Instance.PlayerPos);
+            _playerspeed.Add(LocomotionManager.Instance.CurrHorizontalPlayerSpeed);
             _locomotionOffsetPositions.Add(LocomotionManager.Instance.LocomotionOffset.position);
             _rotations.Add(LocomotionManager.Instance.CurrentPlayerController.eulerAngles);
             _locomotionOffsetPositions.Add(LocomotionManager.Instance.LocomotionOffset.position);
             _headpositions.Add(LocomotionManager.Instance.CameraEye.localPosition);
             _headrotations.Add(LocomotionManager.Instance.CameraEye.localEulerAngles);
+
             _lefthandpositions.Add(LocomotionManager.Instance.LeftController.localPosition);
             _lefthandrotations.Add(LocomotionManager.Instance.LeftController.localEulerAngles);
             _righthandpositions.Add(LocomotionManager.Instance.RightController.localPosition);
@@ -522,7 +570,12 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 _hippositions.Add(LocomotionManager.Instance.HipTracker.localPosition);
                 _hiprotations.Add(LocomotionManager.Instance.HipTracker.localEulerAngles);
                 _directionRotations.Add(LocomotionManager.Instance.DirectionalTracker.localEulerAngles);
-
+                if(smoothLocomotion != null)
+                {
+                    _leftlegspeed.Add(smoothLocomotion.leftFoot.HorizontalSpeed);
+                    _rightlegspeed.Add(smoothLocomotion.rightFoot.HorizontalSpeed);
+                    _hipspeed.Add(GetHorizontalSpeed(smoothLocomotion.hip, smoothLocomotion.HipVelocity));
+                }    
             }
             //if (_lastsample > 5) // end fast for testing
             //{

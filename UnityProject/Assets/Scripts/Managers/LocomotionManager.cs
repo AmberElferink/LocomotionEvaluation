@@ -68,12 +68,24 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
         private set => _autoFreezable = value;
     }
 
-    public float CurrentPlayerSpeed { get; private set; }
+    //including vertical
+    public float CurrHorizontalPlayerSpeed {
+        get
+        {
+            if (Vector3.Dot(CurrentPlayerVelocity, CameraEye.forward) > 0.0f)
+                return Vector3.ProjectOnPlane(CurrentPlayerVelocity, Vector3.up).magnitude;
+            else
+                return -Vector3.ProjectOnPlane(CurrentPlayerVelocity, Vector3.up).magnitude;
+        }
+    }
+
+    public Vector3 CurrentPlayerVelocity { get; private set; }
     public Transform LocomotionOffset { get => CurrentPlayerController; } //excluding roomscale offset
     public Vector3 PlayerPos { //including roomscale offset (characterController pos)
         get => _getPlayerPos.PlayerPosition; 
         set { _getPlayerPos.SetGlobalPlayerPos(value); } 
     } 
+
     public Transform CurrentPlayerController { get; private set; }
     public Transform LeftController { get; private set; }
     public Transform RightController { get; private set; }
@@ -162,7 +174,7 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
         if (Input.GetKeyDown(_freezePalyerKeyCode))
             IsPlayerFreezed = !IsPlayerFreezed;
 
-        CurrentPlayerSpeed = Vector3.Distance(_lastPlayerPosition, PlayerPos) / Time.deltaTime;
+        CurrentPlayerVelocity = (PlayerPos - _lastPlayerPosition) / Time.deltaTime;
         _lastPlayerPosition = PlayerPos;
     }
 

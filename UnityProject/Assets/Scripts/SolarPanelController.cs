@@ -69,7 +69,7 @@ public class SolarPanelController : MonoBehaviour
         transform.position = p;
         transform.localScale = _objectSize;
 
-        if (LocomotionManager.Instance.CurrentPlayerSpeed > 0.05f)
+        if (LocomotionManager.Instance.CurrHorizontalPlayerSpeed > 0.05f)
             Score += Time.deltaTime * Mathf.Pow(ScoreFactor, NormalizedControllerDistance * 20);
         //Debug.Log($"Score = {Score}");
     }

@@ -39,7 +39,7 @@ public class SmoothLocomotion : MonoBehaviour
         public float calibratedThreshold = 0; // when to say this shoe is lifted;
 
         public bool isRight = false;
-        
+
         public Foot(bool isRightFoot)
         {
             isRight = isRightFoot;
@@ -52,15 +52,17 @@ public class SmoothLocomotion : MonoBehaviour
         [System.NonSerialized]
         public State state;
         [System.NonSerialized]
-        private Vector3 velocity; // this is the local velocity (without the player world velocity, which is also effected by the locomotion)
+        private Vector3 localVelocity; // this is the local velocity (without the player world velocity, which is also effected by the locomotion)
         [System.NonSerialized]
-        public Vector3 averageVelocity;
+        public Vector3 averageLocalVelocity;
         [System.NonSerialized]
         private Vector3 rotVelocity; //this is the global rotation of the foot. This is so you can get the angle relative to the floor
         [System.NonSerialized]
         public Vector3 prevPos;
         [System.NonSerialized]
         public Vector3 prevRot;
+
+        SpeedController speedType; //speedType of the locomotion method
 
 
         public Transform tracker; //tracker is the raw tracker data
@@ -71,6 +73,29 @@ public class SmoothLocomotion : MonoBehaviour
             get { return footTransform.position.y; }
         }
 
+        public Vector3 FrontDirection
+        {
+            get
+            {
+                return footTransform.rotation * Vector3.up;
+            }
+        }
+
+        //positive speed for moving forwards, negative speed for moving backwards wrt shoe orientation
+        public float HorizontalSpeed
+        {
+            get
+            {
+                if (Vector3.Dot(FrontDirection, Velocity) > 0.0f)
+                {
+                    return Vector3.ProjectOnPlane(Velocity, Vector3.up).magnitude;
+                }
+                else
+                    return -Vector3.ProjectOnPlane(Velocity, Vector3.up).magnitude;
+            }
+        }
+
+        //local velocity of the foot
         public Vector3 Velocity
         {
             get
@@ -105,13 +130,33 @@ public class SmoothLocomotion : MonoBehaviour
                 //    return new Vector3(velocity.x + toRadians(rotVelocity.z) * Mathf.Sin(toRadians(90 - tracker.rotation.eulerAngles.z)) * r, 0, velocity.z);
                 //}
 
-                return velocity;
+
+                return localVelocity;
             }
         }
 
+        //calculates the 
+        public void CalcVelocities()
+        {
+            // TODO: edit based on speedType to account for angle during standing position (see Velocity above).
+            if (prevPos != Vector3.zero)
+            {
+                //localPosition of the tracker gives the correct velocity no matter the orientation of the tracker. (Horizontal motion stays horizontal, however you rotate it)
+                // the tracker is the parent of the footTransform. The velocity should be calculated by localvelocity. Since the tracker contains that localvelocity, use that (not foottransform, which does not move locally, but via the parent tracker).
+                localVelocity = (tracker.localPosition - prevPos) / Time.deltaTime;
+
+                //average for a more stable orientation. The non averaged velocity is used for motion though.
+                averageLocalVelocity = Vector3.Lerp(averageLocalVelocity, localVelocity, 0.3f); // average jitters out weighing the average 1/3 and the new velocity 2/3.
+
+                rotVelocity = (tracker.rotation.eulerAngles - prevRot);
+            }
+            prevPos = tracker.localPosition;
+            prevRot = tracker.rotation.eulerAngles;
+        }
 
         public State UpdateState(SpeedController speedType, float liftedFootThresh, float standingFootThresh)
         {
+            this.speedType = speedType;
             if (speedType == SpeedController.StandingFootVel && height < calibratedThreshold + standingFootThresh)
             {
                 if (-tracker.localRotation.eulerAngles.z <= 1) // toe is down, heel is up
@@ -145,7 +190,7 @@ public class SmoothLocomotion : MonoBehaviour
 
         public void SetFootColor(bool isLeading)
         {
-            
+
             Material material = sphere.gameObject.GetComponent<Renderer>().material;
             if (!isLeading)
                 material.SetColor("_Color", Color.grey);
@@ -162,25 +207,14 @@ public class SmoothLocomotion : MonoBehaviour
             }
         }
 
-        public void CalcVelocities()
-        {
-            if (prevPos != Vector3.zero)
-            {
-                // the tracker is the parent of the footTransform. The velocity should be calculated by localvelocity. Since the tracker contains that localvelocity, use that (not foottransform, which does not move locally, but via the parent tracker).
-                velocity = (tracker.localPosition - prevPos) / Time.deltaTime;
-                averageVelocity = Vector3.Lerp(averageVelocity, velocity, 0.3f); // average jitters out weighing the average 1/3 and the new velocity 2/3.
 
-                rotVelocity = (tracker.rotation.eulerAngles - prevRot);
-            }
-            prevPos = tracker.localPosition;
-            prevRot = tracker.rotation.eulerAngles;
-        }
 
     }
 
     // ------------------------- now, combine the separate feet to displacement:
     public CharacterController player; //make a CharacterController component on the parent of the SteamVRObjects to move the player and link it here.
     public float additionalHeight = 0.2f; //extra height of "forehead" on top of character height
+
     public Transform head;
     public Transform hip;
     public GameObject directionIndicator;
@@ -197,8 +231,15 @@ public class SmoothLocomotion : MonoBehaviour
     public OrientationController controllerType = OrientationController.Hip;
     private SpeedController speedType = SpeedController.LiftedFootVel; //overwrite in Start
 
-    public float speed = 1; // for scaling speed from the joystick. Currently not used.
+    public float speed = 1; // for scaling output speed 
 
+
+    private Vector3 prevHeadPos = Vector3.zero;
+    private Vector3 prevHipPos = Vector3.zero;
+
+    public Vector3 HeadVelocity { get; private set;  }
+    public Vector3 HipVelocity { get; private set; }
+    
 
     //Leadingfoot is the one determining the velocity
     public Foot LeadingFoot
@@ -215,7 +256,7 @@ public class SmoothLocomotion : MonoBehaviour
                 if (_lFoot != null)
                 {
                     _lFoot.SetFootColor(true);
-                    _lFoot.averageVelocity = Vector3.zero;
+                    _lFoot.averageLocalVelocity = Vector3.zero;
                 }
             }
         }
@@ -241,6 +282,8 @@ public class SmoothLocomotion : MonoBehaviour
         LiftedFootVel
     }
 
+
+
     // Updates based on the controllertype with usually the default displacement and the given orientation.
     // In some controllertypes, it overrides those, since they are defined in the controllertype.
     Vector3 GetMovement(Vector3 defaultDisplacement, Quaternion orientation)
@@ -263,6 +306,8 @@ public class SmoothLocomotion : MonoBehaviour
                 {
                     Vector3 displacement = Vector3.ProjectOnPlane(speed * LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
                     movement += displacement;
+
+                    
                 }
                 break;
             default:
@@ -320,8 +365,8 @@ public class SmoothLocomotion : MonoBehaviour
             case OrientationController.StandingFootVelocity:
             case OrientationController.LiftedFootVelocity:
                 //this return is only used for the green ring. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
-                if (LeadingFoot != null && LeadingFoot.averageVelocity.magnitude > 0.017f)
-                    return Quaternion.LookRotation(Vector3.ProjectOnPlane(-LeadingFoot.averageVelocity, Vector3.up), Vector3.up);
+                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+                    return Quaternion.LookRotation(Vector3.ProjectOnPlane(-LeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
                 else
                     // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not move anyway.
                     return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
@@ -391,7 +436,7 @@ public class SmoothLocomotion : MonoBehaviour
     public void SetBackAndFrontFoot()
     {
         //this is tested, and works as intended
-        if (Vector3.Dot(leftFoot.tracker.position - rightFoot.tracker.position, rightFoot.footTransform.rotation * Vector3.up) > 0)
+        if (Vector3.Dot(leftFoot.tracker.position - rightFoot.tracker.position, rightFoot.FrontDirection) > 0)
         {
             leftFoot.backFoot = false;
             rightFoot.backFoot = true;
@@ -435,23 +480,34 @@ public class SmoothLocomotion : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         Calibrate();
     }
-
+    // these are needed mostly for data collection. Note, these are in local space, just like the shoes are logged in local space!
+    void CalcVelocities()
+    {
+        HeadVelocity = (head.localPosition - prevHeadPos) / Time.fixedDeltaTime;
+        prevHeadPos = head.transform.localPosition;
+        HipVelocity = (hip.localPosition - prevHipPos) / Time.fixedDeltaTime;
+        prevHipPos = hip.transform.position;
+    }
     // Update is called once per frame
     void FixedUpdate()
     {
         CapsuleFollowHeadset();
-
         SetBackAndFrontFoot();
         leftFoot.UpdateState(speedType, liftedThres, standingThres);
         rightFoot.UpdateState(speedType, liftedThres, standingThres);
         leftFoot.CalcVelocities();
         rightFoot.CalcVelocities();
+
         SetLeadingShoe();
 
         Vector3 displacement;
 
         if (LeadingFoot != null)
+        {
             displacement = Vector3.ProjectOnPlane(speed * LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
+            //this is without projection to the flat plane
+            //Debug.DrawLine(LeadingFoot.footTransform.position, LeadingFoot.footTransform.position + LeadingFoot.Velocity * 100, Color.cyan);
+        }
         else
             displacement = Vector3.zero;
 
@@ -460,7 +516,7 @@ public class SmoothLocomotion : MonoBehaviour
         directionIndicator.transform.localRotation = orientation;
 
         player.Move(GetMovement(displacement, orientation));
-
+        CalcVelocities();
     }
 
     private void Update()
