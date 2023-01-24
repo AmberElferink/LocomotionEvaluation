@@ -32,7 +32,7 @@ MonoBehaviour:
     - HeadRotX
     - HeadRotY
     - HeadRotZ
-    - HeadHorSpeed
+    - PlayerHorSpeed
     - LHandPosX
     - LHandPosY
     - LHandPosZ

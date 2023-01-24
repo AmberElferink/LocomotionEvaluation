@@ -14,6 +14,8 @@ public class TransformSaveLoad : MonoBehaviour
 {
 
     public Transform[] objectToSave;
+    public const KeyCode saveTransformKey = KeyCode.Y;
+    public const KeyCode loadTransformKey = KeyCode.T;
 
     // Use this for initialization
     void Start()
@@ -39,10 +41,10 @@ public class TransformSaveLoad : MonoBehaviour
             if (Input.GetKey(kcode))
                 switch (kcode)
                 {
-                    case KeyCode.T:
+                    case saveTransformKey:
                         transform.SaveTransform(objectToSave);
                         break;
-                    case KeyCode.Y:
+                    case loadTransformKey:
                         LoadTransforms();
                         // also Calibrate (done in Smooth locomotion)
                         break;

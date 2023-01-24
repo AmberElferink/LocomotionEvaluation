@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PrattiToolkit;
+using Valve.VR;
 
 [RequireComponent(typeof(Scenario2Manager))]
 public class StatisticsLoggerS2 : StatisticsLoggerBase
@@ -20,6 +21,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
     [SerializeField] private float _dirWalkingDistThreshold = 0.5f;
     [SerializeField] private PathDevAxis _pathDevAxis = PathDevAxis.X;
     [SerializeField] private PathDevAxis _avoidanceAxis = PathDevAxis.X;
+
     #endregion
 
     #region Private Members and Constants
@@ -39,6 +41,8 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
     private uint _dirTargets = 0;
     private GazeDestination _currDest = null;
     private Vector3 _stopPos = Vector3.negativeInfinity;
+
+    
 
     #endregion
 
@@ -252,6 +256,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
 
     protected override void ComputeStatisticsStep()
     {
+
         if (_backWalking)
         {
             var diff = GetPathDev(Scenario2Manager.Instance._pathDevRef, _pathDevAxis);
@@ -325,6 +330,28 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
         _prevpos = LocomotionManager.Instance.PlayerPos;
 
         base.ComputeStatisticsStep();
+    }
+
+    
+    private void Update()
+    {
+        if(GetComponent<InputManagement>().IsRightTriggerClicked)
+        {
+            if(!_masterlog)
+            {
+                StartMasterLog("Custom");
+                Debug.Log("Start custom MasterLog");
+            }
+        }
+        else if(GetComponent<InputManagement>().IsRightPadPressed)
+        {
+            if (_masterlog)
+            {
+                StopMasterLog();
+                Debug.Log("Stop custom log");
+            }    
+                
+        }
     }
 
     #endregion
