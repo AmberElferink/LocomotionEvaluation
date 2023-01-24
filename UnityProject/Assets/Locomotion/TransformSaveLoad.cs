@@ -9,7 +9,8 @@ using UnityEditor;
 #endif
 
 
-
+//this works, but it's saved in a specific folder related to the application
+// so it can't carry over data between the editor version and the built version.
 public class TransformSaveLoad : MonoBehaviour
 {
 
@@ -80,6 +81,7 @@ public static class TransformSaver
         }
 
         string jsonTransform = JsonHelper.ToJson(trnfrm, true);
+
         PlayerPrefs.SetString("transform", jsonTransform);
     }
 
@@ -169,7 +171,9 @@ public class JsonHelper
     {
         public T[] Items;
     }
+
 }
+
 
 
 

@@ -273,13 +273,15 @@ public class SmoothLocomotion : MonoBehaviour
         StandingFootVelocity,
         LiftedFootVelocity,
         LeftShoe,
-        RightShoe
+        RightShoe,
+        Roomscale
     }
 
     public enum SpeedController
     {
         StandingFootVel,
-        LiftedFootVel
+        LiftedFootVel,
+        RoomscaleOnly
     }
 
 
@@ -309,6 +311,9 @@ public class SmoothLocomotion : MonoBehaviour
 
                     
                 }
+                break;
+            case SpeedController.RoomscaleOnly:
+                movement += Vector3.zero;
                 break;
             default:
                 if (LeadingFoot != null && LeadingFoot.isStanding)
@@ -352,6 +357,7 @@ public class SmoothLocomotion : MonoBehaviour
         {
             default:
             case OrientationController.Head:
+            case OrientationController.Roomscale:
                 return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
             case OrientationController.Hip:
                 return Quaternion.AngleAxis(hip.rotation.eulerAngles.y, Vector3.up);
@@ -453,6 +459,7 @@ public class SmoothLocomotion : MonoBehaviour
     {
         leftFoot.Calibrate();
         rightFoot.Calibrate();
+        GetComponent<AnimateTrackersFromFile>().WriteLocalTrackersOnce(); //calibrate foot arrow rotation from file                                                              
         GameObject playerSpawnPoint = GameObject.Find("PlayerSpawnPoint");
         GetComponent<GetPlayerPos>().SetGlobalPlayerPos(new Vector3(playerSpawnPoint.transform.position.x, playerSpawnPoint.transform.position.y + head.localPosition.y, playerSpawnPoint.transform.position.z));
         Debug.Log("Calibrated");
@@ -470,6 +477,9 @@ public class SmoothLocomotion : MonoBehaviour
         {
             case OrientationController.LiftedFootVelocity:
                 speedType = SpeedController.LiftedFootVel;
+                break;
+            case OrientationController.Roomscale:
+                speedType = SpeedController.RoomscaleOnly;
                 break;
             default:
                 speedType = SpeedController.StandingFootVel;
@@ -529,8 +539,10 @@ public class SmoothLocomotion : MonoBehaviour
                 switch (kcode)
                 {
                     case KeyCode.Y:
-                        // also load the FootTransforms saved on calibration of the foot transforms (first open unity to set them to the correct orientation, then hit the save transforms button in the Locomotion Entity TransformLoadSave, or press Y)
-                        Calibrate(); //set foot height (only press with two feet on the ground)                        
+                     Calibrate(); //set foot height (only press with two feet on the ground)
+                        break;
+                    case KeyCode.S:
+                        GetComponent<RecordTrackers>().WriteSingleCalibration();
                         break;
 
                 }

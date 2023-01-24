@@ -1373,6 +1373,8 @@ GameObject:
   - component: {fileID: 1614401267855839708}
   - component: {fileID: 1614401267855839709}
   - component: {fileID: 8732905505826516596}
+  - component: {fileID: 5342904135304543109}
+  - component: {fileID: 6899414488529974509}
   m_Layer: 8
   m_Name: TrackerWalkController 1
   m_TagString: Player
@@ -1575,6 +1577,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eee339983f0134540a6910aa02f425be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5342904135304543109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4633669090031275031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25ca459418edca340a3775b53d9edc00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  path: calibrationTrackers.txt
+  names:
+  - leftfoot
+  - rightfoot
+  - hip
+  - direction
+  transforms:
+  - {fileID: 4633669090017491178}
+  - {fileID: 4633669091140028026}
+  - {fileID: 4633669089536430723}
+  - {fileID: 1290802398502357092}
+--- !u!114 &6899414488529974509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4633669090031275031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59d3f9f804c5e7948a3cb24b80b0ec02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  names:
+  - leftfoot
+  - rightfoot
+  - hip
+  - direction
+  transforms:
+  - {fileID: 4633669090017491178}
+  - {fileID: 4633669091140028026}
+  - {fileID: 4633669089536430723}
+  - {fileID: 1290802398502357092}
+  ignoreTransforms: []
+  writeSetting: 2
+  path: calibrationTrackers.txt
 --- !u!1 &4633669090031278529
 GameObject:
   m_ObjectHideFlags: 0

@@ -63,7 +63,8 @@ public class CSVReader
 
 public class AnimateTrackersFromFile : MonoBehaviour
 {
-    public string path = "test.txt";
+    public string filename = "test.txt";
+    public string FullPath { get => Application.dataPath + "/StreamingAssets/" + filename; }
 
     public List<string> names = new List<string>();
     public List<Transform> transforms = new List<Transform>();
@@ -89,9 +90,14 @@ public class AnimateTrackersFromFile : MonoBehaviour
         StartCoroutine("AnimateTrackers");
     }
 
+    public void WriteLocalTrackersOnce()
+    {
+        StartCoroutine("LoadSingleLocalTransform");
+    }
+
     private IEnumerator AnimateTrackers()
     {
-        List<Dictionary<string, object>> data = CSVReader.Read(path);
+        List<Dictionary<string, object>> data = CSVReader.Read(FullPath);
         var keys = data[0].Keys; // if you need, you can print the keys to see what is in the file.
                                  //foreach (var key in keys)
                                  //{
@@ -134,6 +140,38 @@ public class AnimateTrackersFromFile : MonoBehaviour
 
     }
 
+    public IEnumerator LoadSingleLocalTransform()
+    {
+        List<Dictionary<string, object>> data = CSVReader.Read(FullPath);
+        var keys = data[0].Keys; // if you need, you can print the keys to see what is in the file.
+                                 //foreach (var key in keys)
+                                 //{
+                                 //    print(key + " " + data[i][key]);
+                                 //}
+        if (names.Count > transforms.Count || names.Count > keys.Count)
+        {
+            print("You are requesting to print more transforms than there are names, or there are in the file");
+            yield return null;
+        }
+
+        float frameTime = 1;//Convert.ToSingle(data[lineNr]["dt"]);
+        for (int transformNr = 0; transformNr < names.Count; transformNr++)
+        {
+            float posX = Convert.ToSingle(data[0][names[transformNr] + "_px"]);
+            float posY = Convert.ToSingle(data[0][names[transformNr] + "_py"]);
+            float posZ = Convert.ToSingle(data[0][names[transformNr] + "_pz"]);
+
+            float rotX = Convert.ToSingle((data[0][names[transformNr] + "_rx"]));
+            float rotY = Convert.ToSingle((data[0][names[transformNr] + "_ry"]));
+            float rotZ = Convert.ToSingle((data[0][names[transformNr] + "_rz"]));
+
+            transforms[transformNr].localPosition = new Vector3(posX, posY, posZ);
+            transforms[transformNr].localRotation = Quaternion.Euler(rotX, rotY, rotZ);
+        }
+
+        Debug.Log("Loaded calibration");
+    }
+
 }
 
 
@@ -148,6 +186,12 @@ public class AnimateTrackersFromFileEditor : Editor
         {
             ((AnimateTrackersFromFile)target).WriteBackToGameObjects();
         }
+        else if(GUILayout.Button("Load tracker calibration"))
+        {
+            ((AnimateTrackersFromFile)target).WriteLocalTrackersOnce();
+        }
     }
 }
 #endif
+
+

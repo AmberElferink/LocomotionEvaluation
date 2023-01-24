@@ -27,7 +27,8 @@ public class RecordTrackers : MonoBehaviour
     public WriteSetting writeSetting = WriteSetting.WriteGlobalIgnoringIgnoreTransform; // will enable ignoring all the non null ignoretransforms 
 
 
-    public string path = "test.txt";
+    public string filename = "test.txt";
+    public string FullPath { get => Application.dataPath + "/StreamingAssets/" + filename;}
 
     List<string> VarsForEachName = new List<string> { "_px", "_py", "_pz", "_rx", "_ry", "_rz" };
 
@@ -42,7 +43,7 @@ public class RecordTrackers : MonoBehaviour
     {
         recording = true;
         //Write some text to the test.txt file
-        writer = new StreamWriter(path, true);
+        writer = new StreamWriter(FullPath, true);
         writer.Write("dt" + varDelimiter);
         foreach (string name in names)
         {
@@ -66,7 +67,7 @@ public class RecordTrackers : MonoBehaviour
         switch (writeSetting)
         {
             case WriteSetting.WriteGlobal:
-                writeTransform();
+                writeGlobalTransforms();
                 break;
             case WriteSetting.WriteLocal:
                 writeLocalTransforms();
@@ -105,7 +106,33 @@ public class RecordTrackers : MonoBehaviour
         }
     }
 
-    public void writeTransform()
+
+
+    public void writeTransformIgnoringIgnoreTransform()
+    {
+        for (int i = 0; i < transforms.Count; i++) 
+        {
+            if (i > ignoreTransforms.Count - 1 || ignoreTransforms[i] == null)
+            {
+                writeGlobalTransforms();
+                return;
+            }
+            writer.Write(transforms[i].position.x - ignoreTransforms[i].position.x);
+            writer.Write(varDelimiter);
+            writer.Write(transforms[i].position.y - ignoreTransforms[i].position.y);
+            writer.Write(varDelimiter);
+            writer.Write(transforms[i].position.z - ignoreTransforms[i].position.z);
+            writer.Write(varDelimiter);
+            writer.Write(transforms[i].eulerAngles.x);
+            writer.Write(varDelimiter);
+            writer.Write(transforms[i].eulerAngles.y);
+            writer.Write(varDelimiter);
+            writer.Write(transforms[i].eulerAngles.z);
+            writer.Write(varDelimiter);
+        }
+    }
+
+    public void writeGlobalTransforms()
     {
         foreach (Transform t in transforms)
         {
@@ -121,30 +148,6 @@ public class RecordTrackers : MonoBehaviour
             writer.Write(t.eulerAngles.y);
             writer.Write(varDelimiter);
             writer.Write(t.eulerAngles.z);
-            writer.Write(varDelimiter);
-        }
-    }
-
-    public void writeTransformIgnoringIgnoreTransform()
-    {
-        for (int i = 0; i < transforms.Count; i++) 
-        {
-            if (i > ignoreTransforms.Count - 1 || ignoreTransforms[i] == null)
-            {
-                writeTransform();
-                return;
-            }
-            writer.Write(transforms[i].position.x - ignoreTransforms[i].position.x);
-            writer.Write(varDelimiter);
-            writer.Write(transforms[i].position.y - ignoreTransforms[i].position.y);
-            writer.Write(varDelimiter);
-            writer.Write(transforms[i].position.z - ignoreTransforms[i].position.z);
-            writer.Write(varDelimiter);
-            writer.Write(transforms[i].eulerAngles.x);
-            writer.Write(varDelimiter);
-            writer.Write(transforms[i].eulerAngles.y);
-            writer.Write(varDelimiter);
-            writer.Write(transforms[i].eulerAngles.z);
             writer.Write(varDelimiter);
         }
     }
@@ -169,6 +172,24 @@ public class RecordTrackers : MonoBehaviour
             writer.Write(varDelimiter);
         }
     }
+
+    public void WriteSingleCalibration()
+    {
+        File.WriteAllText(FullPath, "");
+        writer = new StreamWriter(FullPath, true);
+        foreach (string name in names)
+        {
+            foreach (string var in VarsForEachName)
+            {
+                writer.Write(name + var + varDelimiter);
+            }
+        }
+        writer.WriteLine();
+        writeLocalTransforms();
+        writer.Close();
+        Debug.Log("written calibrations");
+    }
+
 
     public void StopRecord()
     {
@@ -201,6 +222,10 @@ public class WriteTrackersEditor : Editor
         else if (GUILayout.Button("Stop Recording"))
         {
             ((RecordTrackers)target).StopRecord();
+        }
+        else if (GUILayout.Button("Save Tracker Calibration"))
+        {
+            ((RecordTrackers)target).WriteSingleCalibration();
         }
     }
 }
