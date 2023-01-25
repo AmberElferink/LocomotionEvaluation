@@ -111,7 +111,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _singleValueBuilder = new StringBuilder();
     }
 
-    void Update()
+    protected void Update()
     {
         Ticker();
     }

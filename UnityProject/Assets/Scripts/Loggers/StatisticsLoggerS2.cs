@@ -42,7 +42,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
     private GazeDestination _currDest = null;
     private Vector3 _stopPos = Vector3.negativeInfinity;
 
-    
+
 
     #endregion
 
@@ -52,7 +52,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
 
     #region MonoBehaviour
     public void StartLogMultiStrLineWalking(GazeDestination g)
-    {
+    { 
         if (_dirTargets == 0)
         {
             StartMasterLog("MW");
@@ -64,8 +64,8 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
         _recallTime = -1;
         _initAngErr = -1;
         _currDest = g;
-
     }
+
     public void StopLogMultiStrLineWalking(GazeDestination g)
     {
         if (_currDest == g)
@@ -335,6 +335,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
     
     private void Update()
     {
+        base.Update();
         if(GetComponent<InputManagement>().IsRightTriggerClicked)
         {
             if(!_masterlog)

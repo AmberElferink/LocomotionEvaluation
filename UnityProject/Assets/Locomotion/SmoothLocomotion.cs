@@ -460,8 +460,8 @@ public class SmoothLocomotion : MonoBehaviour
         leftFoot.Calibrate();
         rightFoot.Calibrate();
         GetComponent<AnimateTrackersFromFile>().WriteLocalTrackersOnce(); //calibrate foot arrow rotation from file                                                              
-        GameObject playerSpawnPoint = GameObject.Find("PlayerSpawnPoint");
-        GetComponent<GetPlayerPos>().SetGlobalPlayerPos(new Vector3(playerSpawnPoint.transform.position.x, playerSpawnPoint.transform.position.y + head.localPosition.y, playerSpawnPoint.transform.position.z));
+        //GameObject playerSpawnPoint = GameObject.Find("PlayerSpawnPoint");
+        //GetComponent<GetPlayerPos>().SetGlobalPlayerPos(new Vector3(playerSpawnPoint.transform.position.x, playerSpawnPoint.transform.position.y + head.localPosition.y, playerSpawnPoint.transform.position.z));
         Debug.Log("Calibrated");
     }
 
