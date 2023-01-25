@@ -5,7 +5,7 @@ using UnityEngine;
 using Valve.VR;
 
 /// <summary>
-/// This class can be used on a GameObject which has a SteamVR_TrackedObject (in this case replaced by Calibrated_tracked_object) component in order
+/// This class can be used on a GameObject which has a SteamVR_TrackedObject component in order
 /// to avoid to specify the SteamVR device's index (which depends on the order of activation).
 /// Instead, it uses a configured tracker name that is defined in <see cref="TRACKER_CONFIG_FILENAME"/>
 /// to match it with it's correct serial number. This file should be present in the executable folder.
@@ -18,7 +18,7 @@ using Valve.VR;
 /// Rhand;LHR-7E677A16
 /// headset;LHR-4B3C71D7
 /// </summary>
-[RequireComponent(typeof(Calibrated_tracked_object) )] //custom tracker based on SteamVR tracked object
+[RequireComponent(typeof(SteamVR_TrackedObject) )] //custom tracker based on SteamVR tracked object
 public class TrackerConfigurationLoader : MonoBehaviour {
 
     /// <summary>
@@ -28,8 +28,8 @@ public class TrackerConfigurationLoader : MonoBehaviour {
 
     public const string TRACKER_CONFIG_FILENAME= "tracker_config.txt";
     private string serialNumber;
-    private Calibrated_tracked_object.EIndex index;
-    private Calibrated_tracked_object trackedObject;
+    private SteamVR_TrackedObject.EIndex index;
+    private SteamVR_TrackedObject trackedObject;
 
     private static Dictionary<string, uint> indexByNames = new Dictionary<string, uint>();
     private Vector3 initPos;
@@ -44,8 +44,8 @@ public class TrackerConfigurationLoader : MonoBehaviour {
         //PrintAllIDs();
         LoadID();
         LoadIndexFromID();
-        trackedObject = GetComponent<Calibrated_tracked_object>();
-        trackedObject.index = (Calibrated_tracked_object.EIndex) this.index;
+        trackedObject = GetComponent<SteamVR_TrackedObject>();
+        trackedObject.index = (SteamVR_TrackedObject.EIndex) this.index;
         if (indexByNames.ContainsKey(configuredName))
         {
             Debug.LogError("Tracker with name " + configuredName + " already defined.");
@@ -115,10 +115,10 @@ public class TrackerConfigurationLoader : MonoBehaviour {
 
         for(int i=0; i<16; i++)
         {
-            if (IsTracker((Calibrated_tracked_object.EIndex)i))
+            if (IsTracker((SteamVR_TrackedObject.EIndex)i))
             {
-                index = (Calibrated_tracked_object.EIndex)i;
-                Debug.LogWarning("Tracker with configured name \"" + configuredName + "\" was assigned to SteamVRIndex " + ((Calibrated_tracked_object.EIndex)i) + " because no corresponding entry were found in the tracker configuration file.");
+                index = (SteamVR_TrackedObject.EIndex)i;
+                Debug.LogWarning("Tracker with configured name \"" + configuredName + "\" was assigned to SteamVRIndex " + ((SteamVR_TrackedObject.EIndex)i) + " because no corresponding entry were found in the tracker configuration file.");
                 LoadIDFromIndex();
                 return;
             }
@@ -143,17 +143,17 @@ public class TrackerConfigurationLoader : MonoBehaviour {
             OpenVR.System.GetStringTrackedDeviceProperty(i, ETrackedDeviceProperty.Prop_SerialNumber_String, result, 64, ref error);
             if (result.ToString().Equals(serialNumber))
             {
-                index = (Calibrated_tracked_object.EIndex)i;
+                index = (SteamVR_TrackedObject.EIndex)i;
                 trackerFound = true;
             }
         }
         if (!trackerFound)
         {
-            index = Calibrated_tracked_object.EIndex.None;
+            index = SteamVR_TrackedObject.EIndex.None;
         }
     }
 
-    public static bool IsTracker(Calibrated_tracked_object.EIndex index)
+    public static bool IsTracker(SteamVR_TrackedObject.EIndex index)
     {
         ETrackedPropertyError error = ETrackedPropertyError.TrackedProp_Success;
         StringBuilder result = new System.Text.StringBuilder((int)64);

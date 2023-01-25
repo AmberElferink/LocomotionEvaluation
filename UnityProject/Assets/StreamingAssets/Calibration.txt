@@ -1,0 +1,2 @@
+leftfoot_px,leftfoot_py,leftfoot_pz,leftfoot_rx,leftfoot_ry,leftfoot_rz,rightfoot_px,rightfoot_py,rightfoot_pz,rightfoot_rx,rightfoot_ry,rightfoot_rz,hip_px,hip_py,hip_pz,hip_rx,hip_ry,hip_rz,direction_px,direction_py,direction_pz,direction_rx,direction_ry,direction_rz,
+0,0,0,0,0,180,0,0,0,0,0,180,0.002895951,-0.0006706819,0.001068703,0,0,180,0,0.2,0,270,180,0,
