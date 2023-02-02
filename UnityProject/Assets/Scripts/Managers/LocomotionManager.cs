@@ -15,6 +15,7 @@ public enum LocomotionTechniqueType
 {
     LiftedFootVelocity,
     StandingFootVelocity,
+    RoomscaleOnly,
     AverageShoes,
     Hip,
     Head,
