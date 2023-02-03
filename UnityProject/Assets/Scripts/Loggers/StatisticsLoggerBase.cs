@@ -326,6 +326,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _masterlog = false;
         if(smoothLocomotion != null)
         {
+            if(LocomotionManager.Instance != null)
             _singleValueBuilder.Append(LocomotionManager.Instance.CurrentPlayerController.name).Append(";");
             _singleValueBuilder.Append("LiftedThreshold").Append(";");
             _singleValueBuilder.Append(smoothLocomotion.liftedThres).Append(";");

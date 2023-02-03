@@ -100,6 +100,8 @@ public class SmoothLocomotion : MonoBehaviour
         {
             get
             {
+                // currently not done, but actually the toe speed on the ground is more constant, and assuming the toe is on the ground under a certain height, we could calculate this toe speed.
+
                 //float r = 0.25f; ///guess
                 //if (state == State.Standing && backFoot && tracker.eulerAngles.z < 90)
                 //{
@@ -154,6 +156,7 @@ public class SmoothLocomotion : MonoBehaviour
             prevRot = tracker.rotation.eulerAngles;
         }
 
+        // sets if it is lifted or standing based on a height threshold. 
         public State UpdateState(SpeedController speedType, float liftedFootThresh, float standingFootThresh)
         {
             this.speedType = speedType;
@@ -237,9 +240,17 @@ public class SmoothLocomotion : MonoBehaviour
     private Vector3 prevHeadPos = Vector3.zero;
     private Vector3 prevHipPos = Vector3.zero;
 
-    public Vector3 HeadVelocity { get; private set;  }
+    public Vector3 HeadVelocity { get; private set; }
     public Vector3 HipVelocity { get; private set; }
-    
+
+    public float EWMA_LiftedRightSpeed { get; private set; } = 0;
+    public float EWMA_LiftedLeftSpeed { get; private set; } = 0;
+    public float EWMA_StandingRightSpeed { get; private set; } = 0;
+    public float EWMA_StandingLeftSpeed { get; private set; } = 0;
+    public float averageStandingSpeed {get; private set;} = 0;
+    public float averageLiftedSpeed { get; private set;} = 0;
+    public float currentLocomotionSpeed {get; private set;} = 0;
+
 
     //Leadingfoot is the one determining the velocity
     public Foot LeadingFoot
@@ -288,39 +299,32 @@ public class SmoothLocomotion : MonoBehaviour
 
     // Updates based on the controllertype with usually the default displacement and the given orientation.
     // In some controllertypes, it overrides those, since they are defined in the controllertype.
-    Vector3 GetMovement(Vector3 defaultDisplacement, Quaternion orientation)
+    Vector3 GetMovement(Quaternion orientation)
     {
         Vector3 movement = Vector3.zero;
+        Vector3 displacement = Vector3.zero;
+
+        //Leadingfoot depends on the SpeedController as well (Standing/Lifted), so it automatically the correct foot.
+        if (LeadingFoot != null)
+            displacement = Vector3.ProjectOnPlane(currentLocomotionSpeed * LeadingFoot.Velocity.normalized, Vector3.up) * Time.fixedDeltaTime;
+
         switch (speedType)
         {
-
             case SpeedController.StandingFootVel:
                 if (LeadingFoot != null && LeadingFoot.isStanding)
-                {
-                    Vector3 displacement = Vector3.ProjectOnPlane(speed *LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
-                    // don't do anything with orientation, since it comes down to the velocity magnitute times velocity orientation unit vector, which is velocity itself.
-                    movement -= displacement;
-                }
+                    movement = -displacement;
                 break;
-
             case SpeedController.LiftedFootVel:
                 if (LeadingFoot != null && LeadingFoot.isLifted)
-                {
-                    Vector3 displacement = Vector3.ProjectOnPlane(speed * LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
-                    movement += displacement;
-
-                    
-                }
+                    movement = displacement;                    
                 break;
             case SpeedController.RoomscaleOnly:
-                movement += Vector3.zero;
+                    movement = Vector3.zero;
                 break;
             default:
-                if (LeadingFoot != null && LeadingFoot.isStanding)
-                {
                     // when you do this, it becomes pure head oriented input. The shoes movement direction have no influence.
-                    Vector3 reorientedDisplacement = orientation * new Vector3(0, 0, Vector3.ProjectOnPlane(defaultDisplacement, Vector3.up).magnitude);
-                    movement += reorientedDisplacement;
+                    Vector3 reorientedDisplacement = orientation * new Vector3(0, 0, currentLocomotionSpeed * Time.fixedDeltaTime);
+                    movement = reorientedDisplacement;
 
 
                     // when you do this, it becomes a hybrid between feet and head input (you rotate the feet input towards the head).
@@ -333,13 +337,11 @@ public class SmoothLocomotion : MonoBehaviour
                     // displacement = new Vector3(input.axis.x, 0, input.axis.y) * speed * Time.deltaTime;
                     //Vector3 reorientedDisplacement = orientation * -displacement;
                     //transform.position += reorientedDisplacement;
-                }
                 break;
         }
-        movement.y -= 9.81f * Time.deltaTime;
+        movement.y -= 9.81f * Time.deltaTime; //gravity
 
 
-        //Vector3.ClampMagnitude(movement, 3); // found this is not reached in walking, by plottiong horizontal shoe speed plots.
         return movement;
 
         //alternative way to do input transform (example based on head)
@@ -380,7 +382,7 @@ public class SmoothLocomotion : MonoBehaviour
 
     }
 
-
+    //select if a shoe is standing/lifted, and if both are, which of the two should take the lead in the algorithm.
     public void SetLeadingShoe()
     {
         if (controllerType == OrientationController.LiftedFootVelocity)
@@ -492,6 +494,35 @@ public class SmoothLocomotion : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         Calibrate();
     }
+
+    // Exponentially Weighted Moving Average. Without bias correction, since all values this is used on start at 0 anyway.
+    float EWMA(float prevAverage, float newValue, float rho)
+    {
+        float newAverage = rho * prevAverage + (1 - rho) * newValue;
+        return newAverage;
+    }
+
+
+    // This is the calculation for the speed we want to add to the head position to move forwards in VR, relating to the speed of the feet.
+    // On average, the head should move as much as the feet do with this algorithm.
+    // rho is the "smoothness" value between 0 and 1. The closer to 1, the more it averages out the movement. However, the longer until it will react to starting/stopping or speed changes.
+    void CalcLocomotionSpeed(float rho = 0.9f)
+    {
+        //shoe moving forwards, defined by positive speed, so filter above 0. This is when the foot is lifted and moving forwards.
+        EWMA_LiftedRightSpeed = EWMA(EWMA_LiftedRightSpeed, Math.Max(rightFoot.HorizontalSpeed, 0), rho);
+        EWMA_LiftedLeftSpeed = EWMA(EWMA_LiftedLeftSpeed, Math.Max(leftFoot.HorizontalSpeed, 0), rho);
+        averageLiftedSpeed = (EWMA_LiftedLeftSpeed + EWMA_LiftedRightSpeed) / 2;
+
+        //shoe moving backwards, defined by negative speed, so filter below 0. This is when the foot is standing and driven backwards.
+        EWMA_StandingRightSpeed = EWMA(EWMA_StandingRightSpeed, Math.Min(rightFoot.HorizontalSpeed, 0), rho);
+        EWMA_StandingLeftSpeed = EWMA(EWMA_StandingLeftSpeed, Math.Min(leftFoot.HorizontalSpeed, 0), rho);
+        averageStandingSpeed = -(EWMA_StandingLeftSpeed + EWMA_StandingRightSpeed) / 2;
+
+        // now, to get a smoother more constant speed, average the lifted and standing speed
+        currentLocomotionSpeed = (averageStandingSpeed + averageLiftedSpeed) / 2;
+    }
+
+    // In here, the Locom
     // these are needed mostly for data collection. Note, these are in local space, just like the shoes are logged in local space!
     void CalcVelocities()
     {
@@ -512,22 +543,13 @@ public class SmoothLocomotion : MonoBehaviour
 
         SetLeadingShoe();
 
-        Vector3 displacement;
-
-        if (LeadingFoot != null)
-        {
-            displacement = Vector3.ProjectOnPlane(speed * LeadingFoot.Velocity, Vector3.up) * Time.deltaTime;
-            //this is without projection to the flat plane
-            //Debug.DrawLine(LeadingFoot.footTransform.position, LeadingFoot.footTransform.position + LeadingFoot.Velocity * 100, Color.cyan);
-        }
-        else
-            displacement = Vector3.zero;
-
-
         Quaternion orientation = GetMoveOrientation(controllerType);
         directionIndicator.transform.localRotation = orientation;
 
-        player.Move(GetMovement(displacement, orientation));
+        CalcLocomotionSpeed();
+
+        player.Move(GetMovement(orientation));
+
         CalcVelocities();
     }
 
