@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class InputManagement : MonoBehaviour
 {
@@ -232,6 +233,7 @@ public class InputManagement : MonoBehaviour
 
     private void Start()
     {
+
         if (LeftController != null)
         {
             LeftVRController = LeftController.GetComponent<SteamVR_TrackedController>();
@@ -277,10 +279,28 @@ public class InputManagement : MonoBehaviour
                 RightVRController.Ungripped += RightUnGripped;
             }
         }
+
+
+
     }
 
-    // Update is called once per frame
-    void Update()
+    //tried to auto assign controllers after a second, but CurrentPlayerController seems to be null still then.
+
+    //StartCoroutine(LateStart(1.0f));
+    //didn't work out
+    //IEnumerator LateStart(float waitTime)
+    //{
+    //    yield return new WaitForSeconds(waitTime);
+
+    //    if (RightController == null)
+    //        RightController = GetComponent<LocomotionManager>().CurrentPlayerController.Find("Controller (right)").gameObject;
+    //    if (LeftController == null)
+    //        LeftController = GetComponent<LocomotionManager>().CurrentPlayerController.Find("Controller (left)").gameObject;
+    // rest of the Start code
+    //}
+
+// Update is called once per frame
+void Update()
     {
 #if MOUSEANDKEYBOARD
         if (Input.GetButtonDown("Fire Left Mouse"))

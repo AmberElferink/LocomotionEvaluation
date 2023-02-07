@@ -114,6 +114,13 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
     protected void Update()
     {
         Ticker();
+        if (Input.GetKeyUp(KeyCode.Escape) == true)
+        {
+            if (_masterlog)
+                StopMasterLog();
+            Application.Quit();
+            UnityEditor.EditorApplication.isPlaying = false;
+        }
     }
 
     #endregion
@@ -122,7 +129,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
 
     public void Ticker()
     {
-        if (_lastsample < (Time.time - (1 / StatisticsLoggerData.SamplingRate)))
+        if (_lastsample < (Time.time - (1.0f / StatisticsLoggerData.SamplingRate)))
         {
             ComputeStatisticsStep();
             _lastsample = Time.time;
@@ -546,7 +553,6 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
             _playerspeed.Add(LocomotionManager.Instance.CurrHorizontalPlayerSpeed);
             _locomotionOffsetPositions.Add(LocomotionManager.Instance.LocomotionOffset.position);
             _rotations.Add(LocomotionManager.Instance.CurrentPlayerController.eulerAngles);
-            _locomotionOffsetPositions.Add(LocomotionManager.Instance.LocomotionOffset.position);
             _headpositions.Add(LocomotionManager.Instance.CameraEye.localPosition);
             _headrotations.Add(LocomotionManager.Instance.CameraEye.localEulerAngles);
 

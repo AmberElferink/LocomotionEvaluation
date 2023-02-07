@@ -81,7 +81,21 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
     }
 
     public Vector3 CurrentPlayerVelocity { get; private set; }
-    public Transform LocomotionOffset { get => CurrentPlayerController; } //excluding roomscale offset
+
+    Vector3 prevLocomotionOffset = Vector3.zero;
+    float prevTime = 0;
+    public Transform LocomotionOffset
+    {
+        get
+        {
+            Debug.Log("LocoOffset dt " + (Time.time - prevTime) + " position " + (CurrentPlayerController.position - prevLocomotionOffset));
+            prevLocomotionOffset = CurrentPlayerController.position;
+            prevTime = Time.time;
+
+            return CurrentPlayerController; //excluding roomscale offset
+        }
+    }
+           
     public Vector3 PlayerPos { //including roomscale offset (characterController pos)
         get => _getPlayerPos.PlayerPosition; 
         set { _getPlayerPos.SetGlobalPlayerPos(value); } 

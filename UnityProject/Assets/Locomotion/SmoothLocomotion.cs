@@ -487,6 +487,8 @@ public class SmoothLocomotion : MonoBehaviour
                 speedType = SpeedController.StandingFootVel;
                 break;
         }
+
+
     }
 
     IEnumerator CalibrationAfterSeconds(float waitTime)
@@ -531,6 +533,8 @@ public class SmoothLocomotion : MonoBehaviour
         HipVelocity = (hip.localPosition - prevHipPos) / Time.fixedDeltaTime;
         prevHipPos = hip.transform.position;
     }
+
+
     // Update is called once per frame
     void FixedUpdate()
     {
