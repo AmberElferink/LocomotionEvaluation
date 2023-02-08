@@ -243,8 +243,8 @@ public class SmoothLocomotion : MonoBehaviour
     public Vector3 HeadVelocity { get; private set; }
     public Vector3 HipVelocity { get; private set; }
 
-    public float EWMA_LiftedRightSpeed { get; private set; } = 0;
-    public float EWMA_LiftedLeftSpeed { get; private set; } = 0;
+    public float EWMA_RightSpeed { get; private set; } = 0;
+    public float EWMA_LeftSpeed { get; private set; } = 0;
     public float EWMA_StandingRightSpeed { get; private set; } = 0;
     public float EWMA_StandingLeftSpeed { get; private set; } = 0;
     public float averageStandingSpeed {get; private set;} = 0;
@@ -504,16 +504,23 @@ public class SmoothLocomotion : MonoBehaviour
         return newAverage;
     }
 
+    void CalcLocomotionSpeed(float rho = 0.9f)
+    {
+        EWMA_RightSpeed = EWMA(EWMA_RightSpeed, Math.Abs(rightFoot.HorizontalSpeed), rho);
+        EWMA_LeftSpeed = EWMA(EWMA_LeftSpeed, Math.Abs(leftFoot.HorizontalSpeed), rho);
+        currentLocomotionSpeed = (EWMA_LeftSpeed + EWMA_RightSpeed) / 4; //take the average: (a + b)/2, divided by 2 an extra time (since you abs gives both the foot driven backwards and the foot going forwards, which would result in double the speed).
+    }
+
 
     // This is the calculation for the speed we want to add to the head position to move forwards in VR, relating to the speed of the feet.
     // On average, the head should move as much as the feet do with this algorithm.
     // rho is the "smoothness" value between 0 and 1. The closer to 1, the more it averages out the movement. However, the longer until it will react to starting/stopping or speed changes.
-    void CalcLocomotionSpeed(float rho = 0.9f)
+    void OldCalcLocomotionSpeed(float rho = 0.9f)
     {
         //shoe moving forwards, defined by positive speed, so filter above 0. This is when the foot is lifted and moving forwards.
-        EWMA_LiftedRightSpeed = EWMA(EWMA_LiftedRightSpeed, Math.Max(rightFoot.HorizontalSpeed, 0), rho);
-        EWMA_LiftedLeftSpeed = EWMA(EWMA_LiftedLeftSpeed, Math.Max(leftFoot.HorizontalSpeed, 0), rho);
-        averageLiftedSpeed = (EWMA_LiftedLeftSpeed + EWMA_LiftedRightSpeed) / 2;
+        EWMA_RightSpeed = EWMA(EWMA_RightSpeed, Math.Max(rightFoot.HorizontalSpeed, 0), rho);
+        EWMA_LeftSpeed = EWMA(EWMA_LeftSpeed, Math.Max(leftFoot.HorizontalSpeed, 0), rho);
+        averageLiftedSpeed = (EWMA_LeftSpeed + EWMA_RightSpeed) / 2;
 
         //shoe moving backwards, defined by negative speed, so filter below 0. This is when the foot is standing and driven backwards.
         EWMA_StandingRightSpeed = EWMA(EWMA_StandingRightSpeed, Math.Min(rightFoot.HorizontalSpeed, 0), rho);
