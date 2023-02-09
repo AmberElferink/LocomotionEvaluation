@@ -88,9 +88,9 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
     {
         get
         {
-            Debug.Log("LocoOffset dt " + (Time.time - prevTime) + " position " + (CurrentPlayerController.position - prevLocomotionOffset));
-            prevLocomotionOffset = CurrentPlayerController.position;
-            prevTime = Time.time;
+            //Debug.Log("Log locomotionoffset dt " + (Time.time - prevTime) + " position " + (CurrentPlayerController.position - prevLocomotionOffset));
+            //prevLocomotionOffset = CurrentPlayerController.position;
+            //prevTime = Time.time;
 
             return CurrentPlayerController; //excluding roomscale offset
         }

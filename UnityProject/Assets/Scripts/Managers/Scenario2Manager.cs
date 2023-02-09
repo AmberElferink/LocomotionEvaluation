@@ -66,7 +66,6 @@ public class Scenario2Manager : UnitySingleton<Scenario2Manager>
         StatisticsLogger = GetComponent<StatisticsLoggerS2>();
         Assert.IsNotNull(StatisticsLogger);
         Assert.IsNotNull(_pathController);
-        Assert.IsNotNull(_city);
 
 
         StartDest.OnDisabled.AddListener(StartGrow);
@@ -190,7 +189,6 @@ public class Scenario2Manager : UnitySingleton<Scenario2Manager>
     {
         _headlight.transform.parent = null;
         _headlight.GetComponent<Light>().enabled = false;
-        _city.SetActive(true);
     }
 
     private void AttachLight(Destination d)

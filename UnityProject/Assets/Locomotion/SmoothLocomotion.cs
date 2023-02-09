@@ -515,7 +515,7 @@ public class SmoothLocomotion : MonoBehaviour
     // This is the calculation for the speed we want to add to the head position to move forwards in VR, relating to the speed of the feet.
     // On average, the head should move as much as the feet do with this algorithm.
     // rho is the "smoothness" value between 0 and 1. The closer to 1, the more it averages out the movement. However, the longer until it will react to starting/stopping or speed changes.
-    void OldCalcLocomotionSpeed(float rho = 0.9f)
+    void OldCalcLocomotionSpeed(float rho = 0.95f)
     {
         //shoe moving forwards, defined by positive speed, so filter above 0. This is when the foot is lifted and moving forwards.
         EWMA_RightSpeed = EWMA(EWMA_RightSpeed, Math.Max(rightFoot.HorizontalSpeed, 0), rho);

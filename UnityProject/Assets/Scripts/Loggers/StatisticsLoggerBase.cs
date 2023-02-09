@@ -61,7 +61,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
     protected float _lastsample = float.MinValue;
     protected float _stPathDev = 0.0f;
 
-    protected List<Vector3> 
+    protected List<Vector3>
         _playerPositions,
         _locomotionOffsetPositions,
         _rotations,
@@ -88,7 +88,10 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _rightlegspeed, // local (no locomotion offset included)
         _leftlegspeed, // local (no locomotion offset included)
         _hipspeed, // local (no locomotion offset included)
-        _gazewalkangles;
+        _gazewalkangles,
+        _locomotionSpeed,
+        _EWMA_RightSpeed,
+        _EWMA_LeftSpeed;
 
     protected List<object> _locks;
     private List<List<string>> _allValues;
@@ -122,6 +125,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
             UnityEditor.EditorApplication.isPlaying = false;
         }
     }
+
 
     #endregion
 
@@ -209,6 +213,9 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _rightlegspeed = new List<float>();
         _hipspeed = new List<float>();
         _gazewalkangles = new List<float>();
+        _locomotionSpeed = new List<float>();
+        _EWMA_RightSpeed = new List<float>();
+        _EWMA_LeftSpeed = new List<float>();
         _time = new List<float>();
 
         Debug.Log($"Logger {this.name} Initialized");
@@ -454,8 +461,8 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                     values.Add("");
                 }
 
-
-                values.Add("" + _directionRotations[i].x);
+                //ends up in targetpositions
+                values.Add("" + _directionRotations[i].x); //targetpositions
                 values.Add("" + _directionRotations[i].y);
                 values.Add("" + _directionRotations[i].z);
             }
@@ -485,21 +492,31 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 values.Add("");
             }
 
-            if (_masterlogtype == "C")
-            {
-                values.Add("" + _targetpositions[i].x);
-                values.Add("" + _targetpositions[i].y);
-                values.Add("" + _targetpositions[i].z);
-            }
-            else
-            {
-                values.Add("");
-                values.Add("");
-                values.Add("");
-            }
+            //if (_masterlogtype == "C")
+            //{
+            //    values.Add("" + _targetpositions[i].x);
+            //    values.Add("" + _targetpositions[i].y);
+            //    values.Add("" + _targetpositions[i].z);
+            //}
+            //else
+            //{
+            //    values.Add("");
+            //    values.Add("");
+            //    values.Add("");
+            //}
 
             if (_masterlogtype == "DG")
                 values.Add("" + _gazewalkangles[i]);
+            else
+                values.Add("");
+
+            if (smoothLocomotion != null)
+            {
+                values.Add("" + _locomotionSpeed[i]);
+                values.Add("" + _EWMA_RightSpeed[i]);
+                values.Add("" + _EWMA_LeftSpeed[i]);
+            }
+                
             else
                 values.Add("");
 
@@ -534,6 +551,9 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _hiprotations.Clear();
         _directionRotations.Clear();
         _gazewalkangles.Clear();
+        _locomotionSpeed.Clear();
+        _EWMA_LeftSpeed.Clear();
+        _EWMA_RightSpeed.Clear();
     }
 
     float GetHorizontalSpeed(Transform trans, Vector3 velocity)
@@ -583,6 +603,9 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                     _leftlegspeed.Add(smoothLocomotion.leftFoot.HorizontalSpeed);
                     _rightlegspeed.Add(smoothLocomotion.rightFoot.HorizontalSpeed);
                     _hipspeed.Add(GetHorizontalSpeed(smoothLocomotion.hip, smoothLocomotion.HipVelocity));
+                    _locomotionSpeed.Add(smoothLocomotion.currentLocomotionSpeed);
+                    _EWMA_LeftSpeed.Add(smoothLocomotion.EWMA_LeftSpeed);
+                    _EWMA_RightSpeed.Add(smoothLocomotion.EWMA_RightSpeed);
                 }    
             }
             //if (_lastsample > 5) // end fast for testing
