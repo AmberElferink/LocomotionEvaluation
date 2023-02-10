@@ -122,7 +122,12 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
 
     public void StartLogCurvedWalking(Destination d)
     {
+        if(!_masterlog)
         StartMasterLog("CW");
+        else
+        {
+            
+        }
         _timeStart = Time.time;
         _curvedWalking = true;
         _stopPos = Vector3.negativeInfinity;
@@ -131,15 +136,18 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
     }
     public void StopLogCurvedWalking(Destination d)
     {
-        _curvedWalking = false;
-        var ComplTime = Time.time - _timeStart;
-        var values = new List<string>
+        if(_curvedWalking)
         {
-            "" + ComplTime,
-            "" + _numInterr
-        };
-        WriteToCSV("CW", values, 3);
-        StopMasterLog();
+            _curvedWalking = false;
+            var ComplTime = Time.time - _timeStart;
+            var values = new List<string>
+            {
+                "" + ComplTime,
+                "" + _numInterr
+            };
+                WriteToCSV("CW", values, 3);
+                StopMasterLog();
+        }
     }
 
     internal void StartLogStair(Destination d)
