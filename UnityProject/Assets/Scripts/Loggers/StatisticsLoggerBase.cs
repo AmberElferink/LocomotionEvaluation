@@ -11,6 +11,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using PrattiToolkit;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 
 public enum PathDevAxis
@@ -122,7 +125,9 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
             if (_masterlog)
                 StopMasterLog();
             Application.Quit();
+#if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
+#endif
         }
     }
 

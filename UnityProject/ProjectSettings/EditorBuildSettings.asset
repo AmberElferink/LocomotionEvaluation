@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Scenario5.unity
     guid: 01cf8199106f98e438ebff5820cf0591
+  - enabled: 1
+    path: Assets/Scenes/TrainingEmpty.unity
+    guid: becf35027fda0ae4880dee4a86fb5ef5
   m_configObjects: {}
