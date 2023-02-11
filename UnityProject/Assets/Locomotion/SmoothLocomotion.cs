@@ -148,7 +148,7 @@ public class SmoothLocomotion : MonoBehaviour
                 localVelocity = (tracker.localPosition - prevPos) / Time.deltaTime;
 
                 //average for a more stable orientation. The non averaged velocity is used for motion though.
-                averageLocalVelocity = Vector3.Lerp(averageLocalVelocity, localVelocity, 0.3f); // average jitters out weighing the average 1/3 and the new velocity 2/3.
+                averageLocalVelocity = SmoothLocomotion.EWMA(averageLocalVelocity, localVelocity, 0.8f); // average jitters out
 
                 rotVelocity = (tracker.rotation.eulerAngles - prevRot);
             }
@@ -312,7 +312,7 @@ public class SmoothLocomotion : MonoBehaviour
         {
             case SpeedController.StandingFootVel:
                 if (LeadingFoot != null && LeadingFoot.isStanding)
-                    movement = -displacement;
+                    movement = -displacement; // not different from lifted foot, since orientation takes care of it.
                 break;
             case SpeedController.LiftedFootVel:
                 if (LeadingFoot != null && LeadingFoot.isLifted)
@@ -357,10 +357,6 @@ public class SmoothLocomotion : MonoBehaviour
         // rotate this delta based on the correct controllerType
         switch (controllerType)
         {
-            default:
-            case OrientationController.Head:
-            case OrientationController.Roomscale:
-                return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
             case OrientationController.Hip:
                 return Quaternion.AngleAxis(hip.rotation.eulerAngles.y, Vector3.up);
             case OrientationController.AverageShoes: // average of both shoes
@@ -371,13 +367,23 @@ public class SmoothLocomotion : MonoBehaviour
             case OrientationController.RightShoe:
                 return rightFoot.footTransform.rotation;
             case OrientationController.StandingFootVelocity:
-            case OrientationController.LiftedFootVelocity:
                 //this return is only used for the green ring. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
                 if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f)
                     return Quaternion.LookRotation(Vector3.ProjectOnPlane(-LeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
                 else
+                    // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not be moving anyway.
+                    return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
+            case OrientationController.LiftedFootVelocity:
+                //this return is used for the green ring and direction of motion. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
+                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+                    return Quaternion.LookRotation(Vector3.ProjectOnPlane(LeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
+                else
                     // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not move anyway.
                     return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
+            case OrientationController.Head:
+            case OrientationController.Roomscale:
+            default:
+                return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
         }
 
     }
@@ -498,9 +504,16 @@ public class SmoothLocomotion : MonoBehaviour
     }
 
     // Exponentially Weighted Moving Average. Without bias correction, since all values this is used on start at 0 anyway.
-    float EWMA(float prevAverage, float newValue, float rho)
+    static float EWMA(float prevAverage, float newValue, float rho)
     {
         float newAverage = rho * prevAverage + (1 - rho) * newValue;
+        return newAverage;
+    }
+
+    // Exponentially Weighted Moving Average. Without bias correction, since all values this is used on start at 0 anyway.
+    static Vector3 EWMA(Vector3 prevAverage, Vector3 newValue, float rho)
+    {
+        Vector3 newAverage = rho * prevAverage + (1 - rho) * newValue;
         return newAverage;
     }
 
