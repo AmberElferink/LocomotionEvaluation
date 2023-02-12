@@ -1,10 +1,9 @@
 # Changing initial tracker orientation
-All trackers should already be in correct default orientation. 
-First make sure the trackers are correctly set-up in SteamVR and the calibration files.
-- Turn on the trackers
+All trackers should already be in correct default orientation after doing the following settings. 
+First make sure the trackers are correctly set-up in SteamVR and the calibration files:
 - Open SteamVR Settings > Controllers > Manage Trackers
 - Set "Waist" for the controller meant on the hip. "Left foot" for the one meant on the foot, and "Right foot" for the one on the right foot.
-- If you don't know which tracker is what, turn them off/on one by one.
+- If you don't know which tracker is what, turn them on/off one by one to see this.
 - Open This projects StreamingAssets > tracker_config.txt file. Set each ID according to the trackers in the Manage Trackers SteamVR menu.
 - If this is all set correctly, the application should automatically correctly position the trackers.
 
