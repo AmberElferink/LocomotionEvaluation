@@ -360,8 +360,8 @@ public class SmoothLocomotion : MonoBehaviour
             case OrientationController.Hip:
                 return Quaternion.AngleAxis(hip.rotation.eulerAngles.y, Vector3.up);
             case OrientationController.AverageShoes: // average of both shoes
-                Quaternion average = Quaternion.Lerp(leftFoot.footTransform.rotation, rightFoot.footTransform.rotation, 0.5f);
-                return Quaternion.AngleAxis(average.eulerAngles.y, Vector3.up);
+                Vector3 averageDirection = (leftFoot.FrontDirection + rightFoot.FrontDirection).normalized;
+                return Quaternion.LookRotation(Vector3.ProjectOnPlane(averageDirection, Vector3.up), Vector3.up);
             case OrientationController.LeftShoe:
                 return leftFoot.footTransform.rotation;
             case OrientationController.RightShoe:
