@@ -29,12 +29,6 @@ public class SmoothLocomotion : MonoBehaviour
     {
         [System.NonSerialized]
         public Transform sphere;
-        public enum State
-        {
-            Standing,
-            Lifted,
-            None
-        }
 
         public float calibratedThreshold = 0; // when to say this shoe is lifted;
 
@@ -43,14 +37,17 @@ public class SmoothLocomotion : MonoBehaviour
         public Foot(bool isRightFoot)
         {
             isRight = isRightFoot;
-
-
         }
+
+        public Foot otherfoot; //needs to be set in Start
 
         [System.NonSerialized]
         public bool backFoot = false;
-        [System.NonSerialized]
-        public State state;
+
+        /// note, easy to reach threshold means it can be both standing and lifted at once
+        public bool isLifted_EasyThreshold = false;
+        /// note, easy to reach threshold means it can be both standing and lifted at once
+        public bool isStanding_EasyThreshold = false;
         [System.NonSerialized]
         private Vector3 localVelocity; // this is the local velocity (without the player world velocity, which is also effected by the locomotion)
         [System.NonSerialized]
@@ -81,22 +78,43 @@ public class SmoothLocomotion : MonoBehaviour
             }
         }
 
+
+
         //positive speed for moving forwards, negative speed for moving backwards wrt shoe orientation
         public float HorizontalSpeed
         {
             get
             {
-                if (Vector3.Dot(FrontDirection, Velocity) > 0.0f)
+                    if (Vector3.Dot(FrontDirection, Velocity) > 0.0f)
+                    {
+                        return Vector3.ProjectOnPlane(Velocity, Vector3.up).magnitude;
+                    }
+                    else
+                        return -Vector3.ProjectOnPlane(Velocity, Vector3.up).magnitude;
+                
+               
+            }
+        }
+
+        //includes velocity compensation for the lifted foot being driven by the standing shoe
+        public Vector3 Velocity
+        {
+            get
+            {
+                Vector3 result = rawVelocity;
+
+                // if only one foot is lifted, the other is driving that one, so the velocity of the driving shoe shoeld be added in negative.
+                if(this.isLifted_EasyThreshold && !otherfoot.isLifted_EasyThreshold)
                 {
-                    return Vector3.ProjectOnPlane(Velocity, Vector3.up).magnitude;
+                    result = rawVelocity - otherfoot.rawVelocity;
                 }
-                else
-                    return -Vector3.ProjectOnPlane(Velocity, Vector3.up).magnitude;
+                return result;
             }
         }
 
         //local velocity of the foot
-        public Vector3 Velocity
+        // Note, using this for the lifted foot gives a lower velocity than you want. Since the standing foot drives, the lifted foot has the same velocity offset. So for the lifted foot, that standing foot velocity should be added. This is done in HorizontalSpeed.
+        public Vector3 rawVelocity
         {
             get
             {
@@ -157,32 +175,38 @@ public class SmoothLocomotion : MonoBehaviour
         }
 
         // sets if it is lifted or standing based on a height threshold. 
-        public State UpdateState(SpeedController speedType, float liftedFootThresh, float standingFootThresh)
+        public void UpdateState(SpeedController speedType, float liftedFootThresh, float standingFootThresh)
         {
             this.speedType = speedType;
-            if (speedType == SpeedController.StandingFootVel && height < calibratedThreshold + standingFootThresh)
+            if (height < calibratedThreshold + standingFootThresh)
             {
                 if (-tracker.localRotation.eulerAngles.z <= 1) // toe is down, heel is up
-                    state = State.Standing;
+                    isStanding_EasyThreshold = true;
             }
-            else if (speedType == SpeedController.LiftedFootVel && height > calibratedThreshold + liftedFootThresh)
+            else if (height > calibratedThreshold + liftedFootThresh)
             {
-                state = State.Lifted;
+                isLifted_EasyThreshold = true; // currently never happens if not SpeedController LiftedFoot
             }
-            else
-                state = State.None;
-
-            return state;
         }
 
-        public bool isStanding
+
+        //isStanding is not as black and white as it sounds.
+        //sometimes you want a really easy to reach threshold for more sensitive orientation for example.
+        //other times you want a foot to be lifted.
+        //This state will only be used for orientation determining.
+
+        //Note: Since the threshold fluctuates depending on which orientationcontroller is selected, don't use this in general (only for determining the leadingfoot for orientation and such).
+        public bool isStandingOrientationDetermining
         {
-            get { return state == State.Standing; }
+            get { return speedType == SpeedController.StandingFootVel && isStanding_EasyThreshold ; }
         }
 
-        public bool isLifted
+
+
+        // This output depends on which orentationController is selected.
+        public bool isLiftedOrientationDetermining
         {
-            get { return state == State.Lifted; }
+            get { return speedType == SpeedController.LiftedFootVel && isLifted_EasyThreshold; }
         }
 
         public void Calibrate()
@@ -199,14 +223,19 @@ public class SmoothLocomotion : MonoBehaviour
                 material.SetColor("_Color", Color.grey);
             else
             {
-                if (state == State.Standing)
+                if (isLifted_EasyThreshold && isStanding_EasyThreshold)
                 {
                     material.color = Color.green;
                 }
-                if (state == State.Lifted)
+                else if (isLifted_EasyThreshold)
+                {
+                    material.color = Color.yellow;
+                }
+                else if (isStanding_EasyThreshold)
                 {
                     material.color = Color.blue;
                 }
+
             }
         }
 
@@ -311,11 +340,11 @@ public class SmoothLocomotion : MonoBehaviour
         switch (speedType)
         {
             case SpeedController.StandingFootVel:
-                if (LeadingFoot != null && LeadingFoot.isStanding)
+                if (LeadingFoot != null && LeadingFoot.isStandingOrientationDetermining)
                     movement = -displacement; // not different from lifted foot, since orientation takes care of it.
                 break;
             case SpeedController.LiftedFootVel:
-                if (LeadingFoot != null && LeadingFoot.isLifted)
+                if (LeadingFoot != null && LeadingFoot.isLiftedOrientationDetermining)
                     movement = displacement;                    
                 break;
             case SpeedController.RoomscaleOnly:
@@ -393,26 +422,26 @@ public class SmoothLocomotion : MonoBehaviour
     {
         if (controllerType == OrientationController.LiftedFootVelocity)
         {
-            if (leftFoot.isLifted && rightFoot.isLifted)
+            if (leftFoot.isLiftedOrientationDetermining && rightFoot.isLiftedOrientationDetermining)
             {
                 Debug.Log("Both feet are lifted. Please calibrate since that is not true for normal operation.");
             }
-            else if (!leftFoot.isLifted && !rightFoot.isLifted)
+            else if (!leftFoot.isLiftedOrientationDetermining && !rightFoot.isLiftedOrientationDetermining)
             {
                 LeadingFoot = null;
             }
-            else if (leftFoot.isLifted)
+            else if (leftFoot.isLiftedOrientationDetermining)
             {
                 LeadingFoot = leftFoot;
             }
-            else if (rightFoot.isLifted)
+            else if (rightFoot.isLiftedOrientationDetermining)
             {
                 LeadingFoot = rightFoot;
             }
         }
         else // for all other orientation settings, use the standing foot velocity.
         {
-            if (leftFoot.isStanding && rightFoot.isStanding)
+            if (leftFoot.isStandingOrientationDetermining && rightFoot.isStandingOrientationDetermining)
             {
                 //Take the back foot
 
@@ -427,15 +456,15 @@ public class SmoothLocomotion : MonoBehaviour
                     LeadingFoot = rightFoot;
                 }
             }
-            else if (!leftFoot.isStanding && !rightFoot.isStanding)
+            else if (!leftFoot.isStandingOrientationDetermining && !rightFoot.isStandingOrientationDetermining)
             {
                 LeadingFoot = null;
             }
-            else if (leftFoot.isStanding)
+            else if (leftFoot.isStandingOrientationDetermining)
             {
                 LeadingFoot = leftFoot;
             }
-            else if (rightFoot.isStanding)
+            else if (rightFoot.isStandingOrientationDetermining)
             {
                 LeadingFoot = rightFoot;
             }
@@ -479,6 +508,9 @@ public class SmoothLocomotion : MonoBehaviour
     {
        leftFoot.sphere = leftFoot.tracker.Find("Sphere");
        rightFoot.sphere = rightFoot.tracker.Find("Sphere");
+        leftFoot.otherfoot = rightFoot;
+        rightFoot.otherfoot = leftFoot;
+
        StartCoroutine(CalibrationAfterSeconds(0.25f));
 
        switch(controllerType)
