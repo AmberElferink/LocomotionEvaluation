@@ -178,12 +178,14 @@ public class SmoothLocomotion : MonoBehaviour
         public void UpdateState(SpeedController speedType, float liftedFootThresh, float standingFootThresh)
         {
             this.speedType = speedType;
+            isStanding_EasyThreshold = false;
+            isLifted_EasyThreshold = false;
             if (height < calibratedThreshold + standingFootThresh)
             {
                 if (-tracker.localRotation.eulerAngles.z <= 1) // toe is down, heel is up
                     isStanding_EasyThreshold = true;
             }
-            else if (height > calibratedThreshold + liftedFootThresh)
+            if (height > calibratedThreshold + liftedFootThresh)
             {
                 isLifted_EasyThreshold = true; // currently never happens if not SpeedController LiftedFoot
             }
@@ -219,23 +221,17 @@ public class SmoothLocomotion : MonoBehaviour
         {
 
             Material material = sphere.gameObject.GetComponent<Renderer>().material;
-            if (!isLeading)
-                material.SetColor("_Color", Color.grey);
-            else
+            if (isLifted_EasyThreshold && isStanding_EasyThreshold)
             {
-                if (isLifted_EasyThreshold && isStanding_EasyThreshold)
-                {
-                    material.color = Color.green;
-                }
-                else if (isLifted_EasyThreshold)
-                {
-                    material.color = Color.yellow;
-                }
-                else if (isStanding_EasyThreshold)
-                {
-                    material.color = Color.blue;
-                }
-
+                material.color = Color.green;
+            }
+            else if (isLifted_EasyThreshold)
+            {
+                material.color = Color.yellow;
+            }
+            else if (isStanding_EasyThreshold)
+            {
+                material.color = Color.blue;
             }
         }
 
@@ -582,6 +578,8 @@ public class SmoothLocomotion : MonoBehaviour
         rightFoot.CalcVelocities();
 
         SetLeadingShoe();
+        leftFoot.SetFootColor(true);
+        rightFoot.SetFootColor(true);
 
         Quaternion orientation = GetMoveOrientation(controllerType);
         directionIndicator.transform.localRotation = orientation;
