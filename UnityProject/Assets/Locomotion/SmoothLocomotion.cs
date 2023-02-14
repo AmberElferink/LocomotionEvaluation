@@ -317,7 +317,8 @@ public class SmoothLocomotion : MonoBehaviour
     {
         StandingFootVel,
         LiftedFootVel,
-        RoomscaleOnly
+        RoomscaleOnly,
+        Other
     }
 
 
@@ -333,17 +334,17 @@ public class SmoothLocomotion : MonoBehaviour
         if (LeadingFoot != null)
             displacement = Vector3.ProjectOnPlane(currentLocomotionSpeed * LeadingFoot.Velocity.normalized, Vector3.up) * Time.fixedDeltaTime;
 
-        switch (speedType)
+        switch (controllerType)
         {
-            case SpeedController.StandingFootVel:
+            case OrientationController.StandingFootVelocity:
                 if (LeadingFoot != null && LeadingFoot.isStandingOrientationDetermining)
                     movement = -displacement; // not different from lifted foot, since orientation takes care of it.
                 break;
-            case SpeedController.LiftedFootVel:
+            case OrientationController.LiftedFootVelocity:
                 if (LeadingFoot != null && LeadingFoot.isLiftedOrientationDetermining)
                     movement = displacement;                    
                 break;
-            case SpeedController.RoomscaleOnly:
+            case OrientationController.Roomscale:
                     movement = Vector3.zero;
                 break;
             default:
@@ -554,6 +555,7 @@ public class SmoothLocomotion : MonoBehaviour
         EWMA_RightSpeed = EWMA(EWMA_RightSpeed, Math.Abs(rightFoot.HorizontalSpeed), rho);
         EWMA_LeftSpeed = EWMA(EWMA_LeftSpeed, Math.Abs(leftFoot.HorizontalSpeed), rho);
         currentLocomotionSpeed = (EWMA_LeftSpeed + EWMA_RightSpeed) / 4; //take the average: (a + b)/2, divided by 2 an extra time (since you abs gives both the foot driven backwards and the foot going forwards, which would result in double the speed).
+        currentLocomotionSpeed = currentLocomotionSpeed * speed;
     }
 
     // In here, the Locom
