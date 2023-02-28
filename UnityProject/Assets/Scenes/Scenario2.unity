@@ -40475,7 +40475,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _getLocomotionFromConfigFile: 0
-  _locomotion: 3
+  _locomotion: 1
   _getAutoFreezableFromConfigFile: 1
   _autoFreezable: 1
   _playerControllers:

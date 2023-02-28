@@ -15,9 +15,6 @@ using UnityEditor;
 // If you want to move Player, create a child object under player
 public class SmoothLocomotion : MonoBehaviour
 {
-
-
-
     static float toRadians(float degrees)
     {
         return (degrees * Mathf.PI) / 180;
@@ -49,9 +46,9 @@ public class SmoothLocomotion : MonoBehaviour
             get { return Vector3.Dot(FrontDirection, Velocity) > 0.0f; }
         }
 
-        /// note, easy to reach threshold means it can be both standing and lifted at once
+        // note, easy to reach threshold means it can be both standing and lifted at once
         public bool isLifted_EasyThreshold = false;
-        /// note, easy to reach threshold means it can be both standing and lifted at once
+        // note, easy to reach threshold means it can be both standing and lifted at once
         public bool isStanding_EasyThreshold = false;
         [System.NonSerialized]
         private Vector3 localVelocity; // this is the local velocity (without the player world velocity, which is also effected by the locomotion)
@@ -203,7 +200,7 @@ public class SmoothLocomotion : MonoBehaviour
         //Note: Since the threshold fluctuates depending on which orientationcontroller is selected, don't use this in general (only for determining the leadingfoot for orientation and such).
         public bool isStandingOrientationDetermining
         {
-            get { return speedType == SpeedController.StandingFootVel && isStanding_EasyThreshold ; }
+            get { return speedType == SpeedController.StandingFootVel && isStanding_EasyThreshold; }
         }
 
 
@@ -217,10 +214,9 @@ public class SmoothLocomotion : MonoBehaviour
         public void Calibrate()
         {
             calibratedThreshold = tracker.position.y;
-            //tracker.gameObject.GetComponent<Calibrated_tracked_object>().Calibrate();
         }
 
-        public void SetFootColor(bool isLeading)
+        public void SetFootColor()
         {
 
             Material material = sphere.gameObject.GetComponent<Renderer>().material;
@@ -257,14 +253,13 @@ public class SmoothLocomotion : MonoBehaviour
 
     private Foot _lFoot; // this foot is the one that determines the velocity. It switches between left and right (and changes in this object also change the leftfoot/rightfoot assigned to it)
 
-    //0.03 extra
     public float standingThres = 0.03f; //standingthresh must be < liftedthresh
     public float liftedThres = 0.05f; // it registers being lifted a bit higher than standing on the foot. 
 
     public OrientationController controllerType = OrientationController.Hip;
     private SpeedController speedType = SpeedController.LiftedFootVel; //overwrite in Start
 
-    public float speed = 1; // for scaling output speed 
+    public float speed = 1; // for scaling output speed (set in editor)
 
 
     private Vector3 prevHeadPos = Vector3.zero;
@@ -275,10 +270,6 @@ public class SmoothLocomotion : MonoBehaviour
 
     public float EWMA_RightSpeed { get; private set; } = 0;
     public float EWMA_LeftSpeed { get; private set; } = 0;
-    public float EWMA_StandingRightSpeed { get; private set; } = 0;
-    public float EWMA_StandingLeftSpeed { get; private set; } = 0;
-    public float averageStandingSpeed {get; private set;} = 0;
-    public float averageLiftedSpeed { get; private set;} = 0;
     public float currentLocomotionSpeed {get; private set;} = 0;
 
 
@@ -290,15 +281,8 @@ public class SmoothLocomotion : MonoBehaviour
         {
             if (value == null || _lFoot == null || _lFoot.isRight != value.isRight) // foot switch
             {
-                if (_lFoot != null)
-                    _lFoot.SetFootColor(false);
 
                 _lFoot = value;
-                if (_lFoot != null)
-                {
-                    _lFoot.SetFootColor(true);
-                    _lFoot.averageLocalVelocity = Vector3.zero;
-                }
             }
         }
     }
@@ -330,14 +314,10 @@ public class SmoothLocomotion : MonoBehaviour
 
     // Updates based on the controllertype with usually the default displacement and the given orientation.
     // In some controllertypes, it overrides those, since they are defined in the controllertype.
-    Vector3 GetMovement(Quaternion orientation)
+    Vector3 GetMovement(Quaternion orientation, float currentLocomotionSpeed)
     {
         Vector3 movement = Vector3.zero;
         Vector3 displacement = Vector3.zero;
-
-        //Leadingfoot depends on the SpeedController as well (Standing/Lifted), so it automatically the correct foot.
-        if (LeadingFoot != null)
-            displacement = Vector3.ProjectOnPlane(currentLocomotionSpeed * LeadingFoot.Velocity.normalized, Vector3.up) * Time.fixedDeltaTime;
 
         switch (controllerType)
         {
@@ -345,31 +325,14 @@ public class SmoothLocomotion : MonoBehaviour
                     movement = Vector3.zero;
                 break;
             default:
-                    // when you do this, it becomes pure head oriented input. The shoes movement direction have no influence.
                     Vector3 reorientedDisplacement = orientation * new Vector3(0, 0, currentLocomotionSpeed * Time.fixedDeltaTime);
                     movement = reorientedDisplacement;
-
-
-                    // when you do this, it becomes a hybrid between feet and head input (you rotate the feet input towards the head).
-                    // This is what happens normally when you would send oriented joystick data to VR without correcting for headset position (it's wrong).
-                    //Vector3 reorientedDisplacement = orientation * -displacement;
-                    //transform.position += reorientedDisplacement;
-
-
-                    // for controller:
-                    // displacement = new Vector3(input.axis.x, 0, input.axis.y) * speed * Time.deltaTime;
-                    //Vector3 reorientedDisplacement = orientation * -displacement;
-                    //transform.position += reorientedDisplacement;
                 break;
         }
         movement.y -= 9.81f * Time.deltaTime; //gravity
 
 
         return movement;
-
-        //alternative way to do input transform (example based on head)
-        //Vector3 direction = headTransform.TransformDirection(new Vector3(input.axis.x, 0, input.axis.y));
-        //transform.position += speed * Time.deltaTime * Vector3.ProjectOnPlane(direction, Vector3.up);;
     }
 
 
@@ -399,7 +362,7 @@ public class SmoothLocomotion : MonoBehaviour
                     return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
             case OrientationController.LiftedFootVelocity:
                 //this return is used for the green ring and direction of motion. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
-                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f && LeadingFoot.MovingForwards)
+                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f) //&& LeadingFoot.MovingForwards
                     return Quaternion.LookRotation(Vector3.ProjectOnPlane(LeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
                 else
                     // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not move anyway.
@@ -439,7 +402,6 @@ public class SmoothLocomotion : MonoBehaviour
             if (leftFoot.isStandingOrientationDetermining && rightFoot.isStandingOrientationDetermining)
             {
                 //Take the back foot
-
                 if (leftFoot.backFoot)
                 {
                     //Debug.Log("leftFootLead");
@@ -556,8 +518,8 @@ public class SmoothLocomotion : MonoBehaviour
         currentLocomotionSpeed = currentLocomotionSpeed * speed;
     }
 
-    // In here, the Locom
-    // these are needed mostly for data collection. Note, these are in local space, just like the shoes are logged in local space!
+
+    // these are needed mostly for data collection
     void CalcVelocities()
     {
         HeadVelocity = (head.localPosition - prevHeadPos) / Time.fixedDeltaTime;
@@ -578,15 +540,15 @@ public class SmoothLocomotion : MonoBehaviour
         rightFoot.CalcVelocities();
 
         SetLeadingShoe();
-        leftFoot.SetFootColor(true);
-        rightFoot.SetFootColor(true);
+        leftFoot.SetFootColor();
+        rightFoot.SetFootColor();
 
         Quaternion orientation = GetMoveOrientation(controllerType);
         directionIndicator.transform.localRotation = orientation;
 
         CalcLocomotionSpeed();
 
-        player.Move(GetMovement(orientation));
+        player.Move(GetMovement(orientation, currentLocomotionSpeed));
 
         CalcVelocities();
     }
@@ -609,6 +571,8 @@ public class SmoothLocomotion : MonoBehaviour
         }
     }
 
+
+    // this capsule contains the player body. It is important for the Charactercontroller (unity object), which helps automate controlling player movement.
     void CapsuleFollowHeadset()
     {
         player.height = head.position.y + additionalHeight;
