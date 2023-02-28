@@ -44,6 +44,11 @@ public class SmoothLocomotion : MonoBehaviour
         [System.NonSerialized]
         public bool backFoot = false;
 
+        public bool MovingForwards
+        {
+            get { return Vector3.Dot(FrontDirection, Velocity) > 0.0f; }
+        }
+
         /// note, easy to reach threshold means it can be both standing and lifted at once
         public bool isLifted_EasyThreshold = false;
         /// note, easy to reach threshold means it can be both standing and lifted at once
@@ -85,14 +90,12 @@ public class SmoothLocomotion : MonoBehaviour
         {
             get
             {
-                    if (Vector3.Dot(FrontDirection, Velocity) > 0.0f)
+                    if (MovingForwards)
                     {
                         return Vector3.ProjectOnPlane(Velocity, Vector3.up).magnitude;
                     }
                     else
-                        return -Vector3.ProjectOnPlane(Velocity, Vector3.up).magnitude;
-                
-               
+                        return -Vector3.ProjectOnPlane(Velocity, Vector3.up).magnitude;  
             }
         }
 
@@ -233,6 +236,8 @@ public class SmoothLocomotion : MonoBehaviour
             {
                 material.color = Color.blue;
             }
+            if (!MovingForwards)
+                material.color = Color.red;
         }
 
 
@@ -336,14 +341,6 @@ public class SmoothLocomotion : MonoBehaviour
 
         switch (controllerType)
         {
-            case OrientationController.StandingFootVelocity:
-                if (LeadingFoot != null && LeadingFoot.isStandingOrientationDetermining)
-                    movement = -displacement; // not different from lifted foot, since orientation takes care of it.
-                break;
-            case OrientationController.LiftedFootVelocity:
-                if (LeadingFoot != null && LeadingFoot.isLiftedOrientationDetermining)
-                    movement = displacement;                    
-                break;
             case OrientationController.Roomscale:
                     movement = Vector3.zero;
                 break;
@@ -380,6 +377,7 @@ public class SmoothLocomotion : MonoBehaviour
 
     Quaternion GetMoveOrientation(OrientationController controllerType)
     {
+
         // rotate this delta based on the correct controllerType
         switch (controllerType)
         {
@@ -394,14 +392,14 @@ public class SmoothLocomotion : MonoBehaviour
                 return rightFoot.footTransform.rotation;
             case OrientationController.StandingFootVelocity:
                 //this return is only used for the green ring. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
-                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f )
                     return Quaternion.LookRotation(Vector3.ProjectOnPlane(-LeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
                 else
                     // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not be moving anyway.
                     return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
             case OrientationController.LiftedFootVelocity:
                 //this return is used for the green ring and direction of motion. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
-                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f && LeadingFoot.MovingForwards)
                     return Quaternion.LookRotation(Vector3.ProjectOnPlane(LeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
                 else
                     // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not move anyway.
