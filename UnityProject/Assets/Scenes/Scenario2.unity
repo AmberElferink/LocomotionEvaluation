@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.48397276, g: 0.5757237, b: 0.68019956, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -88,7 +88,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
-  m_LightingDataAsset: {fileID: 112000000, guid: d808c9626ecb83c4b87c8cdc7da3bf6e,
+  m_LightingDataAsset: {fileID: 112000000, guid: 9a81a40debd77164a9a07fd61e46ff45,
     type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -246,6 +246,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 747482275}
+        m_MethodName: LostTracking
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: RF
+          m_BoolArgument: 0
+        m_CallState: 2
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 747482275}
+        m_MethodName: ReconnectTracking
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: RF
+          m_BoolArgument: 0
+        m_CallState: 2
   index: 5
   origin: {fileID: 0}
 --- !u!1001 &17160391
@@ -29230,6 +29258,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 5
   origin: {fileID: 0}
 --- !u!114 &397341036
@@ -29244,6 +29278,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 5
   origin: {fileID: 0}
 --- !u!114 &397341037
@@ -29258,6 +29298,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 0
   origin: {fileID: 0}
 --- !u!114 &397341038
@@ -38566,6 +38612,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 5
   origin: {fileID: 0}
 --- !u!114 &598273640
@@ -38580,6 +38632,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 5
   origin: {fileID: 0}
 --- !u!114 &598273641
@@ -38594,6 +38652,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 0
   origin: {fileID: 0}
 --- !u!1001 &620442264
@@ -39336,6 +39400,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 5
   origin: {fileID: 0}
 --- !u!114 &624342268
@@ -39350,6 +39420,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 5
   origin: {fileID: 0}
 --- !u!114 &624342269
@@ -39364,6 +39440,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 0
   origin: {fileID: 0}
 --- !u!43 &633515763
@@ -39372,7 +39454,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh28750
+  m_Name: pb_Mesh36018
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -40475,7 +40557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _getLocomotionFromConfigFile: 0
-  _locomotion: 1
+  _locomotion: 0
   _getAutoFreezableFromConfigFile: 1
   _autoFreezable: 1
   _playerControllers:
@@ -44044,6 +44126,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 747482275}
+        m_MethodName: LostTracking
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: LF
+          m_BoolArgument: 0
+        m_CallState: 2
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 747482275}
+        m_MethodName: ReconnectTracking
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: LF
+          m_BoolArgument: 0
+        m_CallState: 2
   index: 5
   origin: {fileID: 0}
 --- !u!114 &806374805 stripped
@@ -44158,7 +44268,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh28868
+  m_Name: pb_Mesh36136
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -44169,8 +44279,8 @@ Mesh:
     firstVertex: 0
     vertexCount: 24
     localAABB:
-      m_Center: {x: 0, y: 0, z: 0}
-      m_Extent: {x: 0, y: 0, z: 0}
+      m_Center: {x: 7.390625, y: 0.5, z: -4.96875}
+      m_Extent: {x: 7.484375, y: 0.5, z: 5.03125}
   m_Shapes:
     vertices: []
     shapes: []
@@ -44210,9 +44320,9 @@ Mesh:
       format: 0
       dimension: 2
     - stream: 0
-      offset: 0
+      offset: 64
       format: 0
-      dimension: 0
+      dimension: 2
     - stream: 0
       offset: 0
       format: 0
@@ -44245,8 +44355,8 @@ Mesh:
       offset: 0
       format: 0
       dimension: 0
-    m_DataSize: 1536
-    _typelessdata: 0000c0bd000000000000803d00000000000000000000803f000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f0000c03d0000000000006e41000000000000803d00000000000000000000803f000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f00006ec1000000000000c0bd0000803f0000803d00000000000000000000803f000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f0000c03d0000803f00006e410000803f0000803d00000000000000000000803f000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f00006ec10000803f00006e41000000000000803d0000803f000000000000000000000000000000000000803f000080bf0000803f0000803f0000803f0000803f0000803d0000000000006e4100000000000020c10000803f000000000000000000000000000000000000803f000080bf0000803f0000803f0000803f0000803f000020c10000000000006e410000803f0000803d0000803f000000000000000000000000000000000000803f000080bf0000803f0000803f0000803f0000803f0000803d0000803f00006e410000803f000020c10000803f000000000000000000000000000000000000803f000080bf0000803f0000803f0000803f0000803f000020c10000803f00006e4100000000000020c10000000000000000000080bf0000803f0000000000000000000080bf0000803f0000803f0000803f0000803f00006e41000000000000c0bd00000000000020c10000000000000000000080bf0000803f0000000000000000000080bf0000803f0000803f0000803f0000803f0000c0bd0000000000006e410000803f000020c10000000000000000000080bf0000803f0000000000000000000080bf0000803f0000803f0000803f0000803f00006e410000803f0000c0bd0000803f000020c10000000000000000000080bf0000803f0000000000000000000080bf0000803f0000803f0000803f0000803f0000c0bd0000803f0000c0bd00000000000020c1000080bf00000000000000000000000000000000000080bf000080bf0000803f0000803f0000803f0000803f00002041000000000000c0bd000000000000803d000080bf00000000000000000000000000000000000080bf000080bf0000803f0000803f0000803f0000803f000080bd000000000000c0bd0000803f000020c1000080bf00000000000000000000000000000000000080bf000080bf0000803f0000803f0000803f0000803f000020410000803f0000c0bd0000803f0000803d000080bf00000000000000000000000000000000000080bf000080bf0000803f0000803f0000803f0000803f000080bd0000803f0000c0bd0000803f0000803d000000000000803f000000000000803f0000000000000000000080bf0000803f0000803f0000803f0000803f0000c0bd0000803d00006e410000803f0000803d000000000000803f000000000000803f0000000000000000000080bf0000803f0000803f0000803f0000803f00006e410000803d0000c0bd0000803f000020c1000000000000803f000000000000803f0000000000000000000080bf0000803f0000803f0000803f0000803f0000c0bd000020c100006e410000803f000020c1000000000000803f000000000000803f0000000000000000000080bf0000803f0000803f0000803f0000803f00006e41000020c10000c0bd00000000000020c100000000000080bf00000000000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f0000c03d000020c100006e4100000000000020c100000000000080bf00000000000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f00006ec1000020c10000c0bd000000000000803d00000000000080bf00000000000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f0000c03d0000803d00006e41000000000000803d00000000000080bf00000000000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f00006ec10000803d
+    m_DataSize: 1728
+    _typelessdata: 0000c0bd000000000000803d00000000000000000000803f000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f0000c03d000000001815833b6f12833b00006e41000000000000803d00000000000000000000803f000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f00006ec1000000001eb3193f6f12833b0000c0bd0000803f0000803d00000000000000000000803f000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f0000c03d0000803f6f12833bfa93333d00006e410000803f0000803d00000000000000000000803f000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f00006ec10000803f18b3193ffa93333d00006e41000000000000803d0000803f000000000000000000000000000000000000803f000080bf0000803f0000803f0000803f0000803f0000803d000000006f12833ba602723f00006e4100000000000020c10000803f000000000000000000000000000000000000803f000080bf0000803f0000803f0000803f0000803f000020c100000000c250cf3ea602723f00006e410000803f0000803d0000803f000000000000000000000000000000000000803f000080bf0000803f0000803f0000803f0000803f0000803d0000803ffa12833bc1357c3f00006e410000803f000020c10000803f000000000000000000000000000000000000803f000080bf0000803f0000803f0000803f0000803f000020c10000803fc450cf3ec1357c3f00006e4100000000000020c10000000000000000000080bf0000803f0000000000000000000080bf0000803f0000803f0000803f0000803f00006e41000000001815833b48f6433d0000c0bd00000000000020c10000000000000000000080bf0000803f0000000000000000000080bf0000803f0000803f0000803f0000803f0000c0bd000000001eb3193f48f6433d00006e410000803f000020c10000000000000000000080bf0000803f0000000000000000000080bf0000803f0000803f0000803f0000803f00006e410000803f6f12833bfa93b33d0000c0bd0000803f000020c10000000000000000000080bf0000803f0000000000000000000080bf0000803f0000803f0000803f0000803f0000c0bd0000803f18b3193ffa93b33d0000c0bd00000000000020c1000080bf00000000000000000000000000000000000080bf000080bf0000803f0000803f0000803f0000803f00002041000000006f12833b67c9663f0000c0bd000000000000803d000080bf00000000000000000000000000000000000080bf000080bf0000803f0000803f0000803f0000803f000080bd00000000c250cf3e67c9663f0000c0bd0000803f000020c1000080bf00000000000000000000000000000000000080bf000080bf0000803f0000803f0000803f0000803f000020410000803ffa12833b81fc703f0000c0bd0000803f0000803d000080bf00000000000000000000000000000000000080bf000080bf0000803f0000803f0000803f0000803f000080bd0000803fc450cf3e81fc703f0000c0bd0000803f0000803d000000000000803f000000000000803f0000000000000000000080bf0000803f0000803f0000803f0000803f0000c0bd0000803d1ab3193fc135fc3e00006e410000803f0000803d000000000000803f000000000000803f0000000000000000000080bf0000803f0000803f0000803f0000803f00006e410000803d6f12833bc135fc3e0000c0bd0000803f000020c1000000000000803f000000000000803f0000000000000000000080bf0000803f0000803f0000803f0000803f0000c0bd000020c11bb3193f21c5bb3d00006e410000803f000020c1000000000000803f000000000000803f0000000000000000000080bf0000803f0000803f0000803f0000803f00006e41000020c14213833b21c5bb3d0000c0bd00000000000020c100000000000080bf00000000000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f0000c03d000020c14213833b0b42fe3e00006e4100000000000020c100000000000080bf00000000000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f00006ec1000020c11bb3193f0b42fe3e0000c0bd000000000000803d00000000000080bf00000000000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f0000c03d0000803d6f12833b42c3653f00006e41000000000000803d00000000000080bf00000000000080bf0000000000000000000080bf0000803f0000803f0000803f0000803f00006ec10000803d1ab3193f42c3653f
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
@@ -45186,6 +45296,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 5
   origin: {fileID: 0}
 --- !u!114 &894432671
@@ -45200,6 +45316,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 5
   origin: {fileID: 0}
 --- !u!114 &894432672
@@ -45214,6 +45336,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 0
   origin: {fileID: 0}
 --- !u!114 &894432673
@@ -45793,7 +45921,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh28738
+  m_Name: pb_Mesh36006
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -47463,7 +47591,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh28450
+  m_Name: pb_Mesh35718
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -49548,6 +49676,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 747482275}
+        m_MethodName: LostTracking
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: HIP
+          m_BoolArgument: 0
+        m_CallState: 2
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 747482275}
+        m_MethodName: ReconnectTracking
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: HIP
+          m_BoolArgument: 0
+        m_CallState: 2
   index: 0
   origin: {fileID: 0}
 --- !u!43 &1540074546
@@ -51382,6 +51538,76 @@ PrefabInstance:
       propertyPath: vertices.Array.data[7].z
       value: -1.7703785
       objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingLoss.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingReconnect.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingLoss.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingLoss.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingLoss.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 747482275}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingLoss.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LostTracking
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingLoss.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingLoss.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: HMD
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingReconnect.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingReconnect.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingReconnect.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 747482275}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingReconnect.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ReconnectTracking
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingReconnect.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087140415887879283, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: onTrackingReconnect.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: HMD
+      objectReference: {fileID: 0}
     - target: {fileID: 4633669089536430723, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -51646,6 +51872,11 @@ PrefabInstance:
         type: 3}
       propertyPath: controllerType
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: speed
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090333792366, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
@@ -61275,6 +61506,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 5
   origin: {fileID: 0}
 --- !u!114 &1976706991
@@ -61289,6 +61526,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 5
   origin: {fileID: 0}
 --- !u!114 &1976706992
@@ -61303,6 +61546,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37c2cf88f7c59f4c8cf5d3812568143, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onTrackingLoss:
+    m_PersistentCalls:
+      m_Calls: []
+  onTrackingReconnect:
+    m_PersistentCalls:
+      m_Calls: []
   index: 0
   origin: {fileID: 0}
 --- !u!114 &1976706993

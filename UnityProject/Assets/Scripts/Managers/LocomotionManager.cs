@@ -112,6 +112,24 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
     public I_UI_HUDController CurrentUIController { get; set; }
 
     public bool TrackersActive { get; private set; }
+    public bool AllTrackersWorking { get; private set; }
+    public List<string> TrackersNotWorking { get; private set; }
+    public void LostTracking(string trackerName)
+    {
+        if (!TrackersNotWorking.Contains(trackerName))
+            TrackersNotWorking.Add(trackerName);
+        AllTrackersWorking = false;
+    }
+
+    public void ReconnectTracking(string trackerName)
+    {
+        if(TrackersNotWorking.Contains(trackerName))
+        {
+            TrackersNotWorking.Remove(trackerName);
+        }
+        if (TrackersNotWorking.Count == 0)
+            AllTrackersWorking = true;
+    }
 
     GetPlayerPos _getPlayerPos;
 
@@ -168,6 +186,9 @@ public class LocomotionManager : UnitySingleton<LocomotionManager>
     void Start()
     {
         InitializeTechnique();
+
+        AllTrackersWorking = true;
+        TrackersNotWorking = new List<string>();
 
         var c = FindObjectOfType<UI_HUDController>();
         Assert.IsNotNull(c);

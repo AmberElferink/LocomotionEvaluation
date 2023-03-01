@@ -96,6 +96,12 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _EWMA_RightSpeed,
         _EWMA_LeftSpeed;
 
+    protected List<bool>
+        _allTrackersWorking;
+
+    protected List<string>
+        _trackersLost;
+
     protected List<object> _locks;
     private List<List<string>> _allValues;
     StringBuilder _singleValueBuilder;
@@ -222,6 +228,9 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _EWMA_RightSpeed = new List<float>();
         _EWMA_LeftSpeed = new List<float>();
         _time = new List<float>();
+
+        _allTrackersWorking = new List<bool>();
+        _trackersLost = new List<string>();
 
         Debug.Log($"Logger {this.name} Initialized");
     }
@@ -470,6 +479,9 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 values.Add("" + _directionRotations[i].x); //targetpositions
                 values.Add("" + _directionRotations[i].y);
                 values.Add("" + _directionRotations[i].z);
+
+                values.Add("" + _allTrackersWorking[i]);
+                values.Add("" + _trackersLost[i]);
             }
             else
             {
@@ -493,6 +505,9 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 values.Add("");
                 values.Add("");
                 values.Add("");
+                values.Add("");
+                values.Add("");
+
                 values.Add("");
                 values.Add("");
             }
@@ -559,6 +574,9 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _locomotionSpeed.Clear();
         _EWMA_LeftSpeed.Clear();
         _EWMA_RightSpeed.Clear();
+
+        _allTrackersWorking.Clear();
+        _trackersLost.Clear();
     }
 
     float GetHorizontalSpeed(Transform trans, Vector3 velocity)
@@ -603,6 +621,14 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 _hippositions.Add(LocomotionManager.Instance.HipTracker.localPosition);
                 _hiprotations.Add(LocomotionManager.Instance.HipTracker.localEulerAngles);
                 _directionRotations.Add(LocomotionManager.Instance.DirectionalTracker.localEulerAngles);
+
+
+                _allTrackersWorking.Add(LocomotionManager.Instance.AllTrackersWorking);
+                string trackerNotWorkingList = "";
+                foreach (string s in LocomotionManager.Instance.TrackersNotWorking)
+                    trackerNotWorkingList += s + ", ";
+                _trackersLost.Add(trackerNotWorkingList);
+
                 if(smoothLocomotion != null)
                 {
                     _leftlegspeed.Add(smoothLocomotion.leftFoot.HorizontalSpeed);

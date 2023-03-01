@@ -6,9 +6,12 @@
 
 using UnityEngine;
 using Valve.VR;
+using UnityEngine.Events;
 
 public class SteamVR_TrackedObject : MonoBehaviour
 {
+	public UnityEvent onTrackingLoss;
+	public UnityEvent onTrackingReconnect;
 	public enum EIndex
 	{
 		None = -1,
@@ -56,10 +59,17 @@ public class SteamVR_TrackedObject : MonoBehaviour
 		if (!poses[i].bDeviceIsConnected)
 			return;
 
+		if (poses[i].eTrackingResult != ETrackingResult.Running_OK)
+			onTrackingLoss.Invoke(); //is more strict than bPoseIsValid
+		else
+			onTrackingReconnect.Invoke();
+
 		if (!poses[i].bPoseIsValid)
 			return;
 
-        isValid = true;
+
+
+		isValid = true;
 
 		var pose = new SteamVR_Utils.RigidTransform(poses[i].mDeviceToAbsoluteTracking);
 

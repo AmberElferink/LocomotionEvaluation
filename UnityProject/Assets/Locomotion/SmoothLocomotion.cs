@@ -314,7 +314,7 @@ public class SmoothLocomotion : MonoBehaviour
 
     // Updates based on the controllertype with usually the default displacement and the given orientation.
     // In some controllertypes, it overrides those, since they are defined in the controllertype.
-    Vector3 GetMovement(Quaternion orientation, float currentLocomotionSpeed)
+    Vector3 MovementDeltaVector(Quaternion orientation, float currentLocomotionSpeed)
     {
         Vector3 movement = Vector3.zero;
         Vector3 displacement = Vector3.zero;
@@ -335,10 +335,8 @@ public class SmoothLocomotion : MonoBehaviour
         return movement;
     }
 
-
-
-
-    Quaternion GetMoveOrientation(OrientationController controllerType)
+    //Outputs the direction quaternion the person should move to
+    Quaternion MoveOrientation(OrientationController controllerType)
     {
 
         // rotate this delta based on the correct controllerType
@@ -362,7 +360,7 @@ public class SmoothLocomotion : MonoBehaviour
                     return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
             case OrientationController.LiftedFootVelocity:
                 //this return is used for the green ring and direction of motion. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
-                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f) //&& LeadingFoot.MovingForwards
+                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f && LeadingFoot.MovingForwards)
                     return Quaternion.LookRotation(Vector3.ProjectOnPlane(LeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
                 else
                     // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not move anyway.
@@ -543,12 +541,12 @@ public class SmoothLocomotion : MonoBehaviour
         leftFoot.SetFootColor();
         rightFoot.SetFootColor();
 
-        Quaternion orientation = GetMoveOrientation(controllerType);
+        Quaternion orientation = MoveOrientation(controllerType);
         directionIndicator.transform.localRotation = orientation;
 
         CalcLocomotionSpeed();
 
-        player.Move(GetMovement(orientation, currentLocomotionSpeed));
+        player.Move(MovementDeltaVector(orientation, currentLocomotionSpeed));
 
         CalcVelocities();
     }
