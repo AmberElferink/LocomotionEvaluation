@@ -274,18 +274,31 @@ public class SmoothLocomotion : MonoBehaviour
 
 
     //Leadingfoot is the one determining the velocity
-    public Foot LeadingFoot
+    public Foot LiftedLeadingFoot
     {
         get { return _lFoot; }
         set
         {
             if (value == null || _lFoot == null || _lFoot.isRight != value.isRight) // foot switch
             {
-
                 _lFoot = value;
             }
         }
     }
+
+    //Leadingfoot is the one determining the velocity
+    public Foot StandingLeadingFoot
+    {
+        get { return _lFoot; }
+        set
+        {
+            if (value == null || _lFoot == null || _lFoot.isRight != value.isRight) // foot switch
+            {
+                _lFoot = value;
+            }
+        }
+    }
+
 
 
 
@@ -353,15 +366,18 @@ public class SmoothLocomotion : MonoBehaviour
                 return rightFoot.footTransform.rotation;
             case OrientationController.StandingFootVelocity:
                 //this return is only used for the green ring. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
-                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f )
-                    return Quaternion.LookRotation(Vector3.ProjectOnPlane(-LeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
+                if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f )
+                    if (!StandingLeadingFoot.MovingForwards) //it's driving backwards on the ground
+                        return Quaternion.LookRotation(Vector3.ProjectOnPlane(-StandingLeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
+                    else
+                        return Quaternion.LookRotation(Vector3.ProjectOnPlane(StandingLeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
                 else
                     // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not be moving anyway.
                     return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
             case OrientationController.LiftedFootVelocity:
                 //this return is used for the green ring and direction of motion. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
-                if (LeadingFoot != null && LeadingFoot.averageLocalVelocity.magnitude > 0.017f && LeadingFoot.MovingForwards)
-                    return Quaternion.LookRotation(Vector3.ProjectOnPlane(LeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
+                if (LiftedLeadingFoot != null && LiftedLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+                    return Quaternion.LookRotation(Vector3.ProjectOnPlane(LiftedLeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
                 else
                     // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not move anyway.
                     return Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
@@ -376,53 +392,52 @@ public class SmoothLocomotion : MonoBehaviour
     //select if a shoe is standing/lifted, and if both are, which of the two should take the lead in the algorithm.
     public void SetLeadingShoe()
     {
-        if (controllerType == OrientationController.LiftedFootVelocity)
+        //LiftedFoot
+        if (leftFoot.isLiftedOrientationDetermining && rightFoot.isLiftedOrientationDetermining)
         {
-            if (leftFoot.isLiftedOrientationDetermining && rightFoot.isLiftedOrientationDetermining)
+            Debug.Log("Both feet are lifted. Please calibrate since that is not true for normal operation.");
+            LiftedLeadingFoot = null;
+        }
+        else if (!leftFoot.isLiftedOrientationDetermining && !rightFoot.isLiftedOrientationDetermining)
+        {
+            LiftedLeadingFoot = null;
+        }
+        else if (leftFoot.isLiftedOrientationDetermining)
+        {
+            LiftedLeadingFoot = leftFoot;
+        }
+        else if (rightFoot.isLiftedOrientationDetermining)
+        {
+            LiftedLeadingFoot = rightFoot;
+        }
+
+
+        //StandingFoot
+        if (leftFoot.isStandingOrientationDetermining && rightFoot.isStandingOrientationDetermining)
+        {
+            //Take the back foot
+            if (leftFoot.backFoot) 
             {
-                Debug.Log("Both feet are lifted. Please calibrate since that is not true for normal operation.");
+                StandingLeadingFoot = leftFoot;
+                return;
             }
-            else if (!leftFoot.isLiftedOrientationDetermining && !rightFoot.isLiftedOrientationDetermining)
+            else if (rightFoot.backFoot)
             {
-                LeadingFoot = null;
-            }
-            else if (leftFoot.isLiftedOrientationDetermining)
-            {
-                LeadingFoot = leftFoot;
-            }
-            else if (rightFoot.isLiftedOrientationDetermining)
-            {
-                LeadingFoot = rightFoot;
+                StandingLeadingFoot = rightFoot;
+                return;
             }
         }
-        else // for all other orientation settings, use the standing foot velocity.
+        if (leftFoot.isStandingOrientationDetermining)
         {
-            if (leftFoot.isStandingOrientationDetermining && rightFoot.isStandingOrientationDetermining)
-            {
-                //Take the back foot
-                if (leftFoot.backFoot)
-                {
-                    //Debug.Log("leftFootLead");
-                    LeadingFoot = leftFoot;
-                }
-                else if (rightFoot.backFoot)
-                {
-                    //Debug.Log("rightFootLead");
-                    LeadingFoot = rightFoot;
-                }
-            }
-            else if (!leftFoot.isStandingOrientationDetermining && !rightFoot.isStandingOrientationDetermining)
-            {
-                LeadingFoot = null;
-            }
-            else if (leftFoot.isStandingOrientationDetermining)
-            {
-                LeadingFoot = leftFoot;
-            }
-            else if (rightFoot.isStandingOrientationDetermining)
-            {
-                LeadingFoot = rightFoot;
-            }
+            StandingLeadingFoot = leftFoot;
+        }
+        else if (rightFoot.isStandingOrientationDetermining)
+        {
+            StandingLeadingFoot = rightFoot;
+        }
+        else
+        {
+            StandingLeadingFoot = null;
         }
     }
 
