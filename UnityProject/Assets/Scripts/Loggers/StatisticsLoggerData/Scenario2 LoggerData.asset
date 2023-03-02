@@ -71,6 +71,12 @@ MonoBehaviour:
     - DirectionRotZ
     - AllTrackersWorking
     - TrackersNotWorking
+    - RightLifted
+    - RightStanding
+    - LeftLifted
+    - LeftStanding
+    - StandingLeadingFoot
+    - LiftedLeadingFoot
     - GWAngle
     - LocomotionSpeed
     - EWMA_Right

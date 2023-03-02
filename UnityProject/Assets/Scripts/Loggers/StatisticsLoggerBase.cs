@@ -97,10 +97,16 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _EWMA_LeftSpeed;
 
     protected List<bool>
-        _allTrackersWorking;
+        _allTrackersWorking,
+        _rightStanding,
+        _rightLifted,
+        _leftStanding,
+        _leftLifted;
 
     protected List<string>
-        _trackersLost;
+        _trackersLost,
+        _liftedLeadingFoot,
+        _standingLeadingFoot;
 
     protected List<object> _locks;
     private List<List<string>> _allValues;
@@ -230,7 +236,14 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _time = new List<float>();
 
         _allTrackersWorking = new List<bool>();
+        _leftLifted = new List<bool>();
+        _rightLifted = new List<bool>();
+        _leftStanding = new List<bool>();
+        _rightStanding = new List<bool>();
+
         _trackersLost = new List<string>();
+        _liftedLeadingFoot = new List<string>();
+        _standingLeadingFoot = new List<string>();
 
         Debug.Log($"Logger {this.name} Initialized");
     }
@@ -482,6 +495,12 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
 
                 values.Add("" + _allTrackersWorking[i]);
                 values.Add("" + _trackersLost[i]);
+                values.Add("" + _rightLifted[i]);
+                values.Add("" + _rightStanding[i]);
+                values.Add("" + _leftLifted[i]);
+                values.Add("" + _leftStanding[i]);
+                values.Add("" + _standingLeadingFoot[i]);
+                values.Add("" + _liftedLeadingFoot[i]);
             }
             else
             {
@@ -577,6 +596,13 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
 
         _allTrackersWorking.Clear();
         _trackersLost.Clear();
+
+        _leftLifted.Clear();
+        _leftStanding.Clear();
+        _rightLifted.Clear();
+        _rightStanding.Clear();
+        _standingLeadingFoot.Clear();
+        _liftedLeadingFoot.Clear();
     }
 
     float GetHorizontalSpeed(Transform trans, Vector3 velocity)
@@ -637,6 +663,33 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                     _locomotionSpeed.Add(smoothLocomotion.currentLocomotionSpeed);
                     _EWMA_LeftSpeed.Add(smoothLocomotion.EWMA_LeftSpeed);
                     _EWMA_RightSpeed.Add(smoothLocomotion.EWMA_RightSpeed);
+
+
+                    _leftLifted.Add(smoothLocomotion.leftFoot.IsLifted_EasyThreshold);
+                    _leftStanding.Add(smoothLocomotion.leftFoot.IsStanding_EasyThreshold);
+                    _rightStanding.Add(smoothLocomotion.rightFoot.IsStanding_EasyThreshold);
+                    _rightLifted.Add(smoothLocomotion.rightFoot.IsLifted_EasyThreshold);
+
+
+                    string liftedLeading;
+                    if (smoothLocomotion.LiftedLeadingFoot == null)
+                        liftedLeading = "none";
+                    else if (smoothLocomotion.LiftedLeadingFoot.isRight)
+                        liftedLeading = "right";
+                    else
+                        liftedLeading = "left";
+                    _liftedLeadingFoot.Add(liftedLeading);
+
+
+                    string standingLeading;
+                    if (smoothLocomotion.StandingLeadingFoot == null)
+                        standingLeading = "none";
+                    else if (smoothLocomotion.StandingLeadingFoot.isRight)
+                        standingLeading = "right";
+                    else
+                        standingLeading = "left";
+
+                    _standingLeadingFoot.Add(standingLeading);
                 }    
             }
             //if (_lastsample > 5) // end fast for testing
