@@ -19,6 +19,8 @@ public class CSVReader
     static string LINE_SPLIT_RE = @"\r\n|\n\r|\n|\r";
     static char[] TRIM_CHARS = { '\"', ' ' };
 
+
+
     public static List<Dictionary<string, object>> Read(string file)
     {
         var list = new List<Dictionary<string, object>>();
@@ -63,6 +65,14 @@ public class CSVReader
 
 public class AnimateTrackersFromFile : MonoBehaviour
 {
+    public enum SetTo
+    {
+        LocalTransform,
+        GlobalTransform
+    }
+
+    public SetTo writeSetting = SetTo.GlobalTransform;
+
     public string filename = "test.txt";
     public string FullPath { get => Application.dataPath + "/StreamingAssets/" + filename; }
 
@@ -112,6 +122,19 @@ public class AnimateTrackersFromFile : MonoBehaviour
 
         float startTime = Time.realtimeSinceStartup;
 
+        List<bool> steamVR_trackedObj_must_reactivate = new List<bool>();
+        foreach(Transform t in transforms)
+        {
+            SteamVR_TrackedObject liveTracker = t.GetComponent<SteamVR_TrackedObject>();
+            if (liveTracker != null && isActiveAndEnabled)
+            {
+                liveTracker.enabled = false;
+                steamVR_trackedObj_must_reactivate.Add(true);
+            }
+            else
+                steamVR_trackedObj_must_reactivate.Add(false);
+        }
+
         for (var lineNr = 0; lineNr < data.Count; lineNr++)
         {
 
@@ -126,7 +149,13 @@ public class AnimateTrackersFromFile : MonoBehaviour
                 float rotY = Convert.ToSingle((data[lineNr][names[transformNr] + "_ry"]));
                 float rotZ = Convert.ToSingle((data[lineNr][names[transformNr] + "_rz"]));
 
-                transforms[transformNr].SetPositionAndRotation(new Vector3(posX, posY, posZ), Quaternion.Euler(rotX, rotY, rotZ));
+                if(writeSetting == SetTo.GlobalTransform)
+                    transforms[transformNr].SetPositionAndRotation(new Vector3(posX, posY, posZ), Quaternion.Euler(rotX, rotY, rotZ));
+                else if(writeSetting == SetTo.LocalTransform)
+                {
+                    transforms[transformNr].localPosition = new Vector3(posX, posY, posZ);
+                    transforms[transformNr].localRotation = Quaternion.Euler(rotX, rotY, rotZ);
+                }
 
             }
 
@@ -136,6 +165,16 @@ public class AnimateTrackersFromFile : MonoBehaviour
                 yield return null; //render next frame
             }
         }
+
+        int transformCounter = 0;
+        foreach (Transform t in transforms)
+        {
+            if (steamVR_trackedObj_must_reactivate[transformCounter])
+                t.GetComponent<SteamVR_TrackedObject>().enabled = true;
+
+            transformCounter++;
+        }
+
         yield return null; //render next frame
 
     }

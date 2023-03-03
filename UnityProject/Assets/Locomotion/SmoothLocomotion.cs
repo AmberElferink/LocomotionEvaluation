@@ -47,9 +47,8 @@ public class SmoothLocomotion : MonoBehaviour
             get { return Vector3.Dot(FrontDirection, averageLocalVelocity) > 0.0f; }
         }
 
-
         [System.NonSerialized]
-        private Vector3 localVelocity; // this is the local velocity (without the player world velocity, which is also effected by the locomotion)
+        private Vector3 localVelocity; // this is the local velocity which is not affected by the locomotion
         [System.NonSerialized]
         public Vector3 averageLocalVelocity;
         [System.NonSerialized]
@@ -59,6 +58,11 @@ public class SmoothLocomotion : MonoBehaviour
         [System.NonSerialized]
         public Vector3 prevRot;
 
+        // orientation towards the average velocity of the foot (used for lifted foot)
+        public Quaternion AvgVelocityOrientation { get { return Quaternion.LookRotation(Vector3.ProjectOnPlane(averageLocalVelocity, Vector3.up), Vector3.up); } }
+
+        // The direction is the negative average velocity of the standing foot: standing shoe driving backwards gives direction forwards (used for standing foot)
+        public Quaternion OppAvgVelocityOrientation { get { return Quaternion.LookRotation(Vector3.ProjectOnPlane(-averageLocalVelocity, Vector3.up), Vector3.up); } }
 
         public Transform tracker; //tracker is the raw tracker data
         public Transform footTransform; //footTransform is the tracker but rotated so it actually matches the foot direction.
@@ -88,6 +92,19 @@ public class SmoothLocomotion : MonoBehaviour
             }
         }
 
+        public float AvgHorizontalSpeed
+        {
+            get
+            {
+                if (AvgMovingForwards)
+                {
+                    return Vector3.ProjectOnPlane(averageLocalVelocity, Vector3.up).magnitude;
+                }
+                else
+                    return -Vector3.ProjectOnPlane(averageLocalVelocity, Vector3.up).magnitude;
+            }
+        }
+
         //includes velocity compensation for the lifted foot being driven by the standing shoe
         public Vector3 Velocity
         {
@@ -104,7 +121,7 @@ public class SmoothLocomotion : MonoBehaviour
             }
         }
 
-        //local velocity of the foot
+        //local velocity of the foot. Stays the same while tracking is lost.
         // Note, using this for the lifted foot gives a lower velocity than you want. Since the standing foot drives, the lifted foot has the same velocity offset. So for the lifted foot, that standing foot velocity should be added. This is done in Velocity.
         public Vector3 rawVelocity
         {
@@ -206,8 +223,6 @@ public class SmoothLocomotion : MonoBehaviour
     public Transform hip;
     public GameObject directionIndicator;
 
-    public Quaternion prevDirOrientation = Quaternion.identity; //previous direction orientation
-
     public Foot leftFoot = new Foot(false);
     public Foot rightFoot = new Foot(true);
 
@@ -227,10 +242,17 @@ public class SmoothLocomotion : MonoBehaviour
     public Vector3 HeadVelocity { get; private set; }
     public Vector3 HipVelocity { get; private set; }
 
-    public float EWMA_RightSpeed { get; private set; } = 0;
-    public float EWMA_LeftSpeed { get; private set; } = 0;
+    public float EWMA_RightSpeed_Abs { get; private set; } = 0;
+    public float EWMA_LeftSpeed_Abs { get; private set; } = 0;
     public float currentLocomotionSpeed { get; private set; } = 0;
     public float previousLocomotionSpeed { get; private set; } = 0;
+
+    // Direction for walking
+    public Quaternion AverageFeetMoveOrientation { get; private set; } = Quaternion.identity;
+    public Quaternion StandingFootMoveOrientation { get; private set; } = Quaternion.identity;
+    public Quaternion LiftedFootMoveOrientation { get; private set; } = Quaternion.identity;
+    public Quaternion HipMoveOrientation { get; private set; } = Quaternion.identity;
+    public Quaternion HeadMoveOrientation { get; private set; } = Quaternion.identity;
 
     // set from the tracked objects
     public bool FeetTrackingLost { get { return RightFootTrackingLost || LeftFootTrackingLost; } }
@@ -333,57 +355,66 @@ public class SmoothLocomotion : MonoBehaviour
         } 
     }
 
+
     //Outputs the direction quaternion the person should move to
+    //Note: Orientation will stay the same if the tracking is lost this frame
     Quaternion MoveOrientation(OrientationController controllerType)
     {
-        Quaternion orientation = previousOrientation;
+        if (!HeadTrackingLost)
+            HeadMoveOrientation = Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
 
-        // rotate this delta based on the correct controllerType
+        // --- Calculate all Orientations -------
+        if (!HipTrackingLost)
+            HipMoveOrientation = Quaternion.AngleAxis(hip.rotation.eulerAngles.y, Vector3.up);
+
+        if (!FeetTrackingLost)
+        { 
+            AverageFeetMoveOrientation = Quaternion.LookRotation(AverageFeetOrientationDir, Vector3.up);
+
+            // STANDINGFOOT
+            if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+                StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
+
+
+            // LIFTEDFOOT
+            // The direction is the average velocity of the lifted foot: lifted shoe moving forwards gives direction forwards.
+            if (LiftedLeadingFoot != null && LiftedLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+                LiftedFootMoveOrientation = LiftedLeadingFoot.AvgVelocityOrientation;
+            else
+                // when there is no lifted foot (double stance phase) or standing still, a choice has to be made for the direction
+                LiftedFootMoveOrientation = Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
+        }
+
+
+
+
+        // ---------------- select orientation to be used based on controllertype
+        Quaternion orientation;
         switch (controllerType)
         {
             case OrientationController.Hip:
-                if (!HipTrackingLost)
-                    orientation = Quaternion.AngleAxis(hip.rotation.eulerAngles.y, Vector3.up);   
+                orientation = HipMoveOrientation;
                 break;
             case OrientationController.AverageShoes: // average of both shoes
-                if (!FeetTrackingLost)
-                    orientation = Quaternion.LookRotation(AverageFeetOrientationDir, Vector3.up);
+                orientation = AverageFeetMoveOrientation;
                 break;
             case OrientationController.LeftShoe:
                 return leftFoot.footTransform.rotation;
             case OrientationController.RightShoe:
                 return rightFoot.footTransform.rotation;
             case OrientationController.StandingFootVelocity:
-                if (!FeetTrackingLost)
-                {
-                    //this return is only used for the green ring. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
-                    if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
-                        orientation = Quaternion.LookRotation(Vector3.ProjectOnPlane(-StandingLeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
-                    else
-                        // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not be moving anyway.
-                        orientation = Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
-                }
+                orientation = StandingFootMoveOrientation;
                 break;
             case OrientationController.LiftedFootVelocity:
-                if (!FeetTrackingLost)
-                {
-                    //this return is used for the green ring and direction of motion. The average is taken to make it jitter less. The movement is done purely on velocity (no average).
-                    if (LiftedLeadingFoot != null && LiftedLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
-                        orientation = Quaternion.LookRotation(Vector3.ProjectOnPlane(LiftedLeadingFoot.averageLocalVelocity, Vector3.up), Vector3.up);
-                    else
-                        // when velocity is close to 0, take the head position instead since the green ring will have irratic behavior. In theory the person should not move anyway.
-                        orientation = Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
-                }
+                orientation = LiftedFootMoveOrientation;
                 break;
             case OrientationController.Head:
             case OrientationController.Roomscale:
             default:
-                if(!HeadTrackingLost)
-                    orientation = Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
+                    orientation = HeadMoveOrientation;
                 break;
         }
-        
-        previousOrientation = orientation;
+
         return orientation;
 
     }
@@ -508,13 +539,13 @@ public class SmoothLocomotion : MonoBehaviour
         if (!FeetTrackingLost)
         {
             //Absolute, to get both the input from the shoe driving backwards, and the shoe moving forwards. This results in twice the speed, so must be canceled later.
-            EWMA_RightSpeed = EWMA(EWMA_RightSpeed, Math.Abs(rightFoot.HorizontalSpeed), rho);
-            EWMA_LeftSpeed = EWMA(EWMA_LeftSpeed, Math.Abs(leftFoot.HorizontalSpeed), rho);
-            float calculatedSpeed = (EWMA_LeftSpeed + EWMA_RightSpeed) / 4; //take the average: (a + b)/2, divided by 2 an extra time (since you abs gives both the foot driven backwards and the foot going forwards, which would result in double the speed).
+            EWMA_RightSpeed_Abs = EWMA(EWMA_RightSpeed_Abs, Math.Abs(rightFoot.HorizontalSpeed), rho);
+            EWMA_LeftSpeed_Abs = EWMA(EWMA_LeftSpeed_Abs, Math.Abs(leftFoot.HorizontalSpeed), rho);
+            float calculatedSpeed = (EWMA_LeftSpeed_Abs + EWMA_RightSpeed_Abs) / 4; //take the average: (a + b)/2, divided by 2 an extra time (since you abs gives both the foot driven backwards and the foot going forwards, which would result in double the speed).
             locoSpeed = calculatedSpeed * speed;
 
-            currentLocomotionSpeed = locoSpeed;
         }
+        currentLocomotionSpeed = locoSpeed;
         previousLocomotionSpeed = currentLocomotionSpeed;
 
         return locoSpeed;
@@ -524,8 +555,11 @@ public class SmoothLocomotion : MonoBehaviour
     // these are needed mostly for data collection
     void CalcVelocities()
     {
+        //note: no check for tracking since it's only for data collection.
         HeadVelocity = (head.localPosition - prevHeadPos) / Time.fixedDeltaTime;
         prevHeadPos = head.transform.localPosition;
+
+        //note: no check for tracking since it's only for data collection.
         HipVelocity = (hip.localPosition - prevHipPos) / Time.fixedDeltaTime;
         prevHipPos = hip.transform.position;
     }
@@ -545,9 +579,8 @@ public class SmoothLocomotion : MonoBehaviour
         leftFoot.SetFootColor();
         rightFoot.SetFootColor();
 
-
-
         Quaternion orientation = MoveOrientation(controllerType);
+
 
         //orientation = Quaternion.Slerp(directionIndicator.transform.localRotation, orientation, 0.1f);
 

@@ -661,8 +661,8 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                     _rightlegspeed.Add(smoothLocomotion.rightFoot.HorizontalSpeed);
                     _hipspeed.Add(GetHorizontalSpeed(smoothLocomotion.hip, smoothLocomotion.HipVelocity));
                     _locomotionSpeed.Add(smoothLocomotion.currentLocomotionSpeed);
-                    _EWMA_LeftSpeed.Add(smoothLocomotion.EWMA_LeftSpeed);
-                    _EWMA_RightSpeed.Add(smoothLocomotion.EWMA_RightSpeed);
+                    _EWMA_LeftSpeed.Add(smoothLocomotion.EWMA_LeftSpeed_Abs);
+                    _EWMA_RightSpeed.Add(smoothLocomotion.EWMA_RightSpeed_Abs);
 
 
                     _leftLifted.Add(smoothLocomotion.leftFoot.IsLifted_EasyThreshold);
