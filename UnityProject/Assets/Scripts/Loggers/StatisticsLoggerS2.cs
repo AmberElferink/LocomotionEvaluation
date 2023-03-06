@@ -7,14 +7,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PrattiToolkit;
+using UnityEngine.Events;
 using Valve.VR;
 
 [RequireComponent(typeof(Scenario2Manager))]
 public class StatisticsLoggerS2 : StatisticsLoggerBase
 {
     #region Events
-
+    public UnityEvent startLog;
+    public UnityEvent stopLog;
     #endregion
+
+    RecordTrackers trackerRecorderSmoothLoc;
 
     #region Editor Visible
     [SerializeField] private float _speedThreshold = 0;
@@ -55,7 +59,12 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
     { 
         if (_dirTargets == 0)
         {
+            startLog.Invoke();
             StartMasterLog("MW");
+            trackerRecorderSmoothLoc = LocomotionManager.Instance.CurrentPlayerController.GetComponents<RecordTrackers>()[1];
+            trackerRecorderSmoothLoc.filename = "rawTrackers_" + fileName + extension; 
+            trackerRecorderSmoothLoc.Folder = fileDirectory;
+            trackerRecorderSmoothLoc.StartRecord();
             _multiStrLineWalking = true;
         }
         _timeStart = Time.time;
@@ -83,6 +92,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
             WriteToCSV("MW" + _dirTargets, values, 1);
             if (_dirTargets == 6)
             {
+                stopLog.Invoke();
                 StopMasterLog();
                 _multiStrLineWalking = false;
             }
@@ -147,6 +157,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
             };
                 WriteToCSV("CW", values, 3);
                 StopMasterLog();
+            stopLog.Invoke();
         }
     }
 
@@ -348,6 +359,11 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
         {
             if(!_masterlog)
             {
+                startLog.Invoke();
+                trackerRecorderSmoothLoc = LocomotionManager.Instance.CurrentPlayerController.GetComponents<RecordTrackers>()[1];
+                trackerRecorderSmoothLoc.filename = "rawTrackers_" + fileName + extension;
+                trackerRecorderSmoothLoc.Folder = fileDirectory;
+                trackerRecorderSmoothLoc.StartRecord();
                 StartMasterLog("Custom");
                 Debug.Log("Start custom MasterLog");
             }
@@ -356,12 +372,36 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
         {
             if (_masterlog)
             {
+                trackerRecorderSmoothLoc.StopRecord();
+                stopLog.Invoke();
                 StopMasterLog();
                 Debug.Log("Stop custom log");
             }    
                 
         }
+
+        if(Input.GetKeyUp(KeyCode.R) == true)
+        {
+            startLog.Invoke();
+            trackerRecorderSmoothLoc = LocomotionManager.Instance.CurrentPlayerController.GetComponents<RecordTrackers>()[1];
+            trackerRecorderSmoothLoc.filename = "rawTrackers_" + fileName + extension;
+            trackerRecorderSmoothLoc.Folder = fileDirectory;
+            trackerRecorderSmoothLoc.StartRecord();
+            StartMasterLog("Custom");
+
+        }
+
+        if (Input.GetKeyUp(KeyCode.Escape) == true)
+        {
+            trackerRecorderSmoothLoc.StopRecord();
+            stopLog.Invoke();
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        }
     }
+
 
     #endregion
 

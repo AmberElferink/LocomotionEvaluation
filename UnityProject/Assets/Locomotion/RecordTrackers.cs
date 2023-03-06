@@ -28,7 +28,22 @@ public class RecordTrackers : MonoBehaviour
 
 
     public string filename = "test.txt";
-    public string FullPath { get => Application.dataPath + "/StreamingAssets/" + filename;}
+
+    public string Folder
+    {
+        get; set;
+    }
+
+    public string FullPath 
+    {
+        get
+        {
+            if (Folder == "")
+                return Application.dataPath + "/StreamingAssets/" + filename;
+            else
+                return Path.Combine(Folder, filename);
+        }
+    }
 
     List<string> VarsForEachName = new List<string> { "_px", "_py", "_pz", "_rx", "_ry", "_rz" };
 

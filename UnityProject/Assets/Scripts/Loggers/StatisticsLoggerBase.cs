@@ -184,10 +184,25 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
 
     #region Helper Methods
 
+    public string fileDirectory
+    { 
+        get; private set;
+    }
+
+    public string fileName
+    {
+        get; private set;
+    }
+
+    public string extension
+    {
+        get { return ".csv";  }
+    }
+
     protected virtual void Initialize()
     {
         var u = UnityMainThreadDispatcher.Instance;
-        string fileDirectory = Path.Combine(Application.dataPath, "StatisticsData",
+        fileDirectory = Path.Combine(Application.dataPath, "StatisticsData",
             ConfigurationLookUp.Instance.GetString("LocomotionTechnique", "unknown"),
             ConfigurationLookUp.Instance.GetString("ParticipantId", "undefined"),
             StatisticsLoggerData.ScenarioName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmssff"));
@@ -199,9 +214,9 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
 
         for (int i = 0; i < StatisticsLoggerData.LogFiles.Count; i++)
         {
-            string fileName = $"{i}_" + StatisticsLoggerData.LogFiles[i].FileName + "_" +
-                              DateTime.Now.ToString("yyyyMMdd_HHmmssff") + ".csv";
-            _logFilePaths.Add(Path.Combine(fileDirectory, fileName));
+            fileName = $"{i}_" + StatisticsLoggerData.LogFiles[i].FileName + "_" +
+                              DateTime.Now.ToString("yyyyMMdd_HHmmssff");
+            _logFilePaths.Add(Path.Combine(fileDirectory, fileName + extension));
             _locks.Add(new object());
         }
 
