@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.IO;
+using UnityEngine.Events;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -79,6 +81,9 @@ public class AnimateTrackersFromFile : MonoBehaviour
     public List<string> names = new List<string>();
     public List<Transform> transforms = new List<Transform>();
     List<string> VarsForEachName = new List<string> { "_px", "_py", "_pz", "_rx", "_ry", "_rz" };
+
+
+    public UnityEvent afterLoadingFirstFrame;
 
     // Start is called before the first frame update
     void Start()
@@ -158,6 +163,9 @@ public class AnimateTrackersFromFile : MonoBehaviour
                 }
 
             }
+
+            afterLoadingFirstFrame.Invoke();
+
 
             if (Time.realtimeSinceStartup - startTime < frameTime)
             { 
