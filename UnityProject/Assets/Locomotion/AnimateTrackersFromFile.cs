@@ -164,7 +164,8 @@ public class AnimateTrackersFromFile : MonoBehaviour
 
             }
 
-            afterLoadingFirstFrame.Invoke();
+            if(lineNr == 0)
+                afterLoadingFirstFrame.Invoke();
 
 
             if (Time.realtimeSinceStartup - startTime < frameTime)

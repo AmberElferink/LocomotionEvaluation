@@ -29674,7 +29674,7 @@ MonoBehaviour:
   - {fileID: 1459107843}
   - {fileID: 431355694}
   - {fileID: 2057580947}
-  - {fileID: 530948390}
+  - {fileID: 756892046}
   - {fileID: 271967299}
   ignoreTransforms: []
   writeSetting: 2
@@ -29704,7 +29704,10 @@ MonoBehaviour:
   - {fileID: 1459107843}
   - {fileID: 431355694}
   - {fileID: 2057580947}
-  - {fileID: 530948390}
+  - {fileID: 756892046}
+  afterLoadingFirstFrame:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &289040480 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1743247547364726, guid: a5b4a34f6cb01374e91ea03d44a0e136,
@@ -30365,6 +30368,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 110098879}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &416381362 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1660435898875727335, guid: 1d8b5445a107a6c408199e8f02c925bb,
+    type: 3}
+  m_PrefabInstance: {fileID: 110098879}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &431355693 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4633669089787207754, guid: 1d8b5445a107a6c408199e8f02c925bb,
@@ -30476,12 +30485,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 90.00001, z: 0}
---- !u!4 &439254166 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5431504661993576519, guid: 1d8b5445a107a6c408199e8f02c925bb,
-    type: 3}
-  m_PrefabInstance: {fileID: 538542934}
-  m_PrefabAsset: {fileID: 0}
 --- !u!65 &457088172 stripped
 BoxCollider:
   m_CorrespondingSourceObject: {fileID: 65372361913154154, guid: a96e20f031f0f3942a6b1e525137de92,
@@ -30587,12 +30590,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 477146, guid: 9c0a6df65fcfba243abb2cf9260b869f,
     type: 3}
   m_PrefabInstance: {fileID: 511248528}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &530948390 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5431504661993576519, guid: 1d8b5445a107a6c408199e8f02c925bb,
-    type: 3}
-  m_PrefabInstance: {fileID: 53223963}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &538542934
 PrefabInstance:
@@ -35548,7 +35545,7 @@ MonoBehaviour:
   - {fileID: 46801682}
   - {fileID: 608724277}
   - {fileID: 510739926}
-  - {fileID: 439254166}
+  - {fileID: 1410325524}
   - {fileID: 559572096}
   ignoreTransforms: []
   writeSetting: 2
@@ -35578,7 +35575,10 @@ MonoBehaviour:
   - {fileID: 46801682}
   - {fileID: 608724277}
   - {fileID: 510739926}
-  - {fileID: 439254166}
+  - {fileID: 1410325524}
+  afterLoadingFirstFrame:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &569378177
 GameObject:
   m_ObjectHideFlags: 0
@@ -40979,12 +40979,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 639875247}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &639875263 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5431504661993576519, guid: 1d8b5445a107a6c408199e8f02c925bb,
-    type: 3}
-  m_PrefabInstance: {fileID: 639875247}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &639875264 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4633669090031275031, guid: 1d8b5445a107a6c408199e8f02c925bb,
@@ -41004,7 +40998,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   writeSetting: 0
-  filename: testWalk.txt
+  filename: rawTrackers_5_Fear_20230306_14040474
   names:
   - leftfoot
   - rightfoot
@@ -41016,7 +41010,10 @@ MonoBehaviour:
   - {fileID: 639875261}
   - {fileID: 639875262}
   - {fileID: 639875259}
-  - {fileID: 639875263}
+  - {fileID: 639875273}
+  afterLoadingFirstFrame:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &639875266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41041,11 +41038,17 @@ MonoBehaviour:
   - {fileID: 639875261}
   - {fileID: 639875262}
   - {fileID: 639875259}
-  - {fileID: 639875263}
+  - {fileID: 639875273}
   - {fileID: 639875248}
   ignoreTransforms: []
   writeSetting: 2
   filename: testWalk.txt
+--- !u!4 &639875273 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1660435898875727335, guid: 1d8b5445a107a6c408199e8f02c925bb,
+    type: 3}
+  m_PrefabInstance: {fileID: 639875247}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &645393368
 Mesh:
   m_ObjectHideFlags: 0
@@ -42099,7 +42102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _getLocomotionFromConfigFile: 0
-  _locomotion: 1
+  _locomotion: 3
   _getAutoFreezableFromConfigFile: 1
   _autoFreezable: 1
   _playerControllers:
@@ -42134,6 +42137,12 @@ MonoBehaviour:
 --- !u!1 &756892039 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2071307016134712799, guid: 1d8b5445a107a6c408199e8f02c925bb,
+    type: 3}
+  m_PrefabInstance: {fileID: 53223963}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &756892046 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1660435898875727335, guid: 1d8b5445a107a6c408199e8f02c925bb,
     type: 3}
   m_PrefabInstance: {fileID: 53223963}
   m_PrefabAsset: {fileID: 0}
@@ -46814,12 +46823,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 870506959}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &907166047 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5431504661993576519, guid: 1d8b5445a107a6c408199e8f02c925bb,
-    type: 3}
-  m_PrefabInstance: {fileID: 110098879}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &924707805
 GameObject:
   m_ObjectHideFlags: 0
@@ -50123,6 +50126,16 @@ PrefabInstance:
       propertyPath: speed
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: leftFoot.calibratedThreshold
+      value: 0.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: rightFoot.calibratedThreshold
+      value: 0.12
+      objectReference: {fileID: 0}
     - target: {fileID: 4633669090333792366, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: origin
@@ -50289,7 +50302,7 @@ MonoBehaviour:
   - {fileID: 1942788327}
   - {fileID: 364487248}
   - {fileID: 2090818923}
-  - {fileID: 1844401339}
+  - {fileID: 1328807516}
   - {fileID: 1273977265}
   ignoreTransforms: []
   writeSetting: 2
@@ -50307,7 +50320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   writeSetting: 0
-  filename: testWalk.txt
+  filename: rawTrackers_5_Fear_20230306_14040474.csv
   names:
   - leftfoot
   - rightfoot
@@ -50319,7 +50332,10 @@ MonoBehaviour:
   - {fileID: 1942788327}
   - {fileID: 364487248}
   - {fileID: 2090818923}
-  - {fileID: 1844401339}
+  - {fileID: 1328807516}
+  afterLoadingFirstFrame:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1280185498 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1589017275753260, guid: a96e20f031f0f3942a6b1e525137de92,
@@ -50358,6 +50374,12 @@ MonoBehaviour:
 --- !u!1 &1328807509 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2071307016134712799, guid: 1d8b5445a107a6c408199e8f02c925bb,
+    type: 3}
+  m_PrefabInstance: {fileID: 1237258590}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1328807516 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1660435898875727335, guid: 1d8b5445a107a6c408199e8f02c925bb,
     type: 3}
   m_PrefabInstance: {fileID: 1237258590}
   m_PrefabAsset: {fileID: 0}
@@ -51320,6 +51342,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 538542934}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1410325524 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1660435898875727335, guid: 1d8b5445a107a6c408199e8f02c925bb,
+    type: 3}
+  m_PrefabInstance: {fileID: 538542934}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &1423215871
 Mesh:
   m_ObjectHideFlags: 0
@@ -51960,7 +51988,7 @@ MonoBehaviour:
   - {fileID: 2038144020}
   - {fileID: 2015217120}
   - {fileID: 216433137}
-  - {fileID: 1349935072}
+  - {fileID: 1629883331}
   - {fileID: 1571901704}
   ignoreTransforms: []
   writeSetting: 2
@@ -51991,6 +52019,9 @@ MonoBehaviour:
   - {fileID: 2015217120}
   - {fileID: 216433137}
   - {fileID: 1349935072}
+  afterLoadingFirstFrame:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1578481030
 GameObject:
   m_ObjectHideFlags: 0
@@ -52869,6 +52900,12 @@ MonoBehaviour:
 --- !u!1 &1629883324 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2071307016134712799, guid: 1d8b5445a107a6c408199e8f02c925bb,
+    type: 3}
+  m_PrefabInstance: {fileID: 847786430}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1629883331 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1660435898875727335, guid: 1d8b5445a107a6c408199e8f02c925bb,
     type: 3}
   m_PrefabInstance: {fileID: 847786430}
   m_PrefabAsset: {fileID: 0}
@@ -54691,12 +54728,6 @@ MonoBehaviour:
         m_CallState: 2
   index: 0
   origin: {fileID: 0}
---- !u!4 &1844401339 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5431504661993576519, guid: 1d8b5445a107a6c408199e8f02c925bb,
-    type: 3}
-  m_PrefabInstance: {fileID: 1237258590}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1847692555
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -62062,7 +62093,7 @@ MonoBehaviour:
   - {fileID: 1624850480}
   - {fileID: 1841332413}
   - {fileID: 2022002721}
-  - {fileID: 907166047}
+  - {fileID: 416381362}
   - {fileID: 1887524295}
   ignoreTransforms: []
   writeSetting: 2
@@ -62092,7 +62123,10 @@ MonoBehaviour:
   - {fileID: 1624850480}
   - {fileID: 1841332413}
   - {fileID: 2022002721}
-  - {fileID: 907166047}
+  - {fileID: 416381362}
+  afterLoadingFirstFrame:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &1890825318
 PrefabInstance:
   m_ObjectHideFlags: 0

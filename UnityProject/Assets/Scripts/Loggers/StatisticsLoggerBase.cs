@@ -85,7 +85,7 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _directionRotations,
         _targetpositions;
 
-    protected List<float> 
+    protected List<float>
         _time,
         _playerspeed, // the global head speed (including locomotion offset)
         _rightlegspeed, // local (no locomotion offset included)
@@ -94,7 +94,16 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _gazewalkangles,
         _locomotionSpeed,
         _EWMA_RightSpeed,
-        _EWMA_LeftSpeed;
+        _EWMA_LeftSpeed,
+        LAvgVelAngle,
+        RAvgVelAngle,
+        LAvgVelMag,
+        RAvgVelMag,
+        LiftedAngle,
+        StandingAngle,
+        HipAngle,
+        HeadAngle,
+        AvgFeetAngle;
 
     protected List<bool>
         _allTrackersWorking,
@@ -249,6 +258,16 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _EWMA_RightSpeed = new List<float>();
         _EWMA_LeftSpeed = new List<float>();
         _time = new List<float>();
+        LAvgVelAngle = new List<float>();
+        RAvgVelAngle = new List<float>();
+        LAvgVelMag = new List<float>();
+        RAvgVelMag = new List<float>();
+        LiftedAngle = new List<float>();
+        StandingAngle = new List<float>();
+        HipAngle = new List<float>();
+        HeadAngle = new List<float>();
+        AvgFeetAngle = new List<float>();
+
 
         _allTrackersWorking = new List<bool>();
         _leftLifted = new List<bool>();
@@ -259,6 +278,8 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _trackersLost = new List<string>();
         _liftedLeadingFoot = new List<string>();
         _standingLeadingFoot = new List<string>();
+
+
 
         Debug.Log($"Logger {this.name} Initialized");
     }
@@ -569,6 +590,15 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                 values.Add("" + _locomotionSpeed[i]);
                 values.Add("" + _EWMA_RightSpeed[i]);
                 values.Add("" + _EWMA_LeftSpeed[i]);
+                values.Add("" + LAvgVelAngle[i]);
+                values.Add("" + RAvgVelAngle[i]);
+                values.Add("" + LAvgVelMag[i]);
+                values.Add("" + RAvgVelMag[i]);
+                values.Add("" + LiftedAngle[i]);
+                values.Add("" + StandingAngle[i]);
+                values.Add("" + HipAngle[i]);
+                values.Add("" + HeadAngle[i]);
+                values.Add("" + AvgFeetAngle[i]);
             }
                 
             else
@@ -608,6 +638,15 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
         _locomotionSpeed.Clear();
         _EWMA_LeftSpeed.Clear();
         _EWMA_RightSpeed.Clear();
+        LAvgVelAngle.Clear();
+        RAvgVelAngle.Clear();
+        LAvgVelMag.Clear();
+        RAvgVelMag.Clear();
+        LiftedAngle.Clear();
+        StandingAngle.Clear();
+        HipAngle.Clear();
+        HeadAngle.Clear();
+        AvgFeetAngle.Clear();
 
         _allTrackersWorking.Clear();
         _trackersLost.Clear();
@@ -678,6 +717,16 @@ public abstract class StatisticsLoggerBase : MonoBehaviour, IStatisticsLogger
                     _locomotionSpeed.Add(smoothLocomotion.currentLocomotionSpeed);
                     _EWMA_LeftSpeed.Add(smoothLocomotion.EWMA_LeftSpeed_Abs);
                     _EWMA_RightSpeed.Add(smoothLocomotion.EWMA_RightSpeed_Abs);
+
+                    LAvgVelAngle.Add(smoothLocomotion.leftFoot.AvgVelocityOrientation.eulerAngles.y);
+                    RAvgVelAngle.Add(smoothLocomotion.rightFoot.AvgVelocityOrientation.eulerAngles.y);
+                    LAvgVelMag.Add(smoothLocomotion.leftFoot.AvgHorizontalSpeed);
+                    RAvgVelMag.Add(smoothLocomotion.rightFoot.AvgHorizontalSpeed);
+                    LiftedAngle.Add(smoothLocomotion.LiftedFootMoveOrientation.eulerAngles.y);
+                    StandingAngle.Add(smoothLocomotion.StandingFootMoveOrientation.eulerAngles.y);
+                    HipAngle.Add(smoothLocomotion.HipMoveOrientation.eulerAngles.y);
+                    HeadAngle.Add(smoothLocomotion.HeadMoveOrientation.eulerAngles.y);
+                    AvgFeetAngle.Add(smoothLocomotion.AverageFeetMoveOrientation.eulerAngles.y);
 
 
                     _leftLifted.Add(smoothLocomotion.leftFoot.IsLifted_EasyThreshold);

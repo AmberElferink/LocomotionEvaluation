@@ -59,6 +59,7 @@ public class StatisticsLoggerS2 : StatisticsLoggerBase
     { 
         if (_dirTargets == 0)
         {
+            Debug.Log("startRawTrackingLog");
             startLog.Invoke();
             StartMasterLog("MW");
             trackerRecorderSmoothLoc = LocomotionManager.Instance.CurrentPlayerController.GetComponents<RecordTrackers>()[1];
