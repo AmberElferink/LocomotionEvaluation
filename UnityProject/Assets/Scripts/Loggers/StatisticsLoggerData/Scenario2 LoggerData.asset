@@ -81,6 +81,15 @@ MonoBehaviour:
     - LocomotionSpeed
     - EWMA_Right
     - EWMA_Left
+    - LAvgVelAngle
+    - RAvgVelAngle
+    - LAvgVelMag
+    - RAvgVelMag
+    - LiftedAngle
+    - StandingAngle
+    - HipAngle
+    - HeadAngle
+    - AvgFeetAngle
   - FileName: MultiStraighLineWalking
     Metrics:
     - ComplTime

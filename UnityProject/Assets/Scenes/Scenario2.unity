@@ -40507,7 +40507,7 @@ PrefabInstance:
     - target: {fileID: 4633669090031107183, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090031107183, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
@@ -40998,7 +40998,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   writeSetting: 0
-  filename: rawTrackers_5_Fear_20230306_14040474
+  filename: rawTrackers_5_Fear_20230306_14040474.csv
   names:
   - leftfoot
   - rightfoot
@@ -42102,7 +42102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _getLocomotionFromConfigFile: 0
-  _locomotion: 3
+  _locomotion: 1
   _getAutoFreezableFromConfigFile: 1
   _autoFreezable: 1
   _playerControllers:
