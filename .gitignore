@@ -6,7 +6,7 @@ UnityProject/[Bb]uilds/
 UnityProject/Assets/AssetStoreTools*
 UnityProject/Assets/Scenes/Scenario*/*
 UnityProject/Assets/Scenes/Training*/*
-UnityProject/Assets/StatisticsData/*
+#UnityProject/Assets/StatisticsData/*
 
 # Visual Studio cache directory
 UnityProject/.vs/
