@@ -15,6 +15,10 @@ def processDirections(df):
     df['LAvgVelAngle'] = (df['LAvgVelAngle'] - 180 - 90)% 360 - 180
     df['LeftVelRad'] = df['LAvgVelAngle'] * math.pi / 180
 
+    
+    df['RAvgVelAngle'] = (df['RAvgVelAngle'] - 180 - 90)% 360 - 180
+    df['RightVelRad'] = df['RAvgVelAngle'] * math.pi / 180
+
 
 
     df['HeadRotY'] = (df['HeadRotY'] + 90)% 360 - 180
