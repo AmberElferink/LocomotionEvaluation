@@ -395,8 +395,11 @@ public class SmoothLocomotion : MonoBehaviour
     //sorted diff idx  4   0  1   2  3
     // median:         4, with index 1
     // so, we can refer in the original angles list with the index to get the corresponding angle: 3
-    float GetMedianAngleBasedOnAngleDerivative(Queue<float> angles)
+    float GetMinDifferenceAngleBasedOnAngleDerivative(Queue<float> angles)
     {
+        if (angles.Count <= 2)
+            return angles.ElementAt<float>(0);
+
         float[] prevAngleArray = angles.ToArray();
         float[] angleDifferences = new float[prevAngleArray.Length - 1];
 
@@ -414,14 +417,23 @@ public class SmoothLocomotion : MonoBehaviour
         List<float> sortedAngleDifferences = sorted.Select(x => x.Key).ToList();
         List<int> idx = sorted.Select(x => x.Value).ToList(); //these are the indexes in sorted order from the original list, so you can refer back to the old elements.
 
-        // if count == 5 (usually), we need nr 3, but not when the length is only 1 (would give out of range)
-        int middleIndex = Math.Min(idx.Count / 2 + 1, idx.Count - 1);
-        int medianIndex = idx[middleIndex];
-        float medianAngle = angles.ElementAt<float>(medianIndex);
-        return medianAngle;
+        //string result = "";
+        //foreach (var thing in sortedAngleDifferences)
+        //    result += thing + ", ";
+        //Debug.Log(result);
+
+        //string result2 = "";
+        //foreach (var thing in idx)
+        //    result2 += thing + ", ";
+        //Debug.Log(result2);
+
+        // the first in the list is the one with the least change wrt the rest
+        int minDifferenceIndex = idx[0];
+        float minDifferenceAngle = angles.ElementAt<float>(minDifferenceIndex);
+        return minDifferenceAngle;
     }
 
-
+    Quaternion previousStandingOrientation = Quaternion.identity;
 
     //Outputs the direction quaternion the person should move to
     //Note: Orientation will stay the same if the tracking is lost this frame
@@ -435,20 +447,47 @@ public class SmoothLocomotion : MonoBehaviour
             HipMoveOrientation = Quaternion.AngleAxis(hip.rotation.eulerAngles.y, Vector3.up);
 
         if (!FeetTrackingLost)
-        { 
+        {
             AverageFeetMoveOrientation = Quaternion.LookRotation(AverageFeetOrientationDir, Vector3.up);
 
-            // STANDINGFOOT
-            if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+
+
+            if (StandingFootMoveOrientation == Quaternion.identity)
+                StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
+
+            ////STANDINGFOOT purely based on negative speed(driving backwards)
+            if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
             {
-                //remember the last 5 angles
-                previousAngles.Enqueue(StandingLeadingFoot.OppAvgVelocityOrientation.eulerAngles.y);
-                if (previousAngles.Count > 16)
-                    previousAngles.Dequeue();
-               
-                StandingFootMoveOrientation = Quaternion.AngleAxis(GetMedianAngleBasedOnAngleDerivative(previousAngles), Vector3.up);                   
+                if (smallestAngleDifference(leftFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40) //max 40 degrees difference each frame
+                    StandingFootMoveOrientation = leftFoot.OppAvgVelocityOrientation;
             }
-                
+            else
+            {
+                if (smallestAngleDifference(rightFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40) //max 40 degrees difference each frame
+                    StandingFootMoveOrientation = rightFoot.OppAvgVelocityOrientation;
+            }
+
+
+            //if (leftFoot.AvgMovingForwards && rightFoot.AvgMovingForwards)
+            //    StandingFootMoveOrientation = previousStandingOrientation;
+
+            //previousStandingOrientation = StandingFootMoveOrientation;
+
+
+
+
+
+            //STANDINGFOOT median filter
+            //if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+            //{
+            //    //remember the last 5 angles
+            //    previousAngles.Enqueue(StandingLeadingFoot.OppAvgVelocityOrientation.eulerAngles.y);
+            //    if (previousAngles.Count > 16)
+            //        previousAngles.Dequeue();
+
+            //    StandingFootMoveOrientation = Quaternion.AngleAxis(GetMinDifferenceAngleBasedOnAngleDerivative(previousAngles), Vector3.up);
+            //}
+
 
 
 
