@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 using System;
+using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -15,6 +16,24 @@ using UnityEditor;
 // If you want to move Player, create a child object under player
 public class SmoothLocomotion : MonoBehaviour
 {
+    // get the smallest difference between the angles (assumption between 0 and 2pi). Do that for 360 degrees instead of radians.
+    // min((2 * PI) - abs(x - y), abs(x - y))
+
+    // smooth avg speed more
+
+    // if foot going backwards (avgspeed), standingfoot
+    
+    //take this direction value, unless the direction differs more than 0.6 wrt to the previous value. If not, and other foot does comply, take that foot. Otherwise, keep previous angle.
+
+    //
+
+    //degrees
+    float smallestAngleDifference(float angle1, float angle2)
+    {
+        return Math.Min(360 - Math.Abs(angle1 - angle2), Math.Abs(angle1 - angle2));
+    }
+
+
 
     [System.Serializable]
     public class Foot
@@ -140,7 +159,7 @@ public class SmoothLocomotion : MonoBehaviour
                     localVelocity = (tracker.localPosition - prevPos) / Time.fixedDeltaTime;
 
                     //average for a more stable orientation. The non averaged velocity is used for motion though.
-                    averageLocalVelocity = SmoothLocomotion.EWMA(averageLocalVelocity, localVelocity, 0.8f); // average jitters out
+                    averageLocalVelocity = SmoothLocomotion.EWMA(averageLocalVelocity, localVelocity, 0.9f); // average jitters out
 
                     rotVelocity = (tracker.rotation.eulerAngles - prevRot);
                 }
@@ -235,6 +254,8 @@ public class SmoothLocomotion : MonoBehaviour
 
     public float speed = 1; // for scaling output speed (set in editor)
 
+    public bool autoCalibrate = true;
+
 
     private Vector3 prevHeadPos = Vector3.zero;
     private Vector3 prevHipPos = Vector3.zero;
@@ -277,7 +298,10 @@ public class SmoothLocomotion : MonoBehaviour
     public bool HeadTrackingLost { get; set; } = false;
 
     public Quaternion previousOrientation { get; private set; } = Quaternion.identity;
- 
+
+    //to perform median filter and such
+    Queue<float> previousAngles;
+
 
 
     //Leadingfoot is the one determining the velocity
@@ -356,6 +380,49 @@ public class SmoothLocomotion : MonoBehaviour
     }
 
 
+    //now, we want to do a median filter to filter out the huge spikes once in a while. (complete switch of direction for a frame)
+    //however, you have to sort it for that, and sorting an angle is not really possible since it goes in a circle (0 and 360 degrees should be the same).
+    //so, we sort based on the differences between the current and previous angles in the list (which can be done if using the smallestAngleDifference function). 
+    //then, we find what original angle related to the median filtered difference by keeping track of the indices list while sorting.
+
+    //example:
+    //angle idx:      0  1  2  3  4  5 
+    //angles list:    0  3 -1  9 -1  1  
+    //differences:     3  4  10 10  2  
+    // difference idx  0  1   2  3  4  
+    //sort differenc:
+    //sorted diff      2   3  4  10 10
+    //sorted diff idx  4   0  1   2  3
+    // median:         4, with index 1
+    // so, we can refer in the original angles list with the index to get the corresponding angle: 3
+    float GetMedianAngleBasedOnAngleDerivative(Queue<float> angles)
+    {
+        float[] prevAngleArray = angles.ToArray();
+        float[] angleDifferences = new float[prevAngleArray.Length - 1];
+
+        for (int i = 0; i < angleDifferences.Length; i++)
+        {//yes, this is recalculated more often than required. It can be more efficient.
+            if (i > 0)
+                angleDifferences[i - 1] = smallestAngleDifference(prevAngleArray[i], prevAngleArray[i - 1]);
+        }
+
+        var sorted = angleDifferences
+            .Select((x, i) => new KeyValuePair<float, int>(x, i))
+            .OrderBy(x => x.Key)
+            .ToList();
+
+        List<float> sortedAngleDifferences = sorted.Select(x => x.Key).ToList();
+        List<int> idx = sorted.Select(x => x.Value).ToList(); //these are the indexes in sorted order from the original list, so you can refer back to the old elements.
+
+        // if count == 5 (usually), we need nr 3, but not when the length is only 1 (would give out of range)
+        int middleIndex = Math.Min(idx.Count / 2 + 1, idx.Count - 1);
+        int medianIndex = idx[middleIndex];
+        float medianAngle = angles.ElementAt<float>(medianIndex);
+        return medianAngle;
+    }
+
+
+
     //Outputs the direction quaternion the person should move to
     //Note: Orientation will stay the same if the tracking is lost this frame
     Quaternion MoveOrientation(OrientationController controllerType)
@@ -373,7 +440,16 @@ public class SmoothLocomotion : MonoBehaviour
 
             // STANDINGFOOT
             if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
-                StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
+            {
+                //remember the last 5 angles
+                previousAngles.Enqueue(StandingLeadingFoot.OppAvgVelocityOrientation.eulerAngles.y);
+                if (previousAngles.Count > 16)
+                    previousAngles.Dequeue();
+               
+                StandingFootMoveOrientation = Quaternion.AngleAxis(GetMedianAngleBasedOnAngleDerivative(previousAngles), Vector3.up);                   
+            }
+                
+
 
 
             // LIFTEDFOOT
@@ -421,14 +497,10 @@ public class SmoothLocomotion : MonoBehaviour
 
     public void SetStandingLeadingShoe()
     {
+        //Standingfoot based on height (smallest hight is standing, except if it moves forwards
         if (!FeetTrackingLost)
         {
             StandingLeadingFoot = leftFoot.Height < rightFoot.Height ? leftFoot : rightFoot;
-
-            // there is a small part in a step, where the standingShoe often thinks it's already lifted (only the toe is still on the ground), but the other shoe (in the very middle of driving backwards) has a forward velocity (somehow, due to noise I guess?)
-            // using that would flip the direction the wrong way, so just a check to see if the standing foot is really moving backwards.
-            if (StandingLeadingFoot.AvgMovingForwards)
-                StandingLeadingFoot = StandingLeadingFoot.otherfoot;
         }
     }
 
@@ -490,6 +562,7 @@ public class SmoothLocomotion : MonoBehaviour
     {
         leftFoot.Calibrate();
         rightFoot.Calibrate();
+
         GetComponent<AnimateTrackersFromFile>().WriteLocalTrackersOnce(); //calibrate foot arrow rotation from file                                                              
         //GameObject playerSpawnPoint = GameObject.Find("PlayerSpawnPoint");
         //GetComponent<GetPlayerPos>().SetGlobalPlayerPos(new Vector3(playerSpawnPoint.transform.position.x, playerSpawnPoint.transform.position.y + head.localPosition.y, playerSpawnPoint.transform.position.z));
@@ -505,7 +578,10 @@ public class SmoothLocomotion : MonoBehaviour
         leftFoot.otherfoot = rightFoot;
         rightFoot.otherfoot = leftFoot;
 
-       StartCoroutine(CalibrationAfterSeconds(0.25f));
+       previousAngles = new Queue<float>();
+
+        if (autoCalibrate)
+            StartCoroutine(CalibrationAfterSeconds(0.25f));
 
     }
 

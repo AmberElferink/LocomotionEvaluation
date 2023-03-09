@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.48397276, g: 0.5757237, b: 0.68019956, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -31181,12 +31181,27 @@ PrefabInstance:
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: controllerType
-      value: 8
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: speed
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: autoCalibrate
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: leftFoot.calibratedThreshold
+      value: 0.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: rightFoot.calibratedThreshold
+      value: 0.11
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090333792366, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
@@ -35563,7 +35578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   writeSetting: 0
-  filename: testWalk.txt
+  filename: rawTrackers_5_Fear_20230306_14040474.csv
   names:
   - leftfoot
   - rightfoot
@@ -40584,6 +40599,16 @@ PrefabInstance:
       propertyPath: speed
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: leftFoot.calibratedThreshold
+      value: 0.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: rightFoot.calibratedThreshold
+      value: 0.11
+      objectReference: {fileID: 0}
     - target: {fileID: 4633669090333792366, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: origin
@@ -42102,7 +42127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _getLocomotionFromConfigFile: 0
-  _locomotion: 1
+  _locomotion: 2
   _getAutoFreezableFromConfigFile: 1
   _autoFreezable: 1
   _playerControllers:

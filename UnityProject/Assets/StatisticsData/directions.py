@@ -12,6 +12,7 @@ def processDirections(df):
     df['DirectionRotY'] = (df['DirectionRotY'] - 90) % 360 - 180
     df['dirAngleRad'] = df['DirectionRotY'] * math.pi / 180
 
+    #-180 since i wanted the standing foot angle here
     df['LAvgVelAngle'] = (df['LAvgVelAngle'] - 180 - 90)% 360 - 180
     df['LeftVelRad'] = df['LAvgVelAngle'] * math.pi / 180
 
