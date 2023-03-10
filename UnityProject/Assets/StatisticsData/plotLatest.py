@@ -16,7 +16,9 @@ import numpy as np
 # lowest difference last 32 values standingfoot between them: StandingFootVelocity/56/Scenario2_20230310_13202838/0_TrackingData_20230310_13202838.csv
 # lowest difference standingfoot last 32 values with currentvalue  StandingFootVelocity/56/Scenario2_20230310_13481815/0_TrackingData_20230310_13481816.csv
 # lowest difference both feet total 64 values with currentvalue
-df = filterdata.filterFileToDataFrame("StandingFootVelocity/56/Scenario2_20230310_14484138/0_TrackingData_20230310_14484138.csv")
+
+# velocity based only with StandingFootVelocity/56/Scenario2_20230310_14484138/0_TrackingData_20230310_14484138.csv
+df = filterdata.filterFileToDataFrame("StandingFootVelocity/56/Scenario2_20230310_15182603/0_TrackingData_20230310_15182604.csv")
 
 directions.processDirections(df)
 dtlist = np.diff(df['SecSinceStart'])
@@ -41,6 +43,6 @@ genVelocity.addData('RLegPosY', "Right leg height")
 genVelocity.addData('LeftVelRad', 'leftAngle')
 genVelocity.addData('RightVelRad', 'rightAngle')
 genVelocity.addData('dirAngleRad', 'world direction radians')
-genVelocity.addData('StandingLeadingFootNr', 'st right: 1.5, left: -1.5, none: 0')
+#genVelocity.addData('StandingLeadingFootNr', 'st right: 1.5, left: -1.5, none: 0')
 
 genVelocity.plotVelocities(df, "file", isMoving=False)

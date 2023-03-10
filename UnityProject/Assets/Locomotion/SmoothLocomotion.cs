@@ -789,8 +789,7 @@ public class SmoothLocomotion : MonoBehaviour
 
         Quaternion orientation = MoveOrientation(controllerType);
 
-
-        orientation = Quaternion.Slerp(directionIndicator.transform.localRotation, orientation, 0.1f);
+        orientation = Quaternion.Lerp(directionIndicator.transform.localRotation, orientation, 0.1f);
 
         directionIndicator.transform.localRotation = orientation;
 
