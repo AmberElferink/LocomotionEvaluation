@@ -301,6 +301,7 @@ public class SmoothLocomotion : MonoBehaviour
 
     //to perform median filter and such
     Queue<float> previousAngles;
+    Queue<float> previousAnglesOtherFoot;
 
 
 
@@ -403,7 +404,7 @@ public class SmoothLocomotion : MonoBehaviour
         float[] prevAngleArray = angles.ToArray();
         float[] angleDifferences = new float[prevAngleArray.Length - 1];
 
-        for (int i = 0; i < angleDifferences.Length; i++)
+        for (int i = 0; i < prevAngleArray.Length; i++)
         {//yes, this is recalculated more often than required. It can be more efficient.
             if (i > 0)
                 angleDifferences[i - 1] = smallestAngleDifference(prevAngleArray[i], prevAngleArray[i - 1]);
@@ -433,7 +434,45 @@ public class SmoothLocomotion : MonoBehaviour
         return minDifferenceAngle;
     }
 
-    Quaternion previousStandingOrientation = Quaternion.identity;
+
+
+    float GetMinDifferenceAngleToCurrent(Queue<float> angles, float comparisonAngle)
+    {
+        if (angles.Count <= 2)
+            return angles.ElementAt<float>(0);
+
+        float[] prevAngleArray = angles.ToArray();
+        float[] diffWithComparisonAngle = new float[prevAngleArray.Length];
+
+        for (int i = 0; i < prevAngleArray.Length; i++)
+        {//yes, this is recalculated more often than required. It can be more efficient.
+            diffWithComparisonAngle[i] = smallestAngleDifference(prevAngleArray[i], comparisonAngle);
+        }
+
+        var sorted = diffWithComparisonAngle
+            .Select((x, i) => new KeyValuePair<float, int>(x, i))
+            .OrderBy(x => x.Key)
+            .ToList();
+
+        List<float> sortedAngleDifferences = sorted.Select(x => x.Key).ToList();
+        List<int> idx = sorted.Select(x => x.Value).ToList(); //these are the indexes in sorted order from the original list, so you can refer back to the old elements.
+
+        //string result = "";
+        //foreach (var thing in sortedAngleDifferences)
+        //    result += thing + ", ";
+        //Debug.Log(result);
+
+        //string result2 = "";
+        //foreach (var thing in idx)
+        //    result2 += thing + ", ";
+        //Debug.Log(result2);
+
+        // the first in the list is the one with the least change wrt the rest
+        int minDifferenceIndex = idx[0];
+        float minDifferenceAngle = angles.ElementAt<float>(minDifferenceIndex);
+        return minDifferenceAngle;
+    }
+
 
     //Outputs the direction quaternion the person should move to
     //Note: Orientation will stay the same if the tracking is lost this frame
@@ -451,21 +490,32 @@ public class SmoothLocomotion : MonoBehaviour
             AverageFeetMoveOrientation = Quaternion.LookRotation(AverageFeetOrientationDir, Vector3.up);
 
 
-
             if (StandingFootMoveOrientation == Quaternion.identity)
                 StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
 
-            ////STANDINGFOOT purely based on negative speed(driving backwards)
+            //STANDINGFOOT purely based on negative speed(driving backwards)
+            //if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
+            //{
+            //    if (smallestAngleDifference(leftFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40) //max 40 degrees difference each frame
+            //        StandingFootMoveOrientation = leftFoot.OppAvgVelocityOrientation;
+            //    else if (smallestAngleDifference(rightFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40)
+            //        StandingFootMoveOrientation = rightFoot.OppAvgVelocityOrientation;
+            //}
+            //else
+            //{
+            //    if (smallestAngleDifference(rightFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40) //max 40 degrees difference each frame
+            //        StandingFootMoveOrientation = rightFoot.OppAvgVelocityOrientation;
+            //    else if (smallestAngleDifference(leftFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40) //max 40 degrees difference each frame
+            //        StandingFootMoveOrientation = leftFoot.OppAvgVelocityOrientation;
+            //}
+
+
+            // velocity based, no smallangledifference check
+            //STANDINGFOOT purely based on negative speed(driving backwards)
             if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
-            {
-                if (smallestAngleDifference(leftFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40) //max 40 degrees difference each frame
-                    StandingFootMoveOrientation = leftFoot.OppAvgVelocityOrientation;
-            }
+                 StandingFootMoveOrientation = leftFoot.OppAvgVelocityOrientation;
             else
-            {
-                if (smallestAngleDifference(rightFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40) //max 40 degrees difference each frame
-                    StandingFootMoveOrientation = rightFoot.OppAvgVelocityOrientation;
-            }
+                 StandingFootMoveOrientation = rightFoot.OppAvgVelocityOrientation;
 
 
             //if (leftFoot.AvgMovingForwards && rightFoot.AvgMovingForwards)
@@ -477,18 +527,60 @@ public class SmoothLocomotion : MonoBehaviour
 
 
 
-            //STANDINGFOOT median filter
+            // //STANDINGFOOT median filter
             //if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
             //{
-            //    //remember the last 5 angles
+            //    //remember the last x angles, and pick the one with the least change wrt the other angles next to it in the queue
             //    previousAngles.Enqueue(StandingLeadingFoot.OppAvgVelocityOrientation.eulerAngles.y);
-            //    if (previousAngles.Count > 16)
+            //    if (previousAngles.Count > 32)
             //        previousAngles.Dequeue();
 
             //    StandingFootMoveOrientation = Quaternion.AngleAxis(GetMinDifferenceAngleBasedOnAngleDerivative(previousAngles), Vector3.up);
             //}
 
 
+
+            // select least difference angle of previous x compared to the current direction angle
+            //if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+            //{
+            //    //remember the last x angles, and pick the one with the least change wrt the other angles next to it in the queue
+            //    previousAngles.Enqueue(StandingLeadingFoot.OppAvgVelocityOrientation.eulerAngles.y);
+
+            //    if (previousAngles.Count > 32)
+            //        previousAngles.Dequeue();
+
+            //    StandingFootMoveOrientation = Quaternion.AngleAxis(GetMinDifferenceAngleToCurrent(previousAngles, StandingFootMoveOrientation.eulerAngles.y), Vector3.up);
+            //}
+
+
+            // least difference angle including both feet, not just the standing foot
+            //if (leftFoot.averageLocalVelocity.magnitude > 0.017f || rightFoot.averageLocalVelocity.magnitude > 0.017f)
+            //{
+            //    //remember the last x angles, and pick the one with the least change wrt the other angles next to it in the queue
+            //    previousAngles.Enqueue(leftFoot.OppAvgVelocityOrientation.eulerAngles.y);
+            //    previousAngles.Enqueue(rightFoot.OppAvgVelocityOrientation.eulerAngles.y);
+
+            //    if (previousAngles.Count > 64)
+            //    {
+            //        previousAngles.Dequeue();
+            //        previousAngles.Dequeue();
+            //    }
+            //    StandingFootMoveOrientation = Quaternion.AngleAxis(GetMinDifferenceAngleToCurrent(previousAngles, StandingFootMoveOrientation.eulerAngles.y), Vector3.up);
+            //}
+
+
+
+            // NO filter or anything (as was before)
+            //if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+            //{
+            //    StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
+            //}
+
+
+
+
+
+            // Debug.DrawRay(directionIndicator.transform.position, StandingFootMoveOrientation * Vector3.forward, Color.cyan);
 
 
             // LIFTEDFOOT
@@ -618,6 +710,7 @@ public class SmoothLocomotion : MonoBehaviour
         rightFoot.otherfoot = leftFoot;
 
        previousAngles = new Queue<float>();
+       previousAnglesOtherFoot = new Queue<float>();
 
         if (autoCalibrate)
             StartCoroutine(CalibrationAfterSeconds(0.25f));
@@ -697,9 +790,11 @@ public class SmoothLocomotion : MonoBehaviour
         Quaternion orientation = MoveOrientation(controllerType);
 
 
-        //orientation = Quaternion.Slerp(directionIndicator.transform.localRotation, orientation, 0.1f);
+        orientation = Quaternion.Slerp(directionIndicator.transform.localRotation, orientation, 0.1f);
 
         directionIndicator.transform.localRotation = orientation;
+
+        Debug.DrawRay(directionIndicator.transform.position, directionIndicator.transform.rotation * Vector3.forward, Color.red);
 
         player.Move(MovementDeltaVector(orientation, CalcLocomotionSpeed()));
 

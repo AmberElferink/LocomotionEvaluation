@@ -62,7 +62,7 @@ def calcAvgLocomotionVel(df, onlyMoving=True):
 
 #calcAvgLocomotionVel(filterdata.filterFileToDataFrame('0_TrackingData_20230215_17133531.csv'))
 
-def plotVelocities(df, title):
+def plotVelocities(df, title, isMoving = True):
     task1 = df[df['Task'].str.contains("MW")]
     task2 = df[df['Task'].str.contains("BW")]
     task3 = df[df['Task'].str.contains("CW")]
@@ -74,7 +74,11 @@ def plotVelocities(df, title):
     #     display(df[['isMoving', 'MoveSectionLabels', 'avgMovingSection']].head(300))
 
     dataset = df
-    dontShow = dataset['isMoving'] == False #dontShow = False #if you do not want to filter 
+
+    if isMoving:
+        dontShow = dataset['isMoving'] == False #dontShow = False #if you do not want to filter 
+    else:
+        dontShow = False
     #for calculations, to work with the unfiltered: dataset[~dontShow]
 
 
