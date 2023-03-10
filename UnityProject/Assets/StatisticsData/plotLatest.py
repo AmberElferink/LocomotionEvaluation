@@ -18,7 +18,11 @@ import numpy as np
 # lowest difference both feet total 64 values with currentvalue
 
 # velocity based only with StandingFootVelocity/56/Scenario2_20230310_14484138/0_TrackingData_20230310_14484138.csv
-df = filterdata.filterFileToDataFrame("StandingFootVelocity/56/Scenario2_20230310_15182603/0_TrackingData_20230310_15182604.csv")
+# new speed, Standingfootvelocity StandingFootVelocity/56/Scenario2_20230310_15341048/0_TrackingData_20230310_15341049.csv
+
+#liftedfoot with standing in between StandingFootVelocity/56/Scenario2_20230310_16370981/0_TrackingData_20230310_16370982.csv
+#liftedfoot only StandingFootVelocity/56/Scenario2_20230310_16425889/0_TrackingData_20230310_16425890.csv
+df = filterdata.filterFileToDataFrame("StandingFootVelocity/56/Scenario2_20230310_16425889/0_TrackingData_20230310_16425890.csv")
 
 directions.processDirections(df)
 dtlist = np.diff(df['SecSinceStart'])
@@ -38,11 +42,12 @@ genVelocity.addData('RLegPosY', "Right leg height")
 #genVelocity.addData('AllTrackersWorking', 'All trackers working')
 #genVelocity.addData('dt', 'deltaTime logging (centi seconds)')
 #genVelocity.addData('headAngleRad', 'Head rotation')
-#genVelocity.addData('LAvgVelMag', 'leftAvgSpeed')
-#genVelocity.addData('RAvgVelMag', 'rightAvgSpeed')
+genVelocity.addData('LAvgVelMag', 'leftAvgSpeed')
+genVelocity.addData('RAvgVelMag', 'rightAvgSpeed')
 genVelocity.addData('LeftVelRad', 'leftAngle')
 genVelocity.addData('RightVelRad', 'rightAngle')
 genVelocity.addData('dirAngleRad', 'world direction radians')
 #genVelocity.addData('StandingLeadingFootNr', 'st right: 1.5, left: -1.5, none: 0')
+genVelocity.addData('LiftedLeadingFootNr', 'st right: 1.5, left: -1.5, none: 0')
 
 genVelocity.plotVelocities(df, "file", isMoving=False)

@@ -31121,7 +31121,7 @@ PrefabInstance:
     - target: {fileID: 4633669090031107183, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.46
+      value: 0.268
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090031107183, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
@@ -31196,12 +31196,12 @@ PrefabInstance:
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: leftFoot.calibratedThreshold
-      value: 0.11
+      value: 0.13
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: rightFoot.calibratedThreshold
-      value: 0.11
+      value: 0.13
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090333792366, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
@@ -42126,8 +42126,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e0e2936e18e38e42a920b083e215af7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _getLocomotionFromConfigFile: 1
-  _locomotion: 3
+  _getLocomotionFromConfigFile: 0
+  _locomotion: 0
   _getAutoFreezableFromConfigFile: 1
   _autoFreezable: 1
   _playerControllers:

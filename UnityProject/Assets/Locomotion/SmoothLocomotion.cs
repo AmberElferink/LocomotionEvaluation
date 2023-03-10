@@ -245,7 +245,8 @@ public class SmoothLocomotion : MonoBehaviour
     public Foot leftFoot = new Foot(false);
     public Foot rightFoot = new Foot(true);
 
-    private Foot _lFoot; // this foot is the one that determines the velocity. It switches between left and right (and changes in this object also change the leftfoot/rightfoot assigned to it)
+    private Foot _liftedLeadingFoot; // this foot is the one that determines the velocity for the StandingFoot locomotion
+    private Foot _standingLeadingFoot;  // this foot is the one that determines the velocity for the LiftedFoot locomotion
 
     public float standingThres = 0.03f; //standingthresh must be < liftedthresh
     public float liftedThres = 0.05f; // it registers being lifted a bit higher than standing on the foot. 
@@ -308,12 +309,12 @@ public class SmoothLocomotion : MonoBehaviour
     //Leadingfoot is the one determining the velocity
     public Foot LiftedLeadingFoot
     {
-        get { return _lFoot; }
+        get { return _liftedLeadingFoot; }
         set
         {
-            if (value == null || _lFoot == null || _lFoot.isRight != value.isRight) // foot switch
+            if (value == null || _liftedLeadingFoot == null || _liftedLeadingFoot.isRight != value.isRight) // foot switch
             {
-                _lFoot = value;
+                _liftedLeadingFoot = value;
             }
         }
     }
@@ -321,12 +322,12 @@ public class SmoothLocomotion : MonoBehaviour
     //Leadingfoot is the one determining the velocity
     public Foot StandingLeadingFoot
     {
-        get { return _lFoot; }
+        get { return _standingLeadingFoot; }
         set
         {
-            if (value == null || _lFoot == null || _lFoot.isRight != value.isRight) // foot switch
+            if (value == null || _standingLeadingFoot == null || _standingLeadingFoot.isRight != value.isRight) // foot switch
             {
-                _lFoot = value;
+                _standingLeadingFoot = value;
             }
         }
     }
@@ -493,103 +494,30 @@ public class SmoothLocomotion : MonoBehaviour
             if (StandingFootMoveOrientation == Quaternion.identity)
                 StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
 
-            //STANDINGFOOT purely based on negative speed(driving backwards)
-            //if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
-            //{
-            //    if (smallestAngleDifference(leftFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40) //max 40 degrees difference each frame
-            //        StandingFootMoveOrientation = leftFoot.OppAvgVelocityOrientation;
-            //    else if (smallestAngleDifference(rightFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40)
-            //        StandingFootMoveOrientation = rightFoot.OppAvgVelocityOrientation;
-            //}
-            //else
-            //{
-            //    if (smallestAngleDifference(rightFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40) //max 40 degrees difference each frame
-            //        StandingFootMoveOrientation = rightFoot.OppAvgVelocityOrientation;
-            //    else if (smallestAngleDifference(leftFoot.OppAvgVelocityOrientation.eulerAngles.y, StandingFootMoveOrientation.eulerAngles.y) < 40) //max 40 degrees difference each frame
-            //        StandingFootMoveOrientation = leftFoot.OppAvgVelocityOrientation;
-            //}
-
 
             // velocity based, no smallangledifference check
             //STANDINGFOOT purely based on negative speed(driving backwards)
             if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
-                 StandingFootMoveOrientation = leftFoot.OppAvgVelocityOrientation;
+            {
+                StandingFootMoveOrientation = leftFoot.OppAvgVelocityOrientation;
+                StandingLeadingFoot = leftFoot;
+            }
             else
-                 StandingFootMoveOrientation = rightFoot.OppAvgVelocityOrientation;
+            {
+                StandingFootMoveOrientation = rightFoot.OppAvgVelocityOrientation;
+                StandingLeadingFoot = rightFoot;
+            }
+                 
 
-
-            //if (leftFoot.AvgMovingForwards && rightFoot.AvgMovingForwards)
-            //    StandingFootMoveOrientation = previousStandingOrientation;
-
-            //previousStandingOrientation = StandingFootMoveOrientation;
-
-
-
-
-
-            // //STANDINGFOOT median filter
-            //if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
-            //{
-            //    //remember the last x angles, and pick the one with the least change wrt the other angles next to it in the queue
-            //    previousAngles.Enqueue(StandingLeadingFoot.OppAvgVelocityOrientation.eulerAngles.y);
-            //    if (previousAngles.Count > 32)
-            //        previousAngles.Dequeue();
-
-            //    StandingFootMoveOrientation = Quaternion.AngleAxis(GetMinDifferenceAngleBasedOnAngleDerivative(previousAngles), Vector3.up);
-            //}
-
-
-
-            // select least difference angle of previous x compared to the current direction angle
-            //if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
-            //{
-            //    //remember the last x angles, and pick the one with the least change wrt the other angles next to it in the queue
-            //    previousAngles.Enqueue(StandingLeadingFoot.OppAvgVelocityOrientation.eulerAngles.y);
-
-            //    if (previousAngles.Count > 32)
-            //        previousAngles.Dequeue();
-
-            //    StandingFootMoveOrientation = Quaternion.AngleAxis(GetMinDifferenceAngleToCurrent(previousAngles, StandingFootMoveOrientation.eulerAngles.y), Vector3.up);
-            //}
-
-
-            // least difference angle including both feet, not just the standing foot
-            //if (leftFoot.averageLocalVelocity.magnitude > 0.017f || rightFoot.averageLocalVelocity.magnitude > 0.017f)
-            //{
-            //    //remember the last x angles, and pick the one with the least change wrt the other angles next to it in the queue
-            //    previousAngles.Enqueue(leftFoot.OppAvgVelocityOrientation.eulerAngles.y);
-            //    previousAngles.Enqueue(rightFoot.OppAvgVelocityOrientation.eulerAngles.y);
-
-            //    if (previousAngles.Count > 64)
-            //    {
-            //        previousAngles.Dequeue();
-            //        previousAngles.Dequeue();
-            //    }
-            //    StandingFootMoveOrientation = Quaternion.AngleAxis(GetMinDifferenceAngleToCurrent(previousAngles, StandingFootMoveOrientation.eulerAngles.y), Vector3.up);
-            //}
-
-
-
-            // NO filter or anything (as was before)
-            //if (StandingLeadingFoot != null && StandingLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
-            //{
-            //    StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
-            //}
-
-
-
-
-
-            // Debug.DrawRay(directionIndicator.transform.position, StandingFootMoveOrientation * Vector3.forward, Color.cyan);
 
 
             // LIFTEDFOOT
             // The direction is the average velocity of the lifted foot: lifted shoe moving forwards gives direction forwards.
-            if (LiftedLeadingFoot != null && LiftedLeadingFoot.averageLocalVelocity.magnitude > 0.017f)
+            if (LiftedLeadingFoot != null)
                 LiftedFootMoveOrientation = LiftedLeadingFoot.AvgVelocityOrientation;
-            else
-                // when there is no lifted foot (double stance phase) or standing still, a choice has to be made for the direction
-                LiftedFootMoveOrientation = Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
+            //else
+            //    // when there is no lifted foot (double stance phase) a choice has to be made for the direction
+            //    LiftedFootMoveOrientation = StandingFootMoveOrientation;
         }
 
 
@@ -635,6 +563,7 @@ public class SmoothLocomotion : MonoBehaviour
         }
     }
 
+    int counter = 0;
     public void SetLiftedLeadingShoe()
     {
         //LiftedFoot
@@ -650,10 +579,12 @@ public class SmoothLocomotion : MonoBehaviour
         }
         else if (leftFoot.IsLifted_EasyThreshold)
         {
+            Debug.Log("lifted left " + counter++);
             LiftedLeadingFoot = leftFoot;
         }
         else if (rightFoot.IsLifted_EasyThreshold)
         {
+            Debug.Log("lifted right " + counter++);
             LiftedLeadingFoot = rightFoot;
         }
 
