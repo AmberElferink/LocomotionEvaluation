@@ -12,6 +12,7 @@ public class SteamVR_TrackedObject : MonoBehaviour
 {
 	public UnityEvent onTrackingLoss;
 	public UnityEvent onTrackingReconnect;
+	public bool trackingLost = false;
 	public enum EIndex
 	{
 		None = -1,
@@ -60,9 +61,15 @@ public class SteamVR_TrackedObject : MonoBehaviour
 			return;
 
 		if (poses[i].eTrackingResult != ETrackingResult.Running_OK)
+        {
+			trackingLost = true;
 			onTrackingLoss.Invoke(); //is more strict than bPoseIsValid
+		}
 		else
+        {
+			trackingLost = false;
 			onTrackingReconnect.Invoke();
+		}
 
 		if (!poses[i].bPoseIsValid)
 			return;

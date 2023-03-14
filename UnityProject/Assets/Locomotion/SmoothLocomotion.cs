@@ -479,6 +479,9 @@ public class SmoothLocomotion : MonoBehaviour
     //Note: Orientation will stay the same if the tracking is lost this frame
     Quaternion MoveOrientation(OrientationController controllerType)
     {
+
+
+
         if (!HeadTrackingLost)
             HeadMoveOrientation = Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
 
@@ -491,23 +494,13 @@ public class SmoothLocomotion : MonoBehaviour
             AverageFeetMoveOrientation = Quaternion.LookRotation(AverageFeetOrientationDir, Vector3.up);
 
 
-            if (StandingFootMoveOrientation == Quaternion.identity)
+            if (StandingFootMoveOrientation == Quaternion.identity && StandingLeadingFoot != null)
                 StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
 
 
-            // velocity based, no smallangledifference check
-            //STANDINGFOOT purely based on negative speed(driving backwards)
-            if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
-            {
-                StandingFootMoveOrientation = leftFoot.OppAvgVelocityOrientation;
-                StandingLeadingFoot = leftFoot;
-            }
-            else
-            {
-                StandingFootMoveOrientation = rightFoot.OppAvgVelocityOrientation;
-                StandingLeadingFoot = rightFoot;
-            }
-                 
+            StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
+
+             
 
 
 
@@ -557,10 +550,21 @@ public class SmoothLocomotion : MonoBehaviour
     public void SetStandingLeadingShoe()
     {
         //Standingfoot based on height (smallest hight is standing, except if it moves forwards
+        //if (!FeetTrackingLost)
+        //{
+        //    StandingLeadingFoot = leftFoot.Height < rightFoot.Height ? leftFoot : rightFoot;
+        //}
+
+        // velocity based, no smallangledifference check
+        //STANDINGFOOT purely based on negative speed(driving backwards)
         if (!FeetTrackingLost)
         {
-            StandingLeadingFoot = leftFoot.Height < rightFoot.Height ? leftFoot : rightFoot;
+            if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
+                StandingLeadingFoot = leftFoot;
+            else
+                StandingLeadingFoot = rightFoot;
         }
+
     }
 
     int counter = 0;

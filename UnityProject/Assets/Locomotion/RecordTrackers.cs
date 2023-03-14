@@ -53,13 +53,17 @@ public class RecordTrackers : MonoBehaviour
 
     string varDelimiter = ",";
 
+    float firstFrameTime = 0;
+
 
     public void StartRecord()
     {
         recording = true;
+        firstFrameTime = Time.realtimeSinceStartup;
         //Write some text to the test.txt file
         writer = new StreamWriter(FullPath, true);
         writer.Write("dt" + varDelimiter);
+        writer.Write("totalTime" + varDelimiter);
         foreach (string name in names)
         {
             foreach (string var in VarsForEachName)
@@ -78,6 +82,7 @@ public class RecordTrackers : MonoBehaviour
             return;
 
         writer.Write(Time.deltaTime + varDelimiter);
+        writer.Write(Time.realtimeSinceStartup - firstFrameTime);
 
         switch (writeSetting)
         {

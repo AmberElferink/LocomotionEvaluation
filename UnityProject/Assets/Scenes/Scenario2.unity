@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.48397276, g: 0.5757237, b: 0.68019956, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -334,7 +334,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh34322
+  m_Name: pb_Mesh80792
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -562,6 +562,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!1001 &53223963
@@ -23331,7 +23332,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh34126
+  m_Name: pb_Mesh80232
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -27984,7 +27985,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh34006
+  m_Name: pb_Mesh79696
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -30134,6 +30135,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 0
   origin: {fileID: 0}
 --- !u!1 &391047816
@@ -30448,6 +30450,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 0
   origin: {fileID: 0}
 --- !u!1 &436963582
@@ -31191,7 +31194,7 @@ PrefabInstance:
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: autoCalibrate
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
@@ -31202,6 +31205,11 @@ PrefabInstance:
         type: 3}
       propertyPath: rightFoot.calibratedThreshold
       value: 0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090333792366, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
@@ -35531,7 +35539,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 538542934}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 559572095}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 17ced6fa1a333ce4cb6e70c9ac287ba1, type: 3}
   m_Name: 
@@ -35578,19 +35586,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   writeSetting: 0
-  filename: rawTrackers_5_Fear_20230306_14040474.csv
+  filename: rawTrackers_5_Fear_20230314_11505181.csv
   names:
   - leftfoot
   - rightfoot
   - hip
   - direction
   - head
+  - locomotionPoint
   transforms:
   - {fileID: 1593133399}
   - {fileID: 46801682}
   - {fileID: 608724277}
   - {fileID: 510739926}
   - {fileID: 1410325524}
+  - {fileID: 559572096}
   afterLoadingFirstFrame:
     m_PersistentCalls:
       m_Calls: []
@@ -39741,6 +39751,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 0
   origin: {fileID: 0}
 --- !u!1001 &620442264
@@ -40850,6 +40861,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!114 &639875257
@@ -40914,6 +40926,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!114 &639875258
@@ -40978,6 +40991,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 0
   origin: {fileID: 0}
 --- !u!4 &639875259 stripped
@@ -41080,7 +41094,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh34274
+  m_Name: pb_Mesh80660
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -41493,6 +41507,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!1 &709414433 stripped
@@ -42127,7 +42142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _getLocomotionFromConfigFile: 0
-  _locomotion: 0
+  _locomotion: 2
   _getAutoFreezableFromConfigFile: 1
   _autoFreezable: 1
   _playerControllers:
@@ -47434,6 +47449,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!43 &1003571759
@@ -48815,7 +48831,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh34778
+  m_Name: pb_Mesh82644
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -51379,7 +51395,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-1884
+  m_Name: pb_Mesh81016
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -51607,6 +51623,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!43 &1455614928
@@ -51615,7 +51632,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh33928
+  m_Name: pb_Mesh79454
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -51843,6 +51860,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!1001 &1466908780
@@ -52578,6 +52596,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!1 &1599907033
@@ -52684,6 +52703,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!43 &1613087244
@@ -52692,7 +52712,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh33984
+  m_Name: pb_Mesh79646
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -52920,6 +52940,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!1 &1629883324 stripped
@@ -53053,7 +53074,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh34828
+  m_Name: pb_Mesh82824
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -53213,7 +53234,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh34524
+  m_Name: pb_Mesh81680
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
@@ -54751,6 +54772,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 0
   origin: {fileID: 0}
 --- !u!1001 &1847692555
@@ -62627,6 +62649,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!1001 &1955596210
@@ -62903,6 +62926,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 0
   origin: {fileID: 0}
 --- !u!1 &2022002720 stripped
@@ -63394,6 +63418,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  trackingLost: 0
   index: 5
   origin: {fileID: 0}
 --- !u!1 &2057580946 stripped
@@ -63452,7 +63477,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh34176
+  m_Name: pb_Mesh80330
   serializedVersion: 9
   m_SubMeshes:
   - serializedVersion: 2
