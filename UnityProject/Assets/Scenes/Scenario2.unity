@@ -29680,35 +29680,6 @@ MonoBehaviour:
   ignoreTransforms: []
   writeSetting: 2
   filename: testWalk.txt
---- !u!114 &271967303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 271967298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25ca459418edca340a3775b53d9edc00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  writeSetting: 0
-  filename: testWalk.txt
-  names:
-  - leftfoot
-  - rightfoot
-  - hip
-  - direction
-  - head
-  transforms:
-  - {fileID: 983830829}
-  - {fileID: 1459107843}
-  - {fileID: 431355694}
-  - {fileID: 2057580947}
-  - {fileID: 756892046}
-  afterLoadingFirstFrame:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &289040480 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1743247547364726, guid: a5b4a34f6cb01374e91ea03d44a0e136,
@@ -31114,7 +31085,7 @@ PrefabInstance:
     - target: {fileID: 4633669090031107183, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.31
+      value: 2.64
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090031107183, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
@@ -31124,7 +31095,7 @@ PrefabInstance:
     - target: {fileID: 4633669090031107183, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.268
+      value: 5.6
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090031107183, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
@@ -31184,7 +31155,7 @@ PrefabInstance:
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: controllerType
-      value: 8
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
@@ -31199,16 +31170,21 @@ PrefabInstance:
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: leftFoot.calibratedThreshold
-      value: 0.13
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: rightFoot.calibratedThreshold
-      value: 0.13
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
         type: 3}
       propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633669090104301459, guid: 1d8b5445a107a6c408199e8f02c925bb,
+        type: 3}
+      propertyPath: leftFoot.isRight
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4633669090333792366, guid: 1d8b5445a107a6c408199e8f02c925bb,
@@ -35539,7 +35515,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 538542934}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 559572095}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 17ced6fa1a333ce4cb6e70c9ac287ba1, type: 3}
   m_Name: 
@@ -35586,21 +35562,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   writeSetting: 0
-  filename: rawTrackers_5_Fear_20230314_11505181.csv
+  filename: cutRawTrackers.csv
   names:
   - leftfoot
   - rightfoot
   - hip
-  - direction
   - head
-  - locomotionPoint
   transforms:
   - {fileID: 1593133399}
   - {fileID: 46801682}
   - {fileID: 608724277}
-  - {fileID: 510739926}
   - {fileID: 1410325524}
-  - {fileID: 559572096}
   afterLoadingFirstFrame:
     m_PersistentCalls:
       m_Calls: []
@@ -42141,8 +42113,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e0e2936e18e38e42a920b083e215af7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _getLocomotionFromConfigFile: 0
-  _locomotion: 2
+  _getLocomotionFromConfigFile: 1
+  _locomotion: 1
   _getAutoFreezableFromConfigFile: 1
   _autoFreezable: 1
   _playerControllers:
@@ -50348,35 +50320,6 @@ MonoBehaviour:
   ignoreTransforms: []
   writeSetting: 2
   filename: testWalk.txt
---- !u!114 &1273977269
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1273977264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25ca459418edca340a3775b53d9edc00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  writeSetting: 0
-  filename: rawTrackers_5_Fear_20230306_14040474.csv
-  names:
-  - leftfoot
-  - rightfoot
-  - hip
-  - direction
-  - head
-  transforms:
-  - {fileID: 702839749}
-  - {fileID: 1942788327}
-  - {fileID: 364487248}
-  - {fileID: 2090818923}
-  - {fileID: 1328807516}
-  afterLoadingFirstFrame:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &1280185498 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1589017275753260, guid: a96e20f031f0f3942a6b1e525137de92,
@@ -50502,12 +50445,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2dfbd3054a4184db7d8c11fa20eabc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &1349935072 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5431504661993576519, guid: 1d8b5445a107a6c408199e8f02c925bb,
-    type: 3}
-  m_PrefabInstance: {fileID: 847786430}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1386239853 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1555481234438040496, guid: bcd39852c3eec2d4380b37a00f8a032a,
@@ -52036,35 +51973,6 @@ MonoBehaviour:
   ignoreTransforms: []
   writeSetting: 2
   filename: testWalk.txt
---- !u!114 &1571901708
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1571901703}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25ca459418edca340a3775b53d9edc00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  writeSetting: 0
-  filename: testWalk.txt
-  names:
-  - leftfoot
-  - rightfoot
-  - hip
-  - direction
-  - head
-  transforms:
-  - {fileID: 1429817127}
-  - {fileID: 2038144020}
-  - {fileID: 2015217120}
-  - {fileID: 216433137}
-  - {fileID: 1349935072}
-  afterLoadingFirstFrame:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &1578481030
 GameObject:
   m_ObjectHideFlags: 0
@@ -62145,35 +62053,6 @@ MonoBehaviour:
   ignoreTransforms: []
   writeSetting: 2
   filename: testWalk.txt
---- !u!114 &1887524299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1887524294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25ca459418edca340a3775b53d9edc00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  writeSetting: 0
-  filename: testWalk.txt
-  names:
-  - leftfoot
-  - rightfoot
-  - hip
-  - direction
-  - head
-  transforms:
-  - {fileID: 1605657957}
-  - {fileID: 1624850480}
-  - {fileID: 1841332413}
-  - {fileID: 2022002721}
-  - {fileID: 416381362}
-  afterLoadingFirstFrame:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1001 &1890825318
 PrefabInstance:
   m_ObjectHideFlags: 0

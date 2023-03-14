@@ -30,7 +30,16 @@ import numpy as np
 # no filter, but checking for maxangle difference StandingFootVelocity/56/Scenario2_20230314_16324946/0_TrackingData_20230314_16324946.csv
 # no filter, no angle change if larger than 30 degrees wrt previous StandingFootVelocity/56/Scenario2_20230314_17020570/0_TrackingData_20230314_17020571.csv
 # including lerp StandingFootVelocity/56/Scenario2_20230314_17120862/0_TrackingData_20230314_17120863.csv
-df = filterdata.filterFileToDataFrame("StandingFootVelocity/56/Scenario2_20230314_17341594/0_TrackingData_20230314_17341595.csv")
+#fixed direction StandingFootVelocity/56/Scenario2_20230314_17341594/0_TrackingData_20230314_17341595.csv
+
+# real walking the fixed direction implementation. It includes:
+# standingfoot on combination of height and velocity
+# only setting orientation if speed > 0.07
+# if not the first set, only update if angledifference between current and previous is not larger than 30 degrees
+# this last part does prevent the sideways spikes between angle switches of the feet. 
+# However, it loses the correct orientation if the direction gets of track due to being set iteratively faultily within the 30 degree bounds, and not being able to get back once off.
+# StandingFootVelocity/56/Scenario2_20230314_18005218/0_TrackingData_20230314_18005219.csv
+df = filterdata.filterFileToDataFrame("StandingFootVelocity/56/Scenario2_20230314_16105318/0_TrackingData_20230314_16105319.csv") # current file of average filter in there, to show the spikes between angle changes filtered out by the new one
 
 #average
 
