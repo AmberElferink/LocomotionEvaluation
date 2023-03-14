@@ -9,15 +9,16 @@ import genVelocity
 # (angle + a) % 360 - 180. a can be set if the interesting part of the angle is usually at the wrapping around value (sometimes 5 degrees, sometimes 355 degrees)
 def processDirections(df):
     #df['TargetPosY'] = df['TargetPosY'] % 360 - 180 #np.where(df['TargetPosY'] >= 180, df['TargetPosY'] - 360, df['TargetPosY'])
-    df['DirectionRotY'] = (df['DirectionRotY'] - 90) % 360 - 180
+    rotate = -80
+    df['DirectionRotY'] = (df['DirectionRotY'] + rotate) % 360 - 180
     df['dirAngleRad'] = df['DirectionRotY'] * math.pi / 180
 
     #-180 since i wanted the standing foot angle here
-    df['LAvgVelAngle'] = (df['LAvgVelAngle'] - 180 - 90)% 360 - 180
+    df['LAvgVelAngle'] = (df['LAvgVelAngle'] - 180  + rotate)% 360 - 180
     df['LeftVelRad'] = df['LAvgVelAngle'] * math.pi / 180
 
     
-    df['RAvgVelAngle'] = (df['RAvgVelAngle'] - 180 - 90)% 360 - 180
+    df['RAvgVelAngle'] = (df['RAvgVelAngle'] - 180 + rotate)% 360 - 180
     df['RightVelRad'] = df['RAvgVelAngle'] * math.pi / 180
 
 

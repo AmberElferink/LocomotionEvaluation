@@ -9,29 +9,128 @@ using System.Linq;
 using UnityEditor;
 #endif
 
+static class AngleMath
+{
 
+    //   Destination | Source | Result
+    //            45 |     30 |     15
+    //            30 |     45 |    -15
+    //           -45 |    -30 |    -15
+    //           -30 |    -45 |     15
+    //360 + 45 = 405 |     30 |     15
+    //          -405 |    -30 |    -15
+    // if from source, to destination is clockwise, the result is positive.
+    public static float angleDifference(float sourceAngle, float destinationAngle)
+    {
+        var distance = (destinationAngle - sourceAngle) % 360;
+        if (distance < -180)
+            distance += 360;
+        else if (distance > 179)
+            distance -= 360;
+        return distance;
+    }
+
+    //now, we want to do a median filter to filter out the huge spikes once in a while. (complete switch of direction for a frame)
+    //however, you have to sort it for that, and sorting an angle is not really possible since it goes in a circle (0 and 360 degrees should be the same).
+    //so, we sort based on the differences between the current and previous angles in the list (which can be done if using the smallestAngleDifference function). 
+    //then, we find what original angle related to the median filtered difference by keeping track of the indices list while sorting.
+
+    //example:
+    //angle idx:      0  1  2  3  4  5 
+    //angles list:    0  3 -1  9 -1  1  
+    //differences:     3  4  10 10  2  
+    // difference idx  0  1   2  3  4  
+    //sort differenc:
+    //sorted diff      2   3  4  10 10
+    //sorted diff idx  4   0  1   2  3
+    // median:         4, with index 1
+    // so, we can refer in the original angles list with the index to get the corresponding angle: 3
+    public static float GetMinDifferenceAngleBasedOnAngleDerivative(Queue<float> angles)
+    {
+        if (angles.Count <= 2)
+            return angles.ElementAt<float>(0);
+
+        float[] prevAngleArray = angles.ToArray();
+        float[] angleDifferences = new float[prevAngleArray.Length - 1];
+
+        for (int i = 0; i < prevAngleArray.Length; i++)
+        {//yes, this is recalculated more often than required. It can be more efficient.
+            if (i > 0)
+                angleDifferences[i - 1] = Mathf.Abs(AngleMath.angleDifference(prevAngleArray[i], prevAngleArray[i - 1]));
+        }
+
+        var sorted = angleDifferences
+            .Select((x, i) => new KeyValuePair<float, int>(x, i))
+            .OrderBy(x => x.Key)
+            .ToList();
+
+        List<float> sortedAngleDifferences = sorted.Select(x => x.Key).ToList();
+        List<int> idx = sorted.Select(x => x.Value).ToList(); //these are the indexes in sorted order from the original list, so you can refer back to the old elements.
+
+        //string result = "";
+        //foreach (var thing in sortedAngleDifferences)
+        //    result += thing + ", ";
+        //Debug.Log(result);
+
+        //string result2 = "";
+        //foreach (var thing in idx)
+        //    result2 += thing + ", ";
+        //Debug.Log(result2);
+
+        // the first in the list is the one with the least change wrt the rest
+        int minDifferenceIndex = idx[0];
+        float minDifferenceAngle = angles.ElementAt<float>(minDifferenceIndex);
+        return minDifferenceAngle;
+    }
+
+
+
+    static float GetMinDifferenceAngleToCurrent(Queue<float> angles, float comparisonAngle)
+    {
+        if (angles.Count <= 2)
+            return angles.ElementAt<float>(0);
+
+        float[] prevAngleArray = angles.ToArray();
+        float[] diffWithComparisonAngle = new float[prevAngleArray.Length];
+
+        for (int i = 0; i < prevAngleArray.Length; i++)
+        {//yes, this is recalculated more often than required. It can be more efficient.
+            diffWithComparisonAngle[i] = Mathf.Abs(angleDifference(prevAngleArray[i], comparisonAngle));
+        }
+
+        var sorted = diffWithComparisonAngle
+            .Select((x, i) => new KeyValuePair<float, int>(x, i))
+            .OrderBy(x => x.Key)
+            .ToList();
+
+        List<float> sortedAngleDifferences = sorted.Select(x => x.Key).ToList();
+        List<int> idx = sorted.Select(x => x.Value).ToList(); //these are the indexes in sorted order from the original list, so you can refer back to the old elements.
+
+        //string result = "";
+        //foreach (var thing in sortedAngleDifferences)
+        //    result += thing + ", ";
+        //Debug.Log(result);
+
+        //string result2 = "";
+        //foreach (var thing in idx)
+        //    result2 += thing + ", ";
+        //Debug.Log(result2);
+
+        // the first in the list is the one with the least change wrt the rest
+        int minDifferenceIndex = idx[0];
+        float minDifferenceAngle = angles.ElementAt<float>(minDifferenceIndex);
+        return minDifferenceAngle;
+    }
+
+}
 
 
 
 // If you want to move Player, create a child object under player
 public class SmoothLocomotion : MonoBehaviour
 {
-    // get the smallest difference between the angles (assumption between 0 and 2pi). Do that for 360 degrees instead of radians.
-    // min((2 * PI) - abs(x - y), abs(x - y))
 
-    // smooth avg speed more
 
-    // if foot going backwards (avgspeed), standingfoot
-    
-    //take this direction value, unless the direction differs more than 0.6 wrt to the previous value. If not, and other foot does comply, take that foot. Otherwise, keep previous angle.
-
-    //
-
-    //degrees
-    float smallestAngleDifference(float angle1, float angle2)
-    {
-        return Math.Min(360 - Math.Abs(angle1 - angle2), Math.Abs(angle1 - angle2));
-    }
 
 
 
@@ -77,11 +176,14 @@ public class SmoothLocomotion : MonoBehaviour
         [System.NonSerialized]
         public Vector3 prevRot;
 
-        // orientation towards the average velocity of the foot (used for lifted foot)
-        public Quaternion AvgVelocityOrientation { get { return Quaternion.LookRotation(Vector3.ProjectOnPlane(averageLocalVelocity, Vector3.up), Vector3.up); } }
+
 
         // The direction is the negative average velocity of the standing foot: standing shoe driving backwards gives direction forwards (used for standing foot)
-        public Quaternion OppAvgVelocityOrientation { get { return Quaternion.LookRotation(Vector3.ProjectOnPlane(-averageLocalVelocity, Vector3.up), Vector3.up); } }
+        public Quaternion AvgVelocityOrientation { 
+            get {
+                return Quaternion.LookRotation(Vector3.ProjectOnPlane(averageLocalVelocity, Vector3.up), Vector3.up);
+            } 
+        }
 
         public Transform tracker; //tracker is the raw tracker data
         public Transform footTransform; //footTransform is the tracker but rotated so it actually matches the foot direction.
@@ -165,6 +267,7 @@ public class SmoothLocomotion : MonoBehaviour
                 }
                 prevPos = tracker.localPosition;
                 prevRot = tracker.rotation.eulerAngles;
+               
             }
             else
                 prevPos = Vector3.zero;
@@ -215,8 +318,8 @@ public class SmoothLocomotion : MonoBehaviour
             {
                 material.color = Color.blue;
             }
-            if (!AvgMovingForwards)
-                material.color = Color.red;
+            //if (!AvgMovingForwards)
+            //    material.color = Color.red;
         }
     }
 
@@ -276,6 +379,20 @@ public class SmoothLocomotion : MonoBehaviour
     public Quaternion HipMoveOrientation { get; private set; } = Quaternion.identity;
     public Quaternion HeadMoveOrientation { get; private set; } = Quaternion.identity;
 
+
+    float _prevIncDirectionAngle = 0;
+    float _incDirectionAngle = 0;
+    public float incStandingFootDirectionAngle
+    {
+        get { return _incDirectionAngle; }
+        private set
+        {
+            _incDirectionAngle += AngleMath.angleDifference(_prevIncDirectionAngle, value);
+            _prevIncDirectionAngle = incStandingFootDirectionAngle;
+        }
+    }
+
+
     // set from the tracked objects
     public bool FeetTrackingLost { get { return RightFootTrackingLost || LeftFootTrackingLost; } }
 
@@ -302,7 +419,6 @@ public class SmoothLocomotion : MonoBehaviour
 
     //to perform median filter and such
     Queue<float> previousAngles;
-    Queue<float> previousAnglesOtherFoot;
 
 
 
@@ -381,99 +497,12 @@ public class SmoothLocomotion : MonoBehaviour
         } 
     }
 
+    bool averageAngleSet = false;
+    float averageAngleStanding = 0;
 
-    //now, we want to do a median filter to filter out the huge spikes once in a while. (complete switch of direction for a frame)
-    //however, you have to sort it for that, and sorting an angle is not really possible since it goes in a circle (0 and 360 degrees should be the same).
-    //so, we sort based on the differences between the current and previous angles in the list (which can be done if using the smallestAngleDifference function). 
-    //then, we find what original angle related to the median filtered difference by keeping track of the indices list while sorting.
+    float prevAngle = 0;
 
-    //example:
-    //angle idx:      0  1  2  3  4  5 
-    //angles list:    0  3 -1  9 -1  1  
-    //differences:     3  4  10 10  2  
-    // difference idx  0  1   2  3  4  
-    //sort differenc:
-    //sorted diff      2   3  4  10 10
-    //sorted diff idx  4   0  1   2  3
-    // median:         4, with index 1
-    // so, we can refer in the original angles list with the index to get the corresponding angle: 3
-    float GetMinDifferenceAngleBasedOnAngleDerivative(Queue<float> angles)
-    {
-        if (angles.Count <= 2)
-            return angles.ElementAt<float>(0);
-
-        float[] prevAngleArray = angles.ToArray();
-        float[] angleDifferences = new float[prevAngleArray.Length - 1];
-
-        for (int i = 0; i < prevAngleArray.Length; i++)
-        {//yes, this is recalculated more often than required. It can be more efficient.
-            if (i > 0)
-                angleDifferences[i - 1] = smallestAngleDifference(prevAngleArray[i], prevAngleArray[i - 1]);
-        }
-
-        var sorted = angleDifferences
-            .Select((x, i) => new KeyValuePair<float, int>(x, i))
-            .OrderBy(x => x.Key)
-            .ToList();
-
-        List<float> sortedAngleDifferences = sorted.Select(x => x.Key).ToList();
-        List<int> idx = sorted.Select(x => x.Value).ToList(); //these are the indexes in sorted order from the original list, so you can refer back to the old elements.
-
-        //string result = "";
-        //foreach (var thing in sortedAngleDifferences)
-        //    result += thing + ", ";
-        //Debug.Log(result);
-
-        //string result2 = "";
-        //foreach (var thing in idx)
-        //    result2 += thing + ", ";
-        //Debug.Log(result2);
-
-        // the first in the list is the one with the least change wrt the rest
-        int minDifferenceIndex = idx[0];
-        float minDifferenceAngle = angles.ElementAt<float>(minDifferenceIndex);
-        return minDifferenceAngle;
-    }
-
-
-
-    float GetMinDifferenceAngleToCurrent(Queue<float> angles, float comparisonAngle)
-    {
-        if (angles.Count <= 2)
-            return angles.ElementAt<float>(0);
-
-        float[] prevAngleArray = angles.ToArray();
-        float[] diffWithComparisonAngle = new float[prevAngleArray.Length];
-
-        for (int i = 0; i < prevAngleArray.Length; i++)
-        {//yes, this is recalculated more often than required. It can be more efficient.
-            diffWithComparisonAngle[i] = smallestAngleDifference(prevAngleArray[i], comparisonAngle);
-        }
-
-        var sorted = diffWithComparisonAngle
-            .Select((x, i) => new KeyValuePair<float, int>(x, i))
-            .OrderBy(x => x.Key)
-            .ToList();
-
-        List<float> sortedAngleDifferences = sorted.Select(x => x.Key).ToList();
-        List<int> idx = sorted.Select(x => x.Value).ToList(); //these are the indexes in sorted order from the original list, so you can refer back to the old elements.
-
-        //string result = "";
-        //foreach (var thing in sortedAngleDifferences)
-        //    result += thing + ", ";
-        //Debug.Log(result);
-
-        //string result2 = "";
-        //foreach (var thing in idx)
-        //    result2 += thing + ", ";
-        //Debug.Log(result2);
-
-        // the first in the list is the one with the least change wrt the rest
-        int minDifferenceIndex = idx[0];
-        float minDifferenceAngle = angles.ElementAt<float>(minDifferenceIndex);
-        return minDifferenceAngle;
-    }
-
+    bool StandingOrientationSet = false;
 
     //Outputs the direction quaternion the person should move to
     //Note: Orientation will stay the same if the tracking is lost this frame
@@ -489,29 +518,89 @@ public class SmoothLocomotion : MonoBehaviour
         if (!HipTrackingLost)
             HipMoveOrientation = Quaternion.AngleAxis(hip.rotation.eulerAngles.y, Vector3.up);
 
+        
+
         if (!FeetTrackingLost)
         {
             AverageFeetMoveOrientation = Quaternion.LookRotation(AverageFeetOrientationDir, Vector3.up);
 
+            if(StandingLeadingFoot.averageLocalVelocity.magnitude > 0.07)
+            {
+                //currently this uses the raw angles without the smoothing.
+                incStandingFootDirectionAngle = StandingLeadingFoot.AvgVelocityOrientation.eulerAngles.y - 180;
 
-            if (StandingFootMoveOrientation == Quaternion.identity && StandingLeadingFoot != null)
-                StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
+               
+
+                if(!StandingOrientationSet)
+                {
+                    StandingOrientationSet = true;
+                    StandingFootMoveOrientation = Quaternion.AngleAxis(incStandingFootDirectionAngle, Vector3.up);
+                    prevAngle = incStandingFootDirectionAngle;
+                }
+                    
+
+                else if (Mathf.Abs(AngleMath.angleDifference(incStandingFootDirectionAngle, prevAngle)) < 30)
+                {
+                    Debug.Log("newAngle " + incStandingFootDirectionAngle + " difference to prev " + AngleMath.angleDifference(incStandingFootDirectionAngle, StandingFootMoveOrientation.eulerAngles.y));
+                    prevAngle = incStandingFootDirectionAngle;
+                    StandingFootMoveOrientation = Quaternion.AngleAxis(incStandingFootDirectionAngle, Vector3.up);
+                }
+                    
+
+                //remember the last x angles to filter
+                //int windowSize = 32;
+                //previousAngles.Enqueue(incStandingFootDirectionAngle);
+
+                //if (previousAngles.Count > windowSize)
+                //    previousAngles.Dequeue();
+
+                //float sum = 0;
+                //float average = 0;
+                //foreach (var angle in previousAngles)
+                //{
+                //    sum += angle;
+                //    average = sum / previousAngles.Count;
+                //}
+
+                //Debug.Log(average);
+
+               // StandingFootMoveOrientation = Quaternion.AngleAxis(average, Vector3.up);
+            }
 
 
-            StandingFootMoveOrientation = StandingLeadingFoot.OppAvgVelocityOrientation;
 
-             
+            // median filter
+            //float[] prevAngleArray = previousAngles.ToArray();
+
+            //string result = "";
+            //Array.Sort(prevAngleArray);
+            //float median = prevAngleArray[windowSize / 2];
+
+            //foreach (var x in previousAngles)
+            //    result += x + ", ";
+
+            //Debug.Log(result + " med: " + median);
+
+            // StandingFootMoveOrientation = Quaternion.AngleAxis(median, Vector3.up);
+
+
+            // EWMA filter
+
+        }
 
 
 
-            // LIFTEDFOOT
-            // The direction is the average velocity of the lifted foot: lifted shoe moving forwards gives direction forwards.
-            if (LiftedLeadingFoot != null)
+
+        // LIFTEDFOOT
+        // The direction is the average velocity of the lifted foot: lifted shoe moving forwards gives direction forwards.
+        if (LiftedLeadingFoot != null)
                 LiftedFootMoveOrientation = LiftedLeadingFoot.AvgVelocityOrientation;
             //else
             //    // when there is no lifted foot (double stance phase) a choice has to be made for the direction
             //    LiftedFootMoveOrientation = StandingFootMoveOrientation;
-        }
+
+
+
 
 
 
@@ -557,17 +646,38 @@ public class SmoothLocomotion : MonoBehaviour
 
         // velocity based, no smallangledifference check
         //STANDINGFOOT purely based on negative speed(driving backwards)
+        //if (!FeetTrackingLost)
+        //{
+        //    if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
+        //        StandingLeadingFoot = leftFoot;
+        //    else
+        //        StandingLeadingFoot = rightFoot;
+        //}
+
+        // combination height and velocity
         if (!FeetTrackingLost)
         {
-            if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
-                StandingLeadingFoot = leftFoot;
-            else
+            // if a foot is lifted, it's automatically the other foot.
+            if (leftFoot.IsLifted_EasyThreshold)
+            {
                 StandingLeadingFoot = rightFoot;
+                return;
+            }
+            if (rightFoot.IsLifted_EasyThreshold)
+            {
+                StandingLeadingFoot = leftFoot;
+                return;
+            }
+                
+            // the one with the largest negative speed is going backwards the fastests (driven by the shoe)
+            if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
+                    StandingLeadingFoot = leftFoot;
+            else
+                    StandingLeadingFoot = rightFoot;                
         }
 
     }
 
-    int counter = 0;
     public void SetLiftedLeadingShoe()
     {
         //LiftedFoot
@@ -583,12 +693,10 @@ public class SmoothLocomotion : MonoBehaviour
         }
         else if (leftFoot.IsLifted_EasyThreshold)
         {
-            Debug.Log("lifted left " + counter++);
             LiftedLeadingFoot = leftFoot;
         }
         else if (rightFoot.IsLifted_EasyThreshold)
         {
-            Debug.Log("lifted right " + counter++);
             LiftedLeadingFoot = rightFoot;
         }
 
@@ -645,7 +753,6 @@ public class SmoothLocomotion : MonoBehaviour
         rightFoot.otherfoot = leftFoot;
 
        previousAngles = new Queue<float>();
-       previousAnglesOtherFoot = new Queue<float>();
 
         if (autoCalibrate)
             StartCoroutine(CalibrationAfterSeconds(0.25f));
@@ -724,11 +831,11 @@ public class SmoothLocomotion : MonoBehaviour
 
         Quaternion orientation = MoveOrientation(controllerType);
 
-        orientation = Quaternion.Lerp(directionIndicator.transform.localRotation, orientation, 0.1f);
+        //orientation = Quaternion.Lerp(directionIndicator.transform.localRotation, orientation, 0.4f);
 
         directionIndicator.transform.localRotation = orientation;
 
-        Debug.DrawRay(directionIndicator.transform.position, directionIndicator.transform.rotation * Vector3.forward, Color.red);
+        Debug.DrawRay(directionIndicator.transform.position, orientation * Vector3.forward, Color.red);
 
         player.Move(MovementDeltaVector(orientation, CalcLocomotionSpeed()));
 

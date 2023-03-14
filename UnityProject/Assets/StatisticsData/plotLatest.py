@@ -23,8 +23,17 @@ import numpy as np
 #liftedfoot with standing in between StandingFootVelocity/56/Scenario2_20230310_16370981/0_TrackingData_20230310_16370982.csv
 #liftedfoot only StandingFootVelocity/56/Scenario2_20230310_16425889/0_TrackingData_20230310_16425890.csv
 
-#standingfoot real walking after adapting to the velocity based AfterFixes/0_TrackingData_20230314_11505181.csv
-df = filterdata.filterFileToDataFrame("AfterFixes/0_TrackingData_20230314_11505181.csv")
+#standingfoot real walking after adapting to the velocity based, gives peak on switch  AfterFixes/0_TrackingData_20230314_11505181.csv
+# same, but now with attempted median filter before the Lerp. StandingFootVelocity/56/Scenario2_20230314_15313958/0_TrackingData_20230314_15313958.csv
+# same, but with average filter before the lerp StandingFootVelocity/56/Scenario2_20230314_16105318/0_TrackingData_20230314_16105319.csv
+# same, no filter, and no lerp StandingFootVelocity/56/Scenario2_20230314_16261697/0_TrackingData_20230314_16261698.csv
+# no filter, but checking for maxangle difference StandingFootVelocity/56/Scenario2_20230314_16324946/0_TrackingData_20230314_16324946.csv
+# no filter, no angle change if larger than 30 degrees wrt previous StandingFootVelocity/56/Scenario2_20230314_17020570/0_TrackingData_20230314_17020571.csv
+# including lerp StandingFootVelocity/56/Scenario2_20230314_17120862/0_TrackingData_20230314_17120863.csv
+df = filterdata.filterFileToDataFrame("StandingFootVelocity/56/Scenario2_20230314_17341594/0_TrackingData_20230314_17341595.csv")
+
+#average
+
 
 directions.processDirections(df)
 dtlist = np.diff(df['SecSinceStart'])
@@ -33,23 +42,23 @@ df['dt'] = dtlist * 100 - 2.25
 
 genVelocity.clearData()
 #genVelocity.addData('PlayerHorSpeed', 'Player speed')
-#genVelocity.addData('LLegPosY', "Left leg height")
-#genVelocity.addData('RLegPosY', "Right leg height")
+genVelocity.addData('LLegPosY', "Left leg height")
+genVelocity.addData('RLegPosY', "Right leg height")
 #genVelocity.addData('LLHorSpeed', "Left Foot horizontal")
 #genVelocity.addData('EWMA_Left_Non_Abs', "EWMA Left Foot horizontal")
 #genVelocity.addData('EWMA_Right_Non_Abs', "EWMA Right Foot horizontal")
 #genVelocity.addData('RLHorSpeed', "Right Foot horizontal")
-genVelocity.addData('LocomotionSpeed', 'Locomotion speed')
+#genVelocity.addData('LocomotionSpeed', 'Locomotion speed')
 #genVelocity.addData('LeftFootPitch', 'Left foot pitch')
-genVelocity.addData('AllTrackersWorking', 'All trackers working')
+#genVelocity.addData('AllTrackersWorking', 'All trackers working')
 #genVelocity.addData('dt', 'deltaTime logging (centi seconds)')
 #genVelocity.addData('headAngleRad', 'Head rotation')
-genVelocity.addData('LAvgVelMag', 'leftAvgSpeed')
-genVelocity.addData('RAvgVelMag', 'rightAvgSpeed')
+#genVelocity.addData('LAvgVelMag', 'leftAvgSpeed')
+#genVelocity.addData('RAvgVelMag', 'rightAvgSpeed')
 genVelocity.addData('LeftVelRad', 'leftAngle')
 genVelocity.addData('RightVelRad', 'rightAngle')
 genVelocity.addData('dirAngleRad', 'world direction radians')
-#genVelocity.addData('StandingLeadingFootNr', 'st right: 1.5, left: -1.5, none: 0')
+genVelocity.addData('StandingLeadingFootNr', 'st right: 1.5, left: -1.5, none: 0')
 #genVelocity.addData('LiftedLeadingFootNr', 'st right: 1.5, left: -1.5, none: 0')
 
 genVelocity.plotVelocities(df, "file", isMoving=False)
