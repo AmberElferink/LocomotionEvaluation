@@ -288,15 +288,18 @@ public class SmoothLocomotion : MonoBehaviour
         // sets if it is lifted or standing based on a height threshold. 
         public void UpdateState(float liftedFootThresh, float standingFootThresh)
         {
-            IsStanding_EasyThreshold = false;
-            IsLifted_EasyThreshold = false;
-            if (Height < calibratedThreshold + standingFootThresh)
+            if(!trackingLost)
             {
-                IsStanding_EasyThreshold = true;
-            }
-            if (Height > calibratedThreshold + liftedFootThresh)
-            {
-                IsLifted_EasyThreshold = true;
+                IsStanding_EasyThreshold = false;
+                IsLifted_EasyThreshold = false;
+                if (Height < calibratedThreshold + standingFootThresh)
+                {
+                    IsStanding_EasyThreshold = true;
+                }
+                if (Height > calibratedThreshold + liftedFootThresh)
+                {
+                    IsLifted_EasyThreshold = true;
+                }
             }
         }
 
