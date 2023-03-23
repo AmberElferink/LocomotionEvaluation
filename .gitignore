@@ -1,8 +1,8 @@
 UnityProject/[Ll]ibrary/
 UnityProject/[Tt]emp/
 UnityProject/[Oo]bj/
-UnityProject/[Bb]uild/
-UnityProject/[Bb]uilds/
+#UnityProject/[Bb]uild/
+#UnityProject/[Bb]uilds/
 UnityProject/Assets/AssetStoreTools*
 UnityProject/Assets/Scenes/Scenario*/*
 UnityProject/Assets/Scenes/Training*/*

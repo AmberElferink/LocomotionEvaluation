@@ -286,10 +286,11 @@ public class SmoothLocomotion : MonoBehaviour
         }
 
         // sets if it is lifted or standing based on a height threshold. 
-        public void UpdateState(float liftedFootThresh, float standingFootThresh)
+        public void UpdateState(float liftedFootThresh, float standingFootThresh, float strictLiftedThresh)
         {
             IsStanding_EasyThreshold = false;
             IsLifted_EasyThreshold = false;
+            IsLifted_StrictThreshold = false;
             if (Height < calibratedThreshold + standingFootThresh)
             {
                 IsStanding_EasyThreshold = true;
@@ -297,6 +298,10 @@ public class SmoothLocomotion : MonoBehaviour
             if (Height > calibratedThreshold + liftedFootThresh)
             {
                 IsLifted_EasyThreshold = true;
+            }
+            if(Height > calibratedThreshold + strictLiftedThresh)
+            {
+                IsLifted_StrictThreshold = true;
             }
         }
 
@@ -306,6 +311,10 @@ public class SmoothLocomotion : MonoBehaviour
         public bool IsStanding_EasyThreshold { get; private set; }
         // ATTENTION: isStanding and isLifted EasyThreshold can be true at the same time. This is needed to be sensitive enough for any case. 
         public bool IsLifted_EasyThreshold { get; private set; }
+        //hard threshold is harder to reach, so you remove the transition point between standing and lifted completely
+        public bool IsLifted_StrictThreshold { get; private set; }
+
+
 
 
 
@@ -365,6 +374,7 @@ public class SmoothLocomotion : MonoBehaviour
 
     public float standingThres = 0.03f; //standingthresh must be < liftedthresh
     public float liftedThres = 0.05f; // it registers being lifted a bit higher than standing on the foot. 
+    public float strictLiftedThresh = 0.1f;
 
     public OrientationController controllerType = OrientationController.Hip;
 
@@ -434,32 +444,11 @@ public class SmoothLocomotion : MonoBehaviour
 
 
 
-    //Leadingfoot is the one determining the velocity
-    public Foot LiftedLeadingFoot
-    {
-        get { return _liftedLeadingFoot; }
-        set
-        {
-            if (value == null || _liftedLeadingFoot == null || _liftedLeadingFoot.isRight != value.isRight) // foot switch
-            {
-                _liftedLeadingFoot = value;
-            }
-        }
-    }
+    //Leadingfoot is the one determining the direction
+    public Foot LiftedLeadingFoot   { get; set; }
 
-    //Leadingfoot is the one determining the velocity
-    public Foot StandingLeadingFoot
-    {
-        get { return _standingLeadingFoot; }
-        set
-        {
-            if (value == null || _standingLeadingFoot == null || _standingLeadingFoot.isRight != value.isRight) // foot switch
-            {
-                _standingLeadingFoot = value;
-            }
-        }
-    }
-
+    //Leadingfoot is the one determining the direction
+    public Foot StandingLeadingFoot { get; set; }
 
 
 
@@ -509,123 +498,35 @@ public class SmoothLocomotion : MonoBehaviour
         } 
     }
 
-    bool averageAngleSet = false;
-    float averageAngleStanding = 0;
-
-    float prevAngle = 0;
-
-    bool StandingOrientationSet = false;
 
     //Outputs the direction quaternion the person should move to
     //Note: Orientation will stay the same if the tracking is lost this frame
     Quaternion MoveOrientation(OrientationController controllerType)
     {
-
-
-
         if (!HeadTrackingLost)
             HeadMoveOrientation = Quaternion.AngleAxis(head.rotation.eulerAngles.y, Vector3.up);
 
-        // --- Calculate all Orientations -------
         if (!HipTrackingLost)
             HipMoveOrientation = Quaternion.AngleAxis(hip.rotation.eulerAngles.y, Vector3.up);
 
-        
 
         if (!FeetTrackingLost)
         {
             AverageFeetMoveOrientation = Quaternion.LookRotation(AverageFeetOrientationDir, Vector3.up);
 
-             //Quaternion.E leftFoot.footTransform.rotation * Vector3.up;
-            //Vector3 direc = StandingLeadingFoot.BackHorDirection;
-            //Debug.DrawRay(leftFoot.footTransform.position, direc, Color.blue);
-
-
             StandingFootMoveOrientation = Quaternion.LookRotation(StandingLeadingFoot.BeltForwardDirection, Vector3.up);
             //Debug.DrawRay(directionIndicator.transform.position, rightFoot.BeltForwardDirection, Color.cyan);
             //Debug.DrawRay(directionIndicator.transform.position, leftFoot.BeltForwardDirection, Color.blue);
 
-            //if (StandingLeadingFoot.averageLocalVelocity.magnitude > 0.07)
-            //{
-               
 
-
-                //currently this uses the raw angles without the lerp smoothing.
-                //incStandingFootDirectionAngle = StandingLeadingFoot.AvgVelocityOrientation.eulerAngles.y - 180;
-
-                // if not using the angledifference, there is a small point where the velocity of the standing foot is a bit above 0, making the direction point the wrong way.
-                // however, compensating for this by saying not to move if the angle difference is too large, gives the issue that if it loses it gradually for a bit, it can't change back to the correct orientation.
-                // it will also have a randolm starting direction when standing still of course, so you'd have to start walking in that direction for it to work again.
-                //if(!StandingOrientationSet)
-                //{
-                //    StandingOrientationSet = true;
-                //    StandingFootMoveOrientation = Quaternion.AngleAxis(incStandingFootDirectionAngle, Vector3.up);
-                //    prevAngle = incStandingFootDirectionAngle;
-                //}
-                //else if (Mathf.Abs(AngleMath.angleDifference(incStandingFootDirectionAngle, prevAngle)) < 30)
-                //{
-                //    Debug.Log("newAngle " + incStandingFootDirectionAngle + " difference to prev " + AngleMath.angleDifference(incStandingFootDirectionAngle, StandingFootMoveOrientation.eulerAngles.y));
-                //    prevAngle = incStandingFootDirectionAngle;
-                //    StandingFootMoveOrientation = Quaternion.AngleAxis(incStandingFootDirectionAngle, Vector3.up);
-                //}
-
-
-                //remember the last x angles to filter
-                //int windowSize = 32;
-                //previousAngles.Enqueue(incStandingFootDirectionAngle);
-
-                //if (previousAngles.Count > windowSize)
-                //    previousAngles.Dequeue();
-
-                //float sum = 0;
-                //float average = 0;
-                //foreach (var angle in previousAngles)
-                //{
-                //    sum += angle;
-                //    average = sum / previousAngles.Count;
-                //}
-
-                //Debug.Log(average);
-
-                // StandingFootMoveOrientation = Quaternion.AngleAxis(average, Vector3.up);
-            //}
-
-
-
-            // median filter
-            //float[] prevAngleArray = previousAngles.ToArray();
-
-            //string result = "";
-            //Array.Sort(prevAngleArray);
-            //float median = prevAngleArray[windowSize / 2];
-
-            //foreach (var x in previousAngles)
-            //    result += x + ", ";
-
-            //Debug.Log(result + " med: " + median);
-
-            // StandingFootMoveOrientation = Quaternion.AngleAxis(median, Vector3.up);
-
-
-            // EWMA filter
-
-        }
-
-
-
-
-        // LIFTEDFOOT
-        // The direction is the average velocity of the lifted foot: lifted shoe moving forwards gives direction forwards.
-        if (LiftedLeadingFoot != null)
+            // LIFTEDFOOT
+            // The direction is the average velocity of the lifted foot: lifted shoe moving forwards gives direction forwards.
+            if (LiftedLeadingFoot != null)
                 LiftedFootMoveOrientation = LiftedLeadingFoot.AvgVelocityOrientation;
             //else
             //    // when there is no lifted foot (double stance phase) a choice has to be made for the direction
             //    LiftedFootMoveOrientation = StandingFootMoveOrientation;
-
-
-
-
-
+        }
 
 
         // ---------------- select orientation to be used based on controllertype
@@ -692,7 +593,7 @@ public class SmoothLocomotion : MonoBehaviour
                 return;
             }
                 
-            // the one with the largest negative speed is going backwards the fastests (driven by the shoe)
+            // the one with the largest negative speed is going backwards the fastest (driven by the shoe), you would read this from the IMU in firmware, not from belt speed.
             if (leftFoot.AvgHorizontalSpeed < rightFoot.AvgHorizontalSpeed)
                     StandingLeadingFoot = leftFoot;
             else
@@ -704,8 +605,8 @@ public class SmoothLocomotion : MonoBehaviour
     public void SetLiftedLeadingShoe()
     {
         //LiftedFoot
-        bool bothLifted = leftFoot.IsLifted_EasyThreshold && rightFoot.IsLifted_EasyThreshold;
-        bool bothNotLifted = !leftFoot.IsLifted_EasyThreshold && !rightFoot.IsLifted_EasyThreshold;
+        bool bothLifted = leftFoot.IsLifted_StrictThreshold && rightFoot.IsLifted_StrictThreshold;
+        bool bothNotLifted = !leftFoot.IsLifted_StrictThreshold && !rightFoot.IsLifted_StrictThreshold;
 
         if (bothNotLifted)
             LiftedLeadingFoot = null;
@@ -714,11 +615,11 @@ public class SmoothLocomotion : MonoBehaviour
             Debug.Log("Both feet are lifted. Please calibrate since that is not true for normal operation.");
             LiftedLeadingFoot = null;
         }
-        else if (leftFoot.IsLifted_EasyThreshold)
+        else if (leftFoot.IsLifted_StrictThreshold)
         {
             LiftedLeadingFoot = leftFoot;
         }
-        else if (rightFoot.IsLifted_EasyThreshold)
+        else if (rightFoot.IsLifted_StrictThreshold)
         {
             LiftedLeadingFoot = rightFoot;
         }
@@ -843,8 +744,8 @@ public class SmoothLocomotion : MonoBehaviour
     {
         CapsuleFollowHeadset();
         SetBackAndFrontFoot();
-        leftFoot.UpdateState(liftedThres, standingThres);
-        rightFoot.UpdateState(liftedThres, standingThres);
+        leftFoot.UpdateState(liftedThres, standingThres, strictLiftedThresh);
+        rightFoot.UpdateState(liftedThres, standingThres, strictLiftedThresh);
         leftFoot.CalcVelocities();
         rightFoot.CalcVelocities();
 

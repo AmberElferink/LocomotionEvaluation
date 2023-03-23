@@ -1,0 +1,6 @@
+left_foot;LHR-CE967088
+right_foot;LHR-E900F770
+hip;LHR-848973B9
+Lhand;LHR-FA50E664
+Rhand;LHR-E84AA7D7
+headset;LHR-4B3C71D7
