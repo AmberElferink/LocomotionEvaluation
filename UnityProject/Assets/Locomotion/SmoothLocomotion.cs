@@ -363,6 +363,12 @@ public class SmoothLocomotion : MonoBehaviour
     public Foot leftFoot = new Foot(false);
     public Foot rightFoot = new Foot(true);
 
+    public bool autoCalibrate = true;
+    // manual calibration key (should calibrate if both feet are on the ground)
+    public KeyCode calibrateKey = KeyCode.Y; 
+    // Set the Transform (child of tracker) to the desired orientation in play mode. Press this once to save it to a file. This orientation will be set on startup each time.
+    public KeyCode saveTrackerOrientationCalibrationKey = KeyCode.S;
+
     private Foot _liftedLeadingFoot; // this foot is the one that determines the velocity for the StandingFoot locomotion
     private Foot _standingLeadingFoot;  // this foot is the one that determines the velocity for the LiftedFoot locomotion
 
@@ -371,9 +377,9 @@ public class SmoothLocomotion : MonoBehaviour
 
     public OrientationController controllerType = OrientationController.Hip;
 
-    public float speed = 1; // for scaling output speed (set in editor)
+    public float speed = 1; // for scaling output speed (set in editor). This is tuned until the standing foot "stands still" on the virtual floor while walking.
 
-    public bool autoCalibrate = true;
+
 
 
     private Vector3 prevHeadPos = Vector3.zero;
@@ -393,6 +399,8 @@ public class SmoothLocomotion : MonoBehaviour
     public Quaternion LiftedFootMoveOrientation { get; private set; } = Quaternion.identity;
     public Quaternion HipMoveOrientation { get; private set; } = Quaternion.identity;
     public Quaternion HeadMoveOrientation { get; private set; } = Quaternion.identity;
+
+
 
 
     float _prevIncDirectionAngle = 0;
@@ -873,16 +881,12 @@ public class SmoothLocomotion : MonoBehaviour
         foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
         {
             if (Input.GetKey(kcode))
-                switch (kcode)
-                {
-                    case KeyCode.Y:
-                     Calibrate(); //set foot height (only press with two feet on the ground)
-                        break;
-                    case KeyCode.S:
-                        GetComponent<RecordTrackers>().WriteSingleCalibration();
-                        break;
-
-                }
+            {
+                if (kcode == calibrateKey)
+                    Calibrate();
+                else if (kcode == saveTrackerOrientationCalibrationKey)
+                    GetComponent<RecordTrackers>().WriteSingleCalibration();
+            }
         }
     }
 

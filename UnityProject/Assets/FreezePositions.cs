@@ -5,6 +5,8 @@ using UnityEngine.SpatialTracking;
 
 public class FreezePositions : MonoBehaviour
 {
+
+    public KeyCode freezeKey = KeyCode.K;
     public List<GameObject> objectsToFreeze = new List<GameObject>(); // it will log the global positions of this
 
     bool _freeze = false;
