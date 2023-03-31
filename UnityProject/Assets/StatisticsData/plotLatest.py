@@ -39,7 +39,7 @@ import numpy as np
 # this last part does prevent the sideways spikes between angle switches of the feet. 
 # However, it loses the correct orientation if the direction gets of track due to being set iteratively faultily within the 30 degree bounds, and not being able to get back once off.
 # StandingFootVelocity/56/Scenario2_20230314_18005218/0_TrackingData_20230314_18005219.csv
-df = filterdata.filterFileToDataFrame("StandingFootVelocity/56/Scenario2_20230314_18005218/0_TrackingData_20230314_18005219.csv") # current file of average filter in there, to show the spikes between angle changes filtered out by the new one
+df = filterdata.filterFileToDataFrame("StandingFootVelocity/56/Scenario2_20230331_15153069/0_TrackingData_20230331_15153070.csv") # current file of average filter in there, to show the spikes between angle changes filtered out by the new one
 
 #average
 
