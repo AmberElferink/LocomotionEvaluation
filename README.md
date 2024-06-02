@@ -1,132 +1,93 @@
-﻿<p align="center" width="100%">
-    <img width="300" src="https://i.postimg.cc/JhCd9T52/giffone-2c.gif"> 
-</p>
+# What is this?
+This is a repository that contains the Unity environment from the VR shoes experiment (LINKKKKKK to full paper), to plots over time and csv files ready for statistical analysis in R. It can calculate speed plots, calculate csv files for statistical analysis on completionTime and trackerlosses. It also has a function to manually clip the data to the end of the experiment based on the trajectory. 
 
-# Locomotion Evaluation Testbed VR
-> **Locomotion Evaluation Testbed VR** (or **LET-VR**) is a research project aimed at supporting a comprehensive comparison of locomotion techniques (for immersive VR) using a provided evaluation testbed. 
-The testbed application is complemented by 
-> - an experimental protocol for collecting objective and subjective measures
-> - a scoring system able to **rank** locomotion techniques based on a **weighted** set of requirements
->
-> **LET-VR** helps to select the best suitable locomotion technique to adopt in a given VR application scenario.   
-> To dig more into the details about the testbed design, you can refer to the paper (see [**Citation**](#citation))
+- This project: For the virtual Unity environment in the user test that the users walked in and gathered the tracking data see [VR shoes Unity Environment Github](https://github.com/AmberElferink/LocomotionEvaluation).
+- Processing tracking data from Unity to plots and csv files ready for statistic analysis: [Processing tracker data Github](https://github.com/AmberElferink/VRshoesDataProcessing)
+- For statistics processing in R, see [VR shoes R statistics processing Github](https://github.com/AlexisDerumigny/Reproducibility-VR-Project).
 
-<p align="center" width="100%">
-    <img width="600" src="https://i.postimg.cc/FK4923pp/architettura.png"> 
-</p>
 
-## Table of contents
-* [Videos](#videos)
-* [Experimental Material](#experimental-material)
-* [Builds](#builds)
-* [Configuration](#configuration)
-* [Citation](#citation)
-* [License](#license)
-* [Acknowledgements](#acknowledgements)
 
-## Videos
-Some videos showing tasks execution with different locomotion techniques (Arm-Swinging, Walking-In-Place, Cyberith Virtualizer, and Joystick) for every scenarios (training included) are available at this [**Link**](http://tiny.cc/8uxlsz) 
+## Raw User Experience data / Questionnaires
 
-## Experimental Material
-Additional material to support the user-study can be found in the [**Experimental Material/**](Experimental%20Material/) folder. In particular:
+- [Raw Data Consent form + demographics + Habituation questions Google Spreadsheet](https://docs.google.com/spreadsheets/d/18L1FDxcECkfh0YWAIcpaJXAqzQvc4uHcm83MKERbGXg/edit?usp=sharing)
+- [Raw Data UX answers for each trial](https://docs.google.com/spreadsheets/d/1mwZUULM_gU6-xjh3AGX8X6qKFkpROcqetkRowhyOwM8/edit?usp=sharing)
 
- - [**Administrator Script.odt**](Experimental%20Material/Administrator%20Script.odt): Script supporting the test administrator in providing information to the participant
- - [**( R ) WDB.xlsx**](Experimental%20Material/(R)WDB.xlsx): Example of WDB (plus Raw data) with 4 techniques comparison
- - [**Questionnaire.ods**](Experimental%20Material/Questionnaire/Questionnaire.ods): The full questionnaire in a spreadsheet format
- - [**Questionnaire_printable.pdf**](Experimental%20Material/Questionnaire/Questionnaire_printable.pdf): The **same** full questionnaire in a printable format
- 
-## Builds
 
-The latest version of the executables are already available for the download in [**Release**](https://github.com/VRatPolito/LET-VR/releases)
+If you want to use the questionnaire in your own experiment, you can copy the form for your own use with the following links:
+- [Consent form + demographics + Habituation Google Form ](https://docs.google.com/forms/d/16HUnzGaGV9iMNdykEuPBm8y9UqQQHBMW23HlNOklhPY/copy)
+- [UX questions for each trial Google Form](https://docs.google.com/forms/d/1SUaqCdrhtiCeiOQPW767yPz0z7UIzTfgg31t2_o47Wo/copy)
 
-The application targets only **Windows 10** and can be deployed to any VR system compatible with the **OpenVR** API, although minimum modifications may be necessary to support non-tested hand controllers
-- The builds have been tested with **HTC Vive/Pro** w/ controllers (+ Vive Trackers for the WIP), **Oculus Rift** w/ touch controllers, and **(WMR) Samsung Odyssey** w/ controllers
-    
-    
-### Build *LET-VR* from scratch
-Instructions to compile the project:
 
-#### Infos
+## How to install
+Compatible with any VR system compatible with Valve lighthouse/basestation tracking, and Vive trackers. Recommended to use at least four 2.0 lighthouses (1.0 only supports up to two lighthouses) to prevent tracker losses of the trackers on the feet.
+
+Steps:
+- Install Unity Hub, and from the Unity Hub go to Installs > Install Unity Editor > Archive > download archive, and click the install button next to version 2018.4.28f1
+- Install Git, and clone the project: `git clone https://github.com/AmberElferink/LocomotionEvaluation`, or if unfamiliar with Git just download this project (Green button `Code` > `Download Zip`) from this page.
+- With Unity Hub > Projects > Open, select the folder and go into it until you can see (but are not inside) the Asset folder.
+- The Unity Editor should now open the project.
+- If package errors are reported, press Continue, open the Package Manager (Window -> Package Manager) and try updating the involved packages, after that restart the project
+- Open Assets > Scenes > Scenario2. This was used in our experiment. If you set up your trackers (see the steps below), this should now give motion through the environment based on the selected locomotion technique. 
+- Before building, open each scene file and perform the bake of the lighting (Window -> Lighting Tab -> Generate Lighting). This can take a bit of time depending on your gpu (progress right bottom).
+- To build the project, also include the Launcher scene, so you can quickly set the `Locomotion Technique (direction condition)`, and subject number.
+- Make sure when building the project to work with the Launcher, _getLocomotionFromConfigFile is true in Scenario2.unity > ScenarioManager, or it will not load the proper locomotion technique.
+- Make sure your SteamVR is flat. Sometimes in room setup one side of the room is higher than another, due to a misaligned IMU in the headset. It can help to balance your VR headset on the front (90 flipped orientation) during floor height calibration to get this right.
+
 The project was created and tested with [**Unity 2018.4.x (LTS)**](https://unity3d.com/unity/qa/lts-releases?version=2018.4)
 - NOTE: the project is built around the **SteamVR asset v1.2.3**, any update to higher versions of the asset will break part of the code due to the different input management (of course is possible to update the SteamVR version installed on the host system)
-   
 The list of package dependencies is in the [**manifest file**](UnityProject/Packages/manifest.json) and will be automatically managed by the Unity editor
 
-#### Prepare to Build
-1. In Unity, open an existing project and select the [**UnityProject/**](UnityProject/) folder
-    1. If package errors are reported, press Continue, open the Package Manager (Window -> Package Manager) and try updating the involved packages, after that restart the project
-1. Scene files for each scenario are placed inside the [**UnityProject/Assets/Scenes/**](UnityProject/Assets/Scenes/) folder. Before building, open each scene file and perform the bake of the lighting (Window -> Lighting Tab -> Generate Lighting). 
-    1. NOTE: baking is a computationally intensive task, and the time required for completing it can vary based on the hardware (in particular, for Scenario 2). By default, Progressive GPU Lightmapper is selected, switch back to CPU in case of low-performance graphics adapters. Also, to pick a specific GPU device to be used for the baking please refer to the [**official Unity manual page**](https://docs.unity3d.com/2018.4/Documentation/Manual/GPUProgressiveLightmapper.html)
-1. The *CybSDK* plug-in required to compile with support to the *Cyberith Virtualizer*, is **NOT** included within the project source due to licensing. To support the locomotion treadmill it is required to obtain and import the relative unity package.
-    1. If you are not able to get the *CybSDK* but want to test **LET-VR** on the *Cyberith Virtualizer* you can use the compiled version in [**Release**](https://github.com/VRatPolito/LET-VR/releases)
 
-#### Build facilities
-- To Build it from scratch, use the facility in the custom menu VR@POliTO (N.B. remember to bake lighting for all the scenarios):
-    - **Build All Scenarios Split**: build all scenarios in a different path with each executable including just one scenario (e.g. *Scenario1.exe*)
-    - **Build Launcher (built-in scenarios)**: build all scenarios embedded into a single executable (*Launcher.exe*)
-    <p align="center" width="100%">
-        <img width="600" src="http://vr.polito.it/wp-content/uploads/2020/01/build_helpers.png"> 
-    </p>
+### Fixing tracker orientation:
+All trackers should already be in correct default orientation after doing the following settings. 
+First make sure the trackers are correctly set-up in SteamVR and the calibration files:
+- Open SteamVR Settings > Controllers > Manage Trackers
+- Set "Waist" for the controller meant on the hip. "Left foot" for the one meant on the foot, and "Right foot" for the one on the right foot.
+- If you don't know which tracker is what, turn them on/off one by one to see this.
+- Open This projects StreamingAssets > tracker_config.txt file. Set each ID according to the trackers in the Manage Trackers SteamVR menu.
+- If this is all set correctly, the application should automatically correctly position the trackers.
+
+
+If you want to change the startingrotation, this can be influenced by two things:
+1 The SteamVR tracker role (a "foot" starts horizontally. A "hip" or "hand" tracker starts vertically.
+2 There is also an easy to use script to calibrate this in the Unity Scene editor easily and save it to a calibration file to be loaded on start.
+- Open the Unity scene
+- Press play, and select and rotate the tracker as you want it to start.
+- Select on the parent (for example "LiftedFoot", if you adapted the tracker in that locomotion hierarchy).
+- In the Inspector, select "Save Tracker Calibration".
+- Stop play.
+- Now each time you press play, it should load the correct configuration. Note: this will happen for ALL locomotion objects referencing the same calibration file.
+
+# What is in what file?
+Scenario2.unity is the scene that contains the environment as used in the experiment.
+All the code of this project is located in the Assets > Locomotion project.
+Specifically [SmoothLocomotion](#SmoothLocomotion) contains the main walking algorithm.
+
+
+When opening the Scene, the locomotion logic is in StandingFoot, AverageFoot, Hip, and Head objects. On Play, the active locomotion is enabled by the ScenarioManager object, in the LocomotionManager script. It can either be set to open a locomotion technique from the config file, which is necessary when working with the Launcher, so set _getLocomotionFromConfigFile to true when building to work with the Launcher! For testing, you can set this to false, and select it with the LocomotionTechnique field there instead.
+
+Each locomotion object contains the following:
+
+## [SmoothLocomotion](https://github.com/AmberElferink/LocomotionEvaluation/blob/master_public/UnityProject/Assets/Locomotion/SmoothLocomotion.cs)
+Contains the main algorithm for each direction condition. The thresholds for lifted, standingfoot, and speed scaling (in our case used to match pilot data to precisely match movement across the virtual floor) can be set here as well. All these functions are called from the FixedUpdate function within that script. This algorithm is further explained in the paper.
+
+
+## [AnimateTrackersFromFile](https://github.com/AmberElferink/LocomotionEvaluation/blob/master_public/UnityProject/Assets/Locomotion/AnimateTrackersFromFile.cs)
+This can replay any raw tracker data. For this, place the file you want to replay in /StreamingAssets/, and enter the filename into the field in AnimateTrackersFromFile.
+- In the existing scene, the names/transforms are prefilled, but this menu is used to link column names in the file to actual in scene transforms that should be moved.
+- It expects each name to contain 6 columns with postfix "_px", "_py", "_pz", "_rx", "_ry", "_rz" for position and rotation to be indicated.
+- To find rawTrackerdata from the experiment, see [Processing tracker data Github](https://github.com/AmberElferink/VRshoesDataProcessing).
+- To record your own tracker data, use the RecordTrackersToFile.cs script.
+- To animate the tracker data, press the AnimateTrackers button.
+- Load tracker calibration can be used to write a transform once, to for example load a saved calibration (recordable with RecordTrackersToFile).
     
-    
-## Configuration
-The **LET-VR** testbed application can be configured with additional parameter without the need to rebuild it every time. If using the **Launcher** mode this can be done by means of the provided configuration mask.   
-<p align="center" width="100%">
-    <img width="500" src="https://i.postimg.cc/TYLXqD4t/launcher.png"> 
-</p>
-
-Otherwise, is possible to manually edit the configuration file. The file is located in the *BuildData/* folder, e.g. `..\LET-VR\Launcher\Launcher_Data\BuildData\config.txt`
-    
-This is an example of a `config.txt` file:
-
-    #Select scenario to load [Launcher only] {-1 = SelectWithGUI, 0 = Training, 1 = Straight Movements, 2 = Direction Control, 3 = Decoupled Movements, 4 = Agility, 5 = Interaction with objects}
-    Scenario=-1
-    
-    #Participant ID (can be a string) [max lenght 15]
-    ParticipantId=56
-    
-    #SetLocomotion Technique among {ArmSwing, WalkInPlace, CVirtualizer, Joystick}
-    LocomotionTechnique=ArmSwing
-    
-    #Use true to automatically freeze the player at the start/end of each task
-    AutoFreeze=true
-
-
-#### Calibration Data
-At the first run, a calibration file `calibrationData.pgd` with the participant data will be created in the User's document folder, e.g. `..\FooUser\Documents\LET_VR`. The file can be automatically populated by using the *Tutorial Scenario* or manually by editing the json file.
-```json
-{
-	"_controllerDistance":1.5,
-	"_headHeight":1.7
-}
-```
-
-## Citation
-Please cite this paper in your publications if it helps your research. 
-
-    @article{letvr,
-      author = {Cannav{\`o}, Alberto and Calandra, Davide and Prattic{\`o}, Filippo Gabriele and Gatteschi, Valentina and Lamberti, Fabrizio},
-      journal = {IEEE Transactions on Visualization and Computer Graphics},
-      title = {An Evaluation Testbed for Locomotion in Virtual Reality},
-      pages={1871-1889},
-      year = {2020},
-      doi = {10.1109/TVCG.2020.3032440}
-    }
-
-The **LET-VR** design is detailed in:
-- *An Evaluation Testbed for Locomotion in Virtual Reality* 
-    - [**IEEE TVCG**](https://dx.doi.org/10.1109/TVCG.2020.3032440)
-    - [**ArXiv**](https://arxiv.org/abs/2010.10178)
-
-
 ## Contact
-Maintained by [F. Gabriele Prattico\`](mailto:filippogabriele.prattico@polito.it?subject=[GitHub]%20LET-VR) - feel free to contact me!
+- If there is an issue with this software, or you have a question, please leave an Issue above.
+- If you want to use any of the developed code in your work, please cite the corresponding paper at the top.
+- Original testbed by https://github.com/VRatPolito/LET-VR
 
 ## License
 Experimental material and Unity project are licensed under
  [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
  
-## Acknowledgements
-<p align="center" width="100%">
-    <img width="800" src="http://vr.polito.it/wp-content/uploads/2018/09/logo_intero_vr@polito_2.png"> 
-</p>
+
