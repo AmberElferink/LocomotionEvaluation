@@ -332,7 +332,10 @@ public class SmoothLocomotion : MonoBehaviour
 
         //Leadingfoot depends on the SpeedController as well (Standing/Lifted), so it automatically the correct foot.
         if (LeadingFoot != null)
-            displacement = Vector3.ProjectOnPlane(currentLocomotionSpeed * LeadingFoot.Velocity.normalized, Vector3.up) * Time.fixedDeltaTime;
+            displacement = Vector3.ProjectOnPlane(LeadingFoot.Velocity.normalized, Vector3.up) * currentLocomotionSpeed * Time.fixedDeltaTime;
+        // displacement = Vector3.ProjectOnPlane(currentLocomotionSpeed * LeadingFoot.Velocity.normalized, Vector3.up) * Time.fixedDeltaTime;
+        // during our experiment it was different (speed was not on the correct side of the brackets, see the line above). This has been rectified here for future experiments, so they automatically use the correct code. 
+        // the effect of that is the actual speed was probably a tiny bit slower than it should be in our experiment.
 
         switch (controllerType)
         {
