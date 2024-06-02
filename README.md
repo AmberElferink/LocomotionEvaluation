@@ -1,5 +1,5 @@
 # What is this?
-This is a repository that contains the Unity environment from the VR shoes experiment (LINKKKKKK to full paper), to plots over time and csv files ready for statistical analysis in R. It can calculate speed plots, calculate csv files for statistical analysis on completionTime and trackerlosses. It also has a function to manually clip the data to the end of the experiment based on the trajectory. 
+This is a repository that contains the Unity environment from the VR shoes experiment (LINKKKKKK to full paper).
 
 - This project: For the virtual Unity environment in the user test that the users walked in and gathered the tracking data see [VR shoes Unity Environment Github](https://github.com/AmberElferink/LocomotionEvaluation).
 - Processing tracking data from Unity to plots and csv files ready for statistic analysis: [Processing tracker data Github](https://github.com/AmberElferink/VRshoesDataProcessing)
