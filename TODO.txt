@@ -1,6 +1,0 @@
-TODO:
-The trackerwalk should work now in Scene 2. Try it next time.
-Edit LocomotionManager for Start/Stop
-Make sure you can start any locomotion method from config
-Add dt to the log, and make sure it logs all trackers for all my locomotionmethods
-Make sure the animationmanager can play this as well.
