@@ -31,7 +31,7 @@ Steps:
 - Before building, open each scene file and perform the bake of the lighting (Window -> Lighting Tab -> Generate Lighting). This can take a bit of time depending on your gpu (progress right bottom).
 - To build the project, also include the Launcher scene, so you can quickly set the `Locomotion Technique (direction condition)`, and subject number.
 - Make sure when building the project to work with the Launcher, _getLocomotionFromConfigFile is true in Scenario2.unity > ScenarioManager, or it will not load the proper locomotion technique.
-- Make sure your SteamVR is flat. Sometimes in room setup one side of the room is higher than another, due to a misaligned IMU in the headset. It can help to balance your VR headset on the front (90 flipped orientation) during floor height calibration to get this right.
+- Make sure your floor in the SteamVR room setup is flat. Sometimes in room setup one side of the room is higher than another, due to a misaligned IMU in the headset. It can help to balance your VR headset on the front (90 flipped orientation) during floor height calibration to get this right.
 
 The project was created and tested with [**Unity 2018.4.x (LTS)**](https://unity3d.com/unity/qa/lts-releases?version=2018.4)
 - NOTE: the project is built around the **SteamVR asset v1.2.3**, any update to higher versions of the asset will break part of the code due to the different input management (of course is possible to update the SteamVR version installed on the host system)
