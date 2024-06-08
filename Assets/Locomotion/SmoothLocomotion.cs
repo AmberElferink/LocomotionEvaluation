@@ -335,7 +335,8 @@ public class SmoothLocomotion : MonoBehaviour
             displacement = Vector3.ProjectOnPlane(LeadingFoot.Velocity.normalized, Vector3.up) * currentLocomotionSpeed * Time.fixedDeltaTime;
         // displacement = Vector3.ProjectOnPlane(currentLocomotionSpeed * LeadingFoot.Velocity.normalized, Vector3.up) * Time.fixedDeltaTime;
         // during our experiment it was different (speed was not on the correct side of the brackets, see the line above). This has been rectified here for future experiments, so they automatically use the correct code. 
-        // the effect of that is the actual speed was probably a tiny bit slower than it should be in our experiment.
+        // we expect (and have seen) that the standing foot speed is not significantly different from the other conditions even though this was not set fully correctly. This is because this deviation will only cause a difference in speed
+        // when the tracker velocity is not horizontal. However, the tracker velocity during standing foot velocity is horizontal since the foot is driven over the ground. Therefore did not cause a difference.
 
         switch (controllerType)
         {
