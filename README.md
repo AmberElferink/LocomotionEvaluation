@@ -1,9 +1,9 @@
 # What is this?
 This is a repository that contains the Unity environment from the VR shoes experiment (LINKKKKKK to full paper).
 
-- This project: For the virtual Unity environment in the user test that the users walked in and gathered the tracking data see [VR shoes Unity Environment Github](https://github.com/AmberElferink/LocomotionEvaluation).
-- Processing tracking data from Unity to plots and csv files ready for statistic analysis: [Processing tracker data Github](https://github.com/AmberElferink/VRshoesDataProcessing)
-- For statistics processing in R, see [VR shoes R statistics processing Github](https://github.com/AlexisDerumigny/Reproducibility-VR-Project).
+- This project: [VR shoes Unity Environment Github](https://github.com/AmberElferink/LocomotionEvaluation). It is the virtual Unity environment in the user test that the users walked in and gathered the tracking data.
+- [Processing tracker data Github](https://github.com/AmberElferink/VRshoesDataProcessing): Processing tracking data from Unity to plots and csv files ready for statistic analysis.
+- [VR shoes R statistics processing Github](https://github.com/AlexisDerumigny/Reproducibility-VR-Project): For statistics processing in R.
 
 
 
